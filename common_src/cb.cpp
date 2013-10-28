@@ -117,27 +117,9 @@ void conn_write_cb(struct bufferevent *bev, void *arg)
 
 void conn_event_cb(struct bufferevent *bev, short what, void *arg)
 {
-    mdebug("conn_event_cb what:%d", what);
     conn *c = (conn *)arg;
 
     if (what & BEV_EVENT_EOF || what & BEV_EVENT_ERROR) {
-        user_callback *cb = (user_callback *)c->data;
-        if (cb->disconnect) {
-            (*(cb->disconnect))(c);
-        }
-    }
-}
-
-/* used by connector */
-static void conn_event_cb2(struct bufferevent *bev, short what, void *arg)
-{
-    mdebug("conn_event_cb2 what:%d", what);
-    conn *c = (conn *)arg;
-
-    if (what & BEV_EVENT_EOF || what & BEV_EVENT_ERROR) {
-        connector *cr = (connector *)c->data;
-        cr->state = STATE_NOT_CONNECTED;
-
         user_callback *cb = (user_callback *)c->data;
         if (cb->disconnect) {
             (*(cb->disconnect))(c);
@@ -165,6 +147,24 @@ static void delay_connecting(conn *c)
         }
     }
     evtimer_add(cr->timer, &cr->tv);
+}
+
+void connecting_event_cb(struct bufferevent *, short, void *);
+static void conn_event_cb2(struct bufferevent *bev, short what, void *arg)
+{
+    conn *c = (conn *)arg;
+
+    if (what & BEV_EVENT_EOF || what & BEV_EVENT_ERROR) {
+        connector *cr = (connector *)c->data;
+        bufferevent_setcb(c->bev, NULL, NULL, connecting_event_cb, c);
+        cr->state = STATE_NOT_CONNECTED;
+        delay_connecting(c);
+
+        user_callback *cb = (user_callback *)c->data;
+        if (cb->disconnect) {
+            (*(cb->disconnect))(c);
+        }
+    }
 }
 
 void connecting_event_cb(struct bufferevent *bev, short what, void *arg)
