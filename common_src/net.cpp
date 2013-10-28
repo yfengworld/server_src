@@ -238,6 +238,7 @@ static void thread_libevent_process(int fd, short which, void *arg)
                         if (NULL == bev) {
                             merror("create bufferevent failed!");
                         } else {
+                            /* multi-thread write */
                             evbuffer *output = bufferevent_get_output(bev);
                             evbuffer_enable_locking(output, NULL);
                             bufferevent_setcb(bev, NULL, NULL, connecting_event_cb, c);

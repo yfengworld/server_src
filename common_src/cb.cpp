@@ -156,6 +156,8 @@ static void conn_event_cb2(struct bufferevent *bev, short what, void *arg)
 
     if (what & BEV_EVENT_EOF || what & BEV_EVENT_ERROR) {
         connector *cr = (connector *)c->data;
+        evutil_socket_t fd = bufferevent_getfd(c->bev);
+        close(fd);
         bufferevent_setcb(c->bev, NULL, NULL, connecting_event_cb, c);
         cr->state = STATE_NOT_CONNECTED;
         delay_connecting(c);

@@ -7,6 +7,9 @@
 
 static void forward(conn* c, connector *cr, msg_head *h, unsigned char *msg, size_t sz)
 {
+    connector_write(center, ce_test);
+    return;
+
     if (NULL == c->user) {
         merror("no associate user");
         /* close connection */
@@ -86,7 +89,7 @@ void client_rpc_cb(conn *c, unsigned char *msg, size_t sz)
         /* close connection */
         return;
     }
-    minfo("client_cb magic:%d len:%d cmd:%d flags:%d", h.magic, h.len, h.cmd, h.flags);
+    mdebug("client_cb magic:%d len:%d cmd:%d flags:%d", h.magic, h.len, h.cmd, h.flags);
 
     if (h.cmd >= CG_BEGIN && h.cmd < CS_END) {
         /* client -> gate */
