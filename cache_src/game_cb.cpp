@@ -1,14 +1,17 @@
 #include "net.h"
 #include "test.pb.h"
 
-void game_cb(conn *c, unsigned char *msg, size_t sz)
+void game_rpc_cb(conn *c, unsigned char *msg, size_t sz)
 {
-    msg_head h;
-    if (0 != message_head(msg, sz, &h)) {
-        return;
-    }
 
-    A a;
-    msg_body<A>(msg, sz, &a);
-    conn_write(c, msg, sz);
+}
+
+void game_connect_cb(conn *c)
+{
+
+}
+
+void game_disconnect_cb(conn *c)
+{
+
 }

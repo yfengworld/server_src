@@ -35,9 +35,14 @@ typedef struct {
 } conn;
 
 typedef void (*rpc_cb_func)(conn *, unsigned char *, size_t);
+typedef void (*connect_cb_func)(conn *);
+typedef void (*disconnect_cb_func)(conn *);
 
 typedef struct {
+    char type;
     rpc_cb_func rpc;
+    connect_cb_func connect;
+    disconnect_cb_func disconnect;
 } user_callback;
 
 typedef struct {
@@ -76,11 +81,18 @@ int conn_add_to_freelist(conn *c);
 int conn_write(conn *c, unsigned char *msg, size_t sz);
 
 /* listener */
-listener *listener_new(struct event_base* base, struct sockaddr *sa, int socklen, rpc_cb_func rpc);
+listener *listener_new(struct event_base* base,
+        struct sockaddr *sa, int socklen,
+        rpc_cb_func rpc,
+        connect_cb_func connect,
+        disconnect_cb_func disconnect);
 void listener_free(listener *l);
 
 /* connector */
-connector *connector_new(struct sockaddr *sa, int socklen, rpc_cb_func rpc);
+connector *connector_new(struct sockaddr *sa, int socklen, 
+        rpc_cb_func rpc,
+        connect_cb_func connect,
+        disconnect_cb_func disconnect);
 void connector_free(connector *cr);
 int connector_write(connector *cr, unsigned char *msg, size_t sz);
 

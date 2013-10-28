@@ -10,8 +10,12 @@
 static void signal_cb(evutil_socket_t, short, void *);
 
 /* callback */
-void gate_cb(conn *, unsigned char *, size_t);
-void game_cb(conn *, unsigned char *, size_t);
+void gate_rpc_cb(conn *, unsigned char *, size_t);
+void gate_connect_cb(conn *);
+void gate_disconnect_cb(conn *);
+void game_rpc_cb(conn *, unsigned char *, size_t);
+void game_connect_cb(conn *);
+void game_disconnect_cb(conn *);
 
 #define WORKER_NUM 8
 
@@ -57,7 +61,7 @@ int main(int argc, char **argv)
     sa.sin_addr.s_addr = htonl(INADDR_ANY);
     sa.sin_port = htons(45000);
 
-    listener *lg = listener_new(main_base, (struct sockaddr *)&sa, sizeof(sa), gate_cb);
+    listener *lg = listener_new(main_base, (struct sockaddr *)&sa, sizeof(sa), gate_rpc_cb, gate_connect_cb, gate_disconnect_cb);
     if (NULL == lg) {
         mfatal("create client listener failed!");
         return 1;
@@ -69,7 +73,7 @@ int main(int argc, char **argv)
     sa.sin_addr.s_addr = htonl(INADDR_ANY);
     sa.sin_port = htons(45001);
 
-    listener *lm = listener_new(main_base, (struct sockaddr *)&sa, sizeof(sa), gate_cb);
+    listener *lm = listener_new(main_base, (struct sockaddr *)&sa, sizeof(sa), game_rpc_cb, game_connect_cb, game_disconnect_cb);
     if (NULL == lm) {
         mfatal("create client listener failed!");
         return 1;

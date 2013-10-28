@@ -3,13 +3,19 @@
 #include "fwd.h"
 #include "test.pb.h" 
 
+#include <assert.h>
+
 static void forward(conn* c, connector *cr, msg_head *h, unsigned char *msg, size_t sz)
 {
     if (NULL == c->user) {
         merror("no associate user");
         /* close connection */
-        return;
+        /* return; */
     }
+
+    msg_head nh;
+    message_head(msg, sz, &nh);
+    minfo("client_cb magic:%d len:%d cmd:%d flags:%d", nh.magic, nh.len, nh.cmd, nh.flags);
 
     if (h->flags & FLAG_HAS_UID) {
         merror("should no uid connection %s", c->addrtext);
@@ -30,6 +36,14 @@ static void forward(conn* c, connector *cr, msg_head *h, unsigned char *msg, siz
         return;
     }
 
+    unsigned char *nmsg = (unsigned char *)malloc(sz);
+    memcpy(nmsg, msg, sz);
+    message_head(nmsg, sz, &nh);
+    minfo("client_cb magic:%d len:%d cmd:%d flags:%d", nh.magic, nh.len, nh.cmd, nh.flags);
+    evbuffer_add(output, nmsg, sz);
+    bufferevent_enable(cr->c->bev, EV_WRITE);
+
+    /*
     evbuffer_lock(output);
     struct evbuffer_iovec v[1];
     if (0 >= evbuffer_reserve_space(output, sz, v, 1)) {
@@ -38,9 +52,12 @@ static void forward(conn* c, connector *cr, msg_head *h, unsigned char *msg, siz
         return;
     }
 
-    unsigned char *cur = (unsigned char *)(v[0].iov_base);
-    memcpy(cur, msg, MSG_HEAD_SIZE);
-    cur += MSG_HEAD_SIZE;
+    unsigned short *cur = (unsigned short *)(v[0].iov_base);
+    assert(cur);
+    *cur++ = htons(h->magic);
+    *cur++ = htons(h->len);
+    *cur++ = htons(h->cmd);
+    *cur++ = htons(h->flags);
     *(uint64_t *)cur = htons(1);
     cur += sizeof(uint64_t);
     memcpy(cur, msg - MSG_HEAD_SIZE, h->len);
@@ -53,6 +70,8 @@ static void forward(conn* c, connector *cr, msg_head *h, unsigned char *msg, siz
     evbuffer_unlock(output);
 
     bufferevent_enable(cr->c->bev, EV_WRITE);
+    */
+    mdebug("forward cmd:%d for connection %s", h->cmd, c->addrtext);
 }
 
 static void cli_cb(conn *c, msg_head *h, unsigned char *msg, size_t sz)
@@ -60,13 +79,14 @@ static void cli_cb(conn *c, msg_head *h, unsigned char *msg, size_t sz)
 
 }
 
-void client_cb(conn *c, unsigned char *msg, size_t sz)
+void client_rpc_cb(conn *c, unsigned char *msg, size_t sz)
 {
     msg_head h;
     if (0 != message_head(msg, sz, &h)) {
         /* close connection */
         return;
     }
+    minfo("client_cb magic:%d len:%d cmd:%d flags:%d", h.magic, h.len, h.cmd, h.flags);
 
     if (h.cmd >= CG_BEGIN && h.cmd < CS_END) {
         /* client -> gate */
@@ -89,4 +109,14 @@ void client_cb(conn *c, unsigned char *msg, size_t sz)
         merror("invalid cmd:%d connection %s", h.cmd, c->addrtext);
         /* close connection */
     }
+}
+
+void client_connect_cb(conn *c)
+{
+
+}
+
+void client_disconnect_cb(conn *c)
+{
+
 }

@@ -10,9 +10,15 @@
 static void signal_cb(evutil_socket_t, short, void *);
 
 /* rpc callback */
-void game_cb(conn *, unsigned char *, size_t);
-void gate_cb(conn *, unsigned char *, size_t);
-void login_cb(conn *, unsigned char *, size_t);
+void game_rpc_cb(conn *, unsigned char *, size_t);
+void game_connect_cb(conn *);
+void game_disconnect_cb(conn *);
+void gate_rpc_cb(conn *, unsigned char *, size_t);
+void gate_connect_cb(conn *);
+void gate_disconnect_cb(conn *);
+void login_rpc_cb(conn *, unsigned char *, size_t);
+void login_connect_cb(conn *);
+void login_disconnect_cb(conn *);
 
 #define WORKER_NUM 8
 
@@ -58,7 +64,10 @@ int main(int argc, char **argv)
     sa.sin_addr.s_addr = htonl(INADDR_ANY);
     sa.sin_port = htons(43000);
 
-    listener *lg = listener_new(main_base, (struct sockaddr *)&sa, sizeof(sa), gate_cb);
+    listener *lg = listener_new(main_base, (struct sockaddr *)&sa, sizeof(sa),
+            gate_rpc_cb,
+            gate_connect_cb,
+            gate_disconnect_cb);
     if (NULL == lg) {
         mfatal("create client listener failed!");
         return 1;
@@ -70,7 +79,10 @@ int main(int argc, char **argv)
     sa.sin_addr.s_addr = htonl(INADDR_ANY);
     sa.sin_port = htons(43001);
 
-    listener *lm = listener_new(main_base, (struct sockaddr *)&sa, sizeof(sa), game_cb);
+    listener *lm = listener_new(main_base, (struct sockaddr *)&sa, sizeof(sa),
+            game_rpc_cb,
+            game_connect_cb,
+            game_disconnect_cb);
     if (NULL == lm) {
         mfatal("create game listener failed!");
         return 1;
@@ -83,7 +95,10 @@ int main(int argc, char **argv)
     csa.sin_addr.s_addr = inet_addr("127.0.0.1");
     csa.sin_port = htons(41001);
 
-    connector *cl = connector_new((struct sockaddr *)&csa, sizeof(csa), login_cb);
+    connector *cl = connector_new((struct sockaddr *)&csa, sizeof(csa),
+            login_rpc_cb,
+            login_connect_cb,
+            login_disconnect_cb);
     if (NULL == cl) {
         mfatal("create center connector failed!");
         return 1;

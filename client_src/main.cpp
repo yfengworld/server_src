@@ -10,14 +10,16 @@
 static void signal_cb(evutil_socket_t, short, void *);
 
 /* callback */
-void server_cb(conn *, unsigned char *, size_t);
+void server_rpc_cb(conn *, unsigned char *, size_t);
+void server_connect_cb(conn *);
+void server_disconnect_cb(conn *);
 
 #define WORKER_NUM 1
 
 int main(int argc, char **argv)
 {
     /* open log */
-    if (0 != LOG_OPEN("./center", LOG_LEVEL_DEBUG, -1)) {
+    if (0 != LOG_OPEN("./client", LOG_LEVEL_DEBUG, -1)) {
         fprintf(stderr, "open center log failed!\n");
         return 1;
     }
@@ -56,7 +58,8 @@ int main(int argc, char **argv)
     csa.sin_addr.s_addr = inet_addr("127.0.0.1");
     csa.sin_port = htons(42000);
 
-    connector *cg = connector_new((struct sockaddr *)&csa, sizeof(csa), server_cb);
+    connector *cg = connector_new((struct sockaddr *)&csa, sizeof(csa),
+            server_rpc_cb, server_connect_cb, server_disconnect_cb);
     if (NULL == cg) {
         mfatal("create gate connector failed!");
         return 1;

@@ -208,13 +208,15 @@ static void thread_libevent_process(int fd, short which, void *arg)
                             merror("create bufferevent failed!");
                         } else {
                             strncpy(c->addrtext, li->addrtext, 32);
-                            evbuffer *input = bufferevent_get_input(bev);
-                            evbuffer_enable_locking(input, NULL);
+                            evbuffer *output = bufferevent_get_output(bev);
+                            evbuffer_enable_locking(output, NULL);
                             bufferevent_setcb(bev, conn_read_cb, conn_write_cb, conn_event_cb, c);
                             bufferevent_enable(bev, EV_READ);
                             c->data = li->l;
                             c->bev = bev;
                             c->thread = me;
+                            if (li->l->cb.connect)
+                                (*(li->l->cb.connect))(c);
                             mdebug("new connection %s established!", c->addrtext);
                         }
                     }
@@ -236,8 +238,8 @@ static void thread_libevent_process(int fd, short which, void *arg)
                         if (NULL == bev) {
                             merror("create bufferevent failed!");
                         } else {
-                            evbuffer *input = bufferevent_get_input(bev);
-                            evbuffer_enable_locking(input, NULL);
+                            evbuffer *output = bufferevent_get_output(bev);
+                            evbuffer_enable_locking(output, NULL);
                             bufferevent_setcb(bev, NULL, NULL, connecting_event_cb, c);
                             c->bev = bev;
                             c->data = cr;
@@ -406,7 +408,11 @@ void dispatch_conn_new(int fd, char key, void *arg) {
 /******************************* listener ********************************/
 
 void accept_cb(struct evconnlistener *, evutil_socket_t, struct sockaddr *, int, void *);
-listener *listener_new(struct event_base* base, struct sockaddr *sa, int socklen, rpc_cb_func rpc)
+listener *listener_new(struct event_base* base,
+        struct sockaddr *sa, int socklen,
+        rpc_cb_func rpc,
+        connect_cb_func connect,
+        disconnect_cb_func disconnect)
 {
     listener * l = (listener *)malloc(sizeof(listener));
     if (NULL == l) {
@@ -425,7 +431,10 @@ listener *listener_new(struct event_base* base, struct sockaddr *sa, int socklen
         return NULL;
     }
 
+    l->cb.type = 'l';
     l->cb.rpc = rpc;
+    l->cb.connect = connect;
+    l->cb.disconnect = disconnect;
     l->l = listener;
     snprintf(l->addrtext, 32, "%s:%d",
             inet_ntoa(((struct sockaddr_in *)sa)->sin_addr),
@@ -442,7 +451,10 @@ void listener_free(listener *l)
 
 /******************************* connector ********************************/
 
-connector *connector_new(struct sockaddr *sa, int socklen, rpc_cb_func rpc)
+connector *connector_new(struct sockaddr *sa, int socklen,
+        rpc_cb_func rpc,
+        connect_cb_func connect,
+        disconnect_cb_func disconnect)
 {
     connector *cr = (connector *)malloc(sizeof(connector));
     if (NULL == cr) {
@@ -457,7 +469,10 @@ connector *connector_new(struct sockaddr *sa, int socklen, rpc_cb_func rpc)
         return NULL;
     }
 
+    cr->cb.type = 'c';
     cr->cb.rpc = rpc;
+    cr->cb.connect = connect;
+    cr->cb.disconnect = disconnect;
     cr->state = STATE_NOT_CONNECTED;
     cr->c = NULL;
     memcpy(cr->sa, sa, socklen);

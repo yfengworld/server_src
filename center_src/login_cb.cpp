@@ -1,15 +1,16 @@
 #include "net.h"
 #include "test.pb.h"
 
-void login_cb(conn *c, unsigned char *msg, size_t sz)
+void login_rpc_cb(conn *c, unsigned char *msg, size_t sz)
 {
-    msg_head h;
-    if (0 != message_head(msg, sz, &h)) {
-        return;
-    }
+}
 
-    A a;
-    msg_body<A>(msg, sz, &a);
+void login_connect_cb(conn *c)
+{
 
-    conn_write(c, msg, sz);
+}
+
+void login_disconnect_cb(conn *c)
+{
+
 }

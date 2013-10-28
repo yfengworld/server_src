@@ -1,5 +1,6 @@
 #include "net.h"
 #include "msg.h"
+#include "cmd.h"
 #include "test.pb.h"
 
 #include <event2/bufferevent.h>
@@ -117,12 +118,31 @@ void conn_write_cb(struct bufferevent *bev, void *arg)
 void conn_event_cb(struct bufferevent *bev, short what, void *arg)
 {
     mdebug("conn_event_cb what:%d", what);
+    conn *c = (conn *)arg;
+
+    if (what & BEV_EVENT_EOF || what & BEV_EVENT_ERROR) {
+        user_callback *cb = (user_callback *)c->data;
+        if (cb->disconnect) {
+            (*(cb->disconnect))(c);
+        }
+    }
 }
 
 /* used by connector */
 static void conn_event_cb2(struct bufferevent *bev, short what, void *arg)
 {
     mdebug("conn_event_cb2 what:%d", what);
+    conn *c = (conn *)arg;
+
+    if (what & BEV_EVENT_EOF || what & BEV_EVENT_ERROR) {
+        connector *cr = (connector *)c->data;
+        cr->state = STATE_NOT_CONNECTED;
+
+        user_callback *cb = (user_callback *)c->data;
+        if (cb->disconnect) {
+            (*(cb->disconnect))(c);
+        }
+    }
 }
 
 static void go_connecting(int fd, short what, void *arg)
@@ -152,20 +172,17 @@ void connecting_event_cb(struct bufferevent *bev, short what, void *arg)
     conn *c = (conn *)arg;
 
     if (!(what & BEV_EVENT_CONNECTED)) {
-        minfo("connecting failed!");
+        mdebug("connecting failed!");
         delay_connecting(c);
     } else {
+        user_callback *cb = (user_callback *)c->data;
+        if (cb->connect)
+            (*(cb->connect))(c);
+
         connector *cr = (connector *)c->data;
         minfo("connect %s success!", cr->addrtext);
         cr->state = STATE_CONNECTED;
         bufferevent_setcb(bev, conn_read_cb, conn_write_cb, conn_event_cb2, c);
         bufferevent_enable(bev, EV_READ);
-
-        for (int i = 0; i < 40; i++)
-        {
-            A a;
-            a.set_info("abc88888888888888888881222222222222223131321 hhhhhhhhhhhhhhfasdf fsfsf");
-            connector_write<A>(cr, 1, &a);
-        }
     }
 }

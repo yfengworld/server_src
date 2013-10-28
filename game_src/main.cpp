@@ -10,8 +10,12 @@
 static void signal_cb(evutil_socket_t, short, void *);
 
 /* callback */
-void gate_cb(conn *, unsigned char *, size_t);
-void center_cb(conn *, unsigned char *, size_t);
+void gate_rpc_cb(conn *, unsigned char *, size_t);
+void gate_connect_cb(conn *c);
+void gate_disconnect_cb(conn *c);
+void center_rpc_cb(conn *, unsigned char *, size_t);
+void center_connect_cb(conn *c);
+void center_disconnect_cb(conn *c);
 
 #define WORKER_NUM 8
 
@@ -57,7 +61,10 @@ int main(int argc, char **argv)
     sa.sin_addr.s_addr = htonl(INADDR_ANY);
     sa.sin_port = htons(44000);
 
-    listener *lg = listener_new(main_base, (struct sockaddr *)&sa, sizeof(sa), gate_cb);
+    listener *lg = listener_new(main_base, (struct sockaddr *)&sa, sizeof(sa),
+            gate_rpc_cb,
+            gate_connect_cb,
+            gate_disconnect_cb);
     if (NULL == lg) {
         mfatal("create client listener failed!");
         return 1;
@@ -70,7 +77,10 @@ int main(int argc, char **argv)
     csa.sin_addr.s_addr = inet_addr("127.0.0.1");
     csa.sin_port = htons(43001);
 
-    connector *ce = connector_new((struct sockaddr *)&csa, sizeof(csa), center_cb);
+    connector *ce = connector_new((struct sockaddr *)&csa, sizeof(csa),
+            center_rpc_cb,
+            center_connect_cb,
+            center_disconnect_cb);
     if (NULL == ce) {
         mfatal("create center connector failed!");
         return 1;
