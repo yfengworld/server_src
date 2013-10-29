@@ -181,6 +181,22 @@ void conn_free(conn *c)
     }
 }
 
+void disconnect(conn *c)
+{
+    if (!c || !c->bev)
+        return;
+
+    user_callback *cb = (user_callback *)c->data;
+    if (cb && cb->type == 'l') {
+        if (cb->disconnect)
+            (*(cb->disconnect))(c);
+
+        conn_free(c);
+    } else {
+        mfatal("invalid type!");
+    }
+}
+
 int conn_write(conn *c, unsigned char *msg, size_t sz) {
     if (c && c->bev) {
         if (0 == bufferevent_write(c->bev, msg, sz)) {

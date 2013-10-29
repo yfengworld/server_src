@@ -137,4 +137,13 @@ enum
 
 int check_cmd();
 
+typedef void (*proto_reg_func)();
+typedef struct proto_reg_item proto_reg_item;
+struct proto_reg_item {
+    proto_reg_item *next;
+    proto_reg_func func;
+};
+
+proto_reg_item *proto_reg(proto_reg_item *head, proto_reg_func func);
+
 #endif /* CMD_H_INCLUDED */

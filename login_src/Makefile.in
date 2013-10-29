@@ -47,9 +47,10 @@ CONFIG_CLEAN_FILES =
 CONFIG_CLEAN_VPATH_FILES =
 am__installdirs = "$(DESTDIR)$(bindir)"
 PROGRAMS = $(bin_PROGRAMS)
-am_login_OBJECTS = cb.$(OBJEXT) log.$(OBJEXT) msg_protobuf.$(OBJEXT) \
-	net.$(OBJEXT) cmd_util.$(OBJEXT) login.pb.$(OBJEXT) \
-	client_cb.$(OBJEXT) center_cb.$(OBJEXT) main.$(OBJEXT)
+am_login_OBJECTS = cb.$(OBJEXT) htable.$(OBJEXT) log.$(OBJEXT) \
+	msg_protobuf.$(OBJEXT) net.$(OBJEXT) cmd_util.$(OBJEXT) \
+	login.pb.$(OBJEXT) client_cb.$(OBJEXT) center_cb.$(OBJEXT) \
+	main.$(OBJEXT)
 login_OBJECTS = $(am_login_OBJECTS)
 login_DEPENDENCIES =
 DEFAULT_INCLUDES = -I.@am__isrc@ -I$(top_builddir)
@@ -193,6 +194,7 @@ AM_CXXFLAGS =
 login_LDADD = -lpthread -levent -lprotobuf
 login_SOURCES = \
 			   ../common_src/cb.cpp \
+			   ../common_src/htable.cpp \
 			   ../common_src/log.cpp \
 			   ../common_src/msg_protobuf.cpp \
 			   ../common_src/net.cpp \
@@ -293,6 +295,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/center_cb.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/client_cb.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/cmd_util.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/htable.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/log.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/login.pb.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/main.Po@am__quote@
@@ -333,6 +336,20 @@ cb.obj: ../common_src/cb.cpp
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='../common_src/cb.cpp' object='cb.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o cb.obj `if test -f '../common_src/cb.cpp'; then $(CYGPATH_W) '../common_src/cb.cpp'; else $(CYGPATH_W) '$(srcdir)/../common_src/cb.cpp'; fi`
+
+htable.o: ../common_src/htable.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT htable.o -MD -MP -MF $(DEPDIR)/htable.Tpo -c -o htable.o `test -f '../common_src/htable.cpp' || echo '$(srcdir)/'`../common_src/htable.cpp
+@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/htable.Tpo $(DEPDIR)/htable.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='../common_src/htable.cpp' object='htable.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o htable.o `test -f '../common_src/htable.cpp' || echo '$(srcdir)/'`../common_src/htable.cpp
+
+htable.obj: ../common_src/htable.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT htable.obj -MD -MP -MF $(DEPDIR)/htable.Tpo -c -o htable.obj `if test -f '../common_src/htable.cpp'; then $(CYGPATH_W) '../common_src/htable.cpp'; else $(CYGPATH_W) '$(srcdir)/../common_src/htable.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/htable.Tpo $(DEPDIR)/htable.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='../common_src/htable.cpp' object='htable.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o htable.obj `if test -f '../common_src/htable.cpp'; then $(CYGPATH_W) '../common_src/htable.cpp'; else $(CYGPATH_W) '$(srcdir)/../common_src/htable.cpp'; fi`
 
 log.o: ../common_src/log.cpp
 @am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT log.o -MD -MP -MF $(DEPDIR)/log.Tpo -c -o log.o `test -f '../common_src/log.cpp' || echo '$(srcdir)/'`../common_src/log.cpp

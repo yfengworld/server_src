@@ -10,6 +10,7 @@ bin_PROGRAMS = login
 
 login_SOURCES = \
 			   ../common_src/cb.cpp \
+			   ../common_src/htable.cpp \
 			   ../common_src/log.cpp \
 			   ../common_src/msg_protobuf.cpp \
 			   ../common_src/net.cpp \

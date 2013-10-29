@@ -77,6 +77,7 @@ void thread_init(struct event_base *base, int nthreads, pthread_t *th);
 void conn_init();
 conn *conn_new(int fd);
 void conn_free(conn *c);
+void disconnect(conn *c);
 void dispatch_conn_new(int fd, char key, void *arg);
 int conn_write(conn *c, unsigned char *msg, size_t sz);
 

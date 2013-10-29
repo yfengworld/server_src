@@ -9,6 +9,9 @@
 
 static void signal_cb(evutil_socket_t, short, void *);
 
+/* reg */
+void client_cb_reg();
+
 /* callback */
 void client_rpc_cb(conn *, unsigned char *, size_t);
 void client_connect_cb(conn *c);
@@ -26,9 +29,11 @@ int main(int argc, char **argv)
         return 1;
     }
 
+    /* cmd */
     if (0 != check_cmd()) {
         return 1;
     }
+    client_cb_reg();
 
     /* protobuf verify version */
     GOOGLE_PROTOBUF_VERIFY_VERSION;

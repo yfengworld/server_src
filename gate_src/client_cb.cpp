@@ -2,22 +2,6 @@
 #include "cmd.h"
 #include "fwd.h"
 
-static void disconnect(conn *c)
-{
-    if (!c || !c->bev)
-        return;
-
-    user_callback *cb = (user_callback *)c->data;
-    if (cb && cb->type == 'l') {
-        if (cb->disconnect)
-            (*(cb->disconnect))(c);
-
-        conn_free(c);
-    } else {
-        mfatal("invalid type!");
-    }
-}
-
 static void forward(conn* c, connector *cr, msg_head *h, unsigned char *msg, size_t sz)
 {
     uint64_t uid = 0;
