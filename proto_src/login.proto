@@ -1,0 +1,35 @@
+message login_request {
+    required string account = 1;
+    required string passwd = 2;
+}
+
+message user_login_request {
+    required uint64 uid = 1;
+}
+
+message user_session_request {
+    required uint64 uid = 1;
+    required string sk = 2;
+}
+
+message user_session_reply {
+    required int32 err = 1;
+    required uint64 uid = 2;
+    optional string sk = 3;
+}
+
+message user_login_reply {
+    required int32 err = 1;
+    required uint64 uid = 2;
+    optional string sk = 3;
+    optional string gateip = 4;
+    optional int32 gateport = 5;
+}
+
+message login_reply {
+    required int32 err = 1;
+    optional uint64 uid = 2;
+    optional string sk = 3;
+    optional string gateip = 4;
+    optional int32 gateport = 5;
+}
