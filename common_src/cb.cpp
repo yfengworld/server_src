@@ -124,6 +124,9 @@ void conn_event_cb(struct bufferevent *bev, short what, void *arg)
         if (cb->disconnect) {
             (*(cb->disconnect))(c);
         }
+
+        /* free bufferevent */
+        bufferevent_free(c->bev);
     }
 }
 
@@ -161,8 +164,10 @@ static void conn_event_cb2(struct bufferevent *bev, short what, void *arg)
             (*(cb->disconnect))(c);
         }
 
-        /* reconnect */
+        /* free bufferevent */
         bufferevent_free(c->bev);
+
+        /* reconnect */
         c->bev = bufferevent_socket_new(c->thread->base, -1,
                 BEV_OPT_CLOSE_ON_FREE | BEV_OPT_DEFER_CALLBACKS);
         if (NULL == c->bev) {
@@ -192,7 +197,7 @@ void connecting_event_cb(struct bufferevent *bev, short what, void *arg)
         connector *cr = (connector *)c->data;
         minfo("connect %s success!", cr->addrtext);
         cr->state = STATE_CONNECTED;
-        evutil_socket_t fd = bufferevent_getfd(bev);
+        int fd = bufferevent_getfd(bev);
         linger l;
         l.l_onoff = 1;
         l.l_linger = 0;
