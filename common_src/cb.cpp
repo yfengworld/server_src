@@ -155,16 +155,24 @@ static void conn_event_cb2(struct bufferevent *bev, short what, void *arg)
     conn *c = (conn *)arg;
 
     if (what & BEV_EVENT_EOF || what & BEV_EVENT_ERROR) {
-        connector *cr = (connector *)c->data;
-        evutil_socket_t fd = bufferevent_getfd(c->bev);
-        close(fd);
-        bufferevent_setcb(c->bev, NULL, NULL, connecting_event_cb, c);
-        cr->state = STATE_NOT_CONNECTED;
-        delay_connecting(c);
-
+        /* cb */
         user_callback *cb = (user_callback *)c->data;
         if (cb->disconnect) {
             (*(cb->disconnect))(c);
+        }
+
+        /* reconnect */
+        bufferevent_free(c->bev);
+        c->bev = bufferevent_socket_new(c->thread->base, -1,
+                BEV_OPT_CLOSE_ON_FREE | BEV_OPT_DEFER_CALLBACKS);
+        if (NULL == c->bev) {
+            merror("create bufferevent failed!");
+            return;
+        } else {
+            bufferevent_setcb(c->bev, NULL, NULL, connecting_event_cb, c);
+            connector *cr = (connector *)c->data;
+            cr->state = STATE_NOT_CONNECTED;
+            delay_connecting(c);
         }
     }
 }
@@ -184,6 +192,11 @@ void connecting_event_cb(struct bufferevent *bev, short what, void *arg)
         connector *cr = (connector *)c->data;
         minfo("connect %s success!", cr->addrtext);
         cr->state = STATE_CONNECTED;
+        evutil_socket_t fd = bufferevent_getfd(bev);
+        linger l;
+        l.l_onoff = 1;
+        l.l_linger = 0;
+        setsockopt(fd, SOL_SOCKET, SO_LINGER, (const char *)&l, sizeof(l));
         bufferevent_setcb(bev, conn_read_cb, conn_write_cb, conn_event_cb2, c);
         bufferevent_enable(bev, EV_READ);
     }
