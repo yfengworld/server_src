@@ -75,9 +75,9 @@ void thread_init(struct event_base *base, int nthreads, pthread_t *th);
 
 /* connection */
 void conn_init();
-void dispatch_conn_new(int fd, char key, void *arg);
 conn *conn_new(int fd);
-int conn_add_to_freelist(conn *c);
+void conn_free(conn *c);
+void dispatch_conn_new(int fd, char key, void *arg);
 int conn_write(conn *c, unsigned char *msg, size_t sz);
 
 /* listener */

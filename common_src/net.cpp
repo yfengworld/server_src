@@ -144,24 +144,41 @@ conn *conn_new()
     return c;
 }
 
-int conn_add_to_freelist(conn *c) {
+#define MAX_CONN_FREELIST 512
+
+static int conn_add_to_freelist(conn *c) {
     int ret = -1;
     pthread_mutex_lock(&conn_lock);
-    if (freecurr < freetotal) {
-        freeconns[freecurr++] = c;
-        ret = 0;
-    } else {
-        size_t newsize = freetotal * 2;
-        conn **new_freeconns = (conn **)realloc(freeconns, sizeof(conn *) * newsize);
-        if (new_freeconns) {
-            freetotal = newsize;
-            freeconns = new_freeconns;
+    if (MAX_CONN_FREELIST > freecurr) {
+        if (freecurr < freetotal) {
             freeconns[freecurr++] = c;
             ret = 0;
+        } else {
+            size_t newsize = freetotal * 2;
+            conn **new_freeconns = (conn **)realloc(freeconns, sizeof(conn *) * newsize);
+            if (new_freeconns) {
+                freetotal = newsize;
+                freeconns = new_freeconns;
+                freeconns[freecurr++] = c;
+                ret = 0;
+            }
         }
+    } else {
+        mdebug("reach MAX_CONN_FREELIST:%d", MAX_CONN_FREELIST);
     }
     pthread_mutex_unlock(&conn_lock);
     return ret;
+}
+
+void conn_free(conn *c)
+{
+    if (NULL != c->bev) {
+        bufferevent_free(c->bev);
+        c->bev = NULL;
+    }
+    if (0 != conn_add_to_freelist(c)) {
+        free(c);
+    }
 }
 
 int conn_write(conn *c, unsigned char *msg, size_t sz) {
@@ -204,16 +221,18 @@ static void thread_libevent_process(int fd, short which, void *arg)
                     } else {
                         struct bufferevent* bev = bufferevent_socket_new(me->base, item->fd,
                                 BEV_OPT_CLOSE_ON_FREE | BEV_OPT_DEFER_CALLBACKS);
+                        c->bev = bev;
                         if (NULL == bev) {
                             merror("create bufferevent failed!");
+                            conn_free(c);
                         } else {
                             strncpy(c->addrtext, li->addrtext, 32);
+                            /* multi-thread write */
                             evbuffer *output = bufferevent_get_output(bev);
                             evbuffer_enable_locking(output, NULL);
                             bufferevent_setcb(bev, conn_read_cb, conn_write_cb, conn_event_cb, c);
                             bufferevent_enable(bev, EV_READ);
                             c->data = li->l;
-                            c->bev = bev;
                             c->thread = me;
                             if (li->l->cb.connect)
                                 (*(li->l->cb.connect))(c);
@@ -235,14 +254,15 @@ static void thread_libevent_process(int fd, short which, void *arg)
                     } else {
                         struct bufferevent *bev = bufferevent_socket_new(me->base, -1,
                                 BEV_OPT_CLOSE_ON_FREE | BEV_OPT_DEFER_CALLBACKS);
+                        c->bev = bev;
                         if (NULL == bev) {
                             merror("create bufferevent failed!");
+                            conn_free(c);
                         } else {
                             /* multi-thread write */
                             evbuffer *output = bufferevent_get_output(bev);
                             evbuffer_enable_locking(output, NULL);
                             bufferevent_setcb(bev, NULL, NULL, connecting_event_cb, c);
-                            c->bev = bev;
                             c->data = cr;
                             c->thread = me;
                             cr->c = c;
