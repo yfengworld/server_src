@@ -9,7 +9,9 @@
 typedef struct
 {
     uint64_t id;
-    char c;
+#define USER_STATE_NONE
+#define USER_STATE_AUTH
+    int state;
     pthread_mutex_t lock;
 } user_t;
 

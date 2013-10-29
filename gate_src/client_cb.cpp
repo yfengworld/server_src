@@ -1,9 +1,6 @@
 #include "net.h"
 #include "cmd.h"
 #include "fwd.h"
-#include "test.pb.h" 
-
-#include <assert.h>
 
 static void disconnect(conn *c)
 {
@@ -24,16 +21,11 @@ static void disconnect(conn *c)
 static void forward(conn* c, connector *cr, msg_head *h, unsigned char *msg, size_t sz)
 {
     uint64_t uid = 0;
-    if (NULL == c->user) {
-        merror("no associate user");
-        /* close connection */
-        //disconnect(c);
-        //return;
-    }
 
     if (h->flags & FLAG_HAS_UID) {
         merror("should no uid connection %s", c->addrtext);
         /* close connection */
+        disconnect(c);
         return;
     }
 
@@ -61,8 +53,7 @@ static void forward(conn* c, connector *cr, msg_head *h, unsigned char *msg, siz
     memcpy(nmsg, msg, MSG_HEAD_SIZE);
     nmsg += sizeof(unsigned short);
     *(unsigned short *)nmsg = htons((unsigned short)(h->len + sizeof(uint64_t)));
-    nmsg -= sizeof(unsigned short);
-    nmsg += MSG_HEAD_SIZE;
+    nmsg += (MSG_HEAD_SIZE - sizeof(unsigned short));
     *(uint64_t *)nmsg = htons(uid);
     nmsg += sizeof(uint64_t);
     memcpy(nmsg, msg + MSG_HEAD_SIZE, h->len);
@@ -91,9 +82,9 @@ void client_rpc_cb(conn *c, unsigned char *msg, size_t sz)
     msg_head h;
     if (0 != message_head(msg, sz, &h)) {
         /* close connection */
+        disconnect(c);
         return;
     }
-    mdebug("client_cb magic:%d len:%d cmd:%d flags:%d", h.magic, h.len, h.cmd, h.flags);
 
     if (h.cmd >= CG_BEGIN && h.cmd < CS_END) {
         /* client -> gate */
@@ -111,16 +102,29 @@ void client_rpc_cb(conn *c, unsigned char *msg, size_t sz)
         } else {
             merror("invalid cmd:%d connection %s", h.cmd, c->addrtext);
             /* close connection */
+            disconnect(c);
         }
     } else {
         merror("invalid cmd:%d connection %s", h.cmd, c->addrtext);
         /* close connection */
+        disconnect(c);
     }
 }
 
 void client_connect_cb(conn *c)
 {
     mdebug("client_connect_cb");
+    /*
+    pthread_rwlock_rdlock(&user_mgr->rwlock);
+    user_map_t::iterator itr= user_mgr->users_.find(uid);
+    if (itr != user_mgr->users_.end()) {
+        user_t *user = itr->second;
+        pthread_mutex_lock(&user->lock);
+        if (user->state == 
+        pthread_mutex_unlock(&user->lock);
+    }
+    pthread_rwlock_unlock(&user_mgr->rwlock);
+    */
 }
 
 void client_disconnect_cb(conn *c)

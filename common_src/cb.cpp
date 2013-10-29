@@ -1,7 +1,6 @@
 #include "net.h"
 #include "msg.h"
 #include "cmd.h"
-#include "test.pb.h"
 
 #include <event2/bufferevent.h>
 #include <event2/buffer.h>

@@ -48,7 +48,7 @@ CONFIG_CLEAN_VPATH_FILES =
 am__installdirs = "$(DESTDIR)$(bindir)"
 PROGRAMS = $(bin_PROGRAMS)
 am_cache_OBJECTS = cb.$(OBJEXT) log.$(OBJEXT) msg_protobuf.$(OBJEXT) \
-	net.$(OBJEXT) cmd_util.$(OBJEXT) test.pb.$(OBJEXT) \
+	net.$(OBJEXT) cmd_util.$(OBJEXT) login.pb.$(OBJEXT) \
 	gate_cb.$(OBJEXT) game_cb.$(OBJEXT) main.$(OBJEXT)
 cache_OBJECTS = $(am_cache_OBJECTS)
 cache_DEPENDENCIES =
@@ -197,7 +197,7 @@ cache_SOURCES = \
 			   ../common_src/msg_protobuf.cpp \
 			   ../common_src/net.cpp \
 			   ../proto_src/cmd_util.cpp \
-			   ../proto_src/test.pb.cc \
+			   ../proto_src/login.pb.cc \
 			   gate_cb.cpp \
 			   game_cb.cpp \
 			   main.cpp
@@ -294,10 +294,10 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/game_cb.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gate_cb.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/log.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/login.pb.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/main.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/msg_protobuf.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/net.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test.pb.Po@am__quote@
 
 .cc.o:
 @am__fastdepCXX_TRUE@	$(CXXCOMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ $<
@@ -390,19 +390,19 @@ cmd_util.obj: ../proto_src/cmd_util.cpp
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o cmd_util.obj `if test -f '../proto_src/cmd_util.cpp'; then $(CYGPATH_W) '../proto_src/cmd_util.cpp'; else $(CYGPATH_W) '$(srcdir)/../proto_src/cmd_util.cpp'; fi`
 
-test.pb.o: ../proto_src/test.pb.cc
-@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT test.pb.o -MD -MP -MF $(DEPDIR)/test.pb.Tpo -c -o test.pb.o `test -f '../proto_src/test.pb.cc' || echo '$(srcdir)/'`../proto_src/test.pb.cc
-@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/test.pb.Tpo $(DEPDIR)/test.pb.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='../proto_src/test.pb.cc' object='test.pb.o' libtool=no @AMDEPBACKSLASH@
+login.pb.o: ../proto_src/login.pb.cc
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT login.pb.o -MD -MP -MF $(DEPDIR)/login.pb.Tpo -c -o login.pb.o `test -f '../proto_src/login.pb.cc' || echo '$(srcdir)/'`../proto_src/login.pb.cc
+@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/login.pb.Tpo $(DEPDIR)/login.pb.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='../proto_src/login.pb.cc' object='login.pb.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o test.pb.o `test -f '../proto_src/test.pb.cc' || echo '$(srcdir)/'`../proto_src/test.pb.cc
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o login.pb.o `test -f '../proto_src/login.pb.cc' || echo '$(srcdir)/'`../proto_src/login.pb.cc
 
-test.pb.obj: ../proto_src/test.pb.cc
-@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT test.pb.obj -MD -MP -MF $(DEPDIR)/test.pb.Tpo -c -o test.pb.obj `if test -f '../proto_src/test.pb.cc'; then $(CYGPATH_W) '../proto_src/test.pb.cc'; else $(CYGPATH_W) '$(srcdir)/../proto_src/test.pb.cc'; fi`
-@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/test.pb.Tpo $(DEPDIR)/test.pb.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='../proto_src/test.pb.cc' object='test.pb.obj' libtool=no @AMDEPBACKSLASH@
+login.pb.obj: ../proto_src/login.pb.cc
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT login.pb.obj -MD -MP -MF $(DEPDIR)/login.pb.Tpo -c -o login.pb.obj `if test -f '../proto_src/login.pb.cc'; then $(CYGPATH_W) '../proto_src/login.pb.cc'; else $(CYGPATH_W) '$(srcdir)/../proto_src/login.pb.cc'; fi`
+@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/login.pb.Tpo $(DEPDIR)/login.pb.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='../proto_src/login.pb.cc' object='login.pb.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o test.pb.obj `if test -f '../proto_src/test.pb.cc'; then $(CYGPATH_W) '../proto_src/test.pb.cc'; else $(CYGPATH_W) '$(srcdir)/../proto_src/test.pb.cc'; fi`
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o login.pb.obj `if test -f '../proto_src/login.pb.cc'; then $(CYGPATH_W) '../proto_src/login.pb.cc'; else $(CYGPATH_W) '$(srcdir)/../proto_src/login.pb.cc'; fi`
 
 .cpp.o:
 @am__fastdepCXX_TRUE@	$(CXXCOMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ $<

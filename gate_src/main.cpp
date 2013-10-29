@@ -1,6 +1,7 @@
 #include "log.h"
 #include "net.h"
 #include "cmd.h"
+
 #include "fwd.h"
 
 #include <strings.h>
@@ -11,6 +12,7 @@
 connector *center = NULL;
 connector *game = NULL;
 connector *cache = NULL;
+user_manager_t *user_mgr = NULL;
 
 static void signal_cb(evutil_socket_t, short, void *);
 
@@ -125,6 +127,13 @@ int main(int argc, char **argv)
     cache = ca;
     if (NULL == ca) {
         mfatal("create cache connector failed!");
+        return 1;
+    }
+
+    /* user manager */
+    user_mgr = user_manager_new();
+    if (NULL == user_mgr) {
+        mfatal("create user_manager_t instance failed!");
         return 1;
     }
 
