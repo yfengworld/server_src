@@ -9,6 +9,8 @@
 #include <arpa/inet.h>
 #include <signal.h>
 
+#define WORKER_NUM 8
+
 connector *center = NULL;
 connector *game = NULL;
 connector *cache = NULL;
@@ -16,21 +18,21 @@ user_manager_t *user_mgr = NULL;
 
 static void signal_cb(evutil_socket_t, short, void *);
 
-/* callback */
-void client_rpc_cb(conn *, unsigned char *, size_t);
-void client_connect_cb(conn *);
-void client_disconnect_cb(conn *);
-void center_rpc_cb(conn *, unsigned char *, size_t);
-void center_connect_cb(conn *);
-void center_disconnect_cb(conn *);
-void game_rpc_cb(conn *, unsigned char *, size_t);
-void game_connect_cb(conn *);
-void game_disconnect_cb(conn *);
-void cache_rpc_cb(conn *, unsigned char *, size_t);
-void cache_connect_cb(conn *);
-void cache_disconnect_cb(conn *);
+/* client_cb */
+static user_callback client_cb;
+void client_cb_init(user_callback *cb);
 
-#define WORKER_NUM 8
+/* center_cb */
+static user_callback center_cb;
+void center_cb_init(user_callback *cb);
+
+/* game_cb */
+static user_callback game_cb;
+void game_cb_init(user_callback *cb);
+
+/* cache_cb */
+static user_callback cache_cb;
+void cache_cb_init(user_callback *cb);
 
 int main(int argc, char **argv)
 {
@@ -43,6 +45,10 @@ int main(int argc, char **argv)
     if (0 != check_cmd()) {
         return 1;
     }
+    client_cb_init(&client_cb);
+    center_cb_init(&center_cb);
+    game_cb_init(&game_cb);
+    cache_cb_init(&cache_cb);
 
     /* protobuf verify version */
     GOOGLE_PROTOBUF_VERIFY_VERSION;
@@ -75,7 +81,9 @@ int main(int argc, char **argv)
     sa.sin_port = htons(42000);
 
     listener *lc = listener_new(main_base, (struct sockaddr *)&sa, sizeof(sa),
-            client_rpc_cb, client_connect_cb, client_disconnect_cb);
+            client_cb.rpc,
+            client_cb.connect,
+            client_cb.disconnect);
     if (NULL == lc) {
         mfatal("create client listener failed!");
         return 1;
@@ -89,9 +97,9 @@ int main(int argc, char **argv)
     csa.sin_port = htons(43000);
 
     connector *ce = connector_new((struct sockaddr *)&csa, sizeof(csa),
-            center_rpc_cb,
-            center_connect_cb,
-            center_disconnect_cb);
+            center_cb.rpc,
+            center_cb.connect,
+            center_cb.disconnect);
     center = ce;
     if (NULL == ce) {
         mfatal("create center connector failed!");
@@ -105,9 +113,9 @@ int main(int argc, char **argv)
     csa.sin_port = htons(44000);
 
     connector *cm = connector_new((struct sockaddr *)&csa, sizeof(csa),
-            game_rpc_cb,
-            game_connect_cb,
-            game_disconnect_cb);
+            game_cb.rpc,
+            game_cb.connect,
+            game_cb.disconnect);
     game = cm;
     if (NULL == cm) {
         mfatal("create game connector failed!");
@@ -121,9 +129,9 @@ int main(int argc, char **argv)
     csa.sin_port = htons(45000);
 
     connector *ca = connector_new((struct sockaddr *)&csa, sizeof(csa),
-            cache_rpc_cb,
-            cache_connect_cb,
-            cache_disconnect_cb);
+            cache_cb.rpc,
+            cache_cb.connect,
+            cache_cb.disconnect);
     cache = ca;
     if (NULL == ca) {
         mfatal("create cache connector failed!");

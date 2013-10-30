@@ -2,6 +2,14 @@
 #include "cmd.h"
 #include "fwd.h"
 
+typedef void (*cb)(conn *, unsigned char *msg, size_t sz);
+static cb cbs[CG_END - CG_BEGIN];
+
+static void user_session_cb(conn *c, unsigned char *msg, size_t sz)
+{
+    mdebug("user_session_cb");
+}
+
 static void forward(conn* c, connector *cr, msg_head *h, unsigned char *msg, size_t sz)
 {
     uint64_t uid = 0;
@@ -56,11 +64,6 @@ static void forward(conn* c, connector *cr, msg_head *h, unsigned char *msg, siz
     mdebug("forward cmd:%d for connection %s", h->cmd, c->addrtext);
 }
 
-static void cli_cb(conn *c, msg_head *h, unsigned char *msg, size_t sz)
-{
-
-}
-
 void client_rpc_cb(conn *c, unsigned char *msg, size_t sz)
 {
     msg_head h;
@@ -73,7 +76,9 @@ void client_rpc_cb(conn *c, unsigned char *msg, size_t sz)
     if (h.cmd >= CG_BEGIN && h.cmd < CS_END) {
         /* client -> gate */
         if (h.cmd >= CG_BEGIN && h.cmd < CG_END) {
-            cli_cb(c, &h, msg, sz);
+            if (cbs[h.cmd - CG_BEGIN]) {
+                (*cbs[h.cmd - CG_BEGIN])(c, msg, sz);
+            }
         /* client -> center */
         } else if (h.cmd >= CE_BEGIN && h.cmd < CE_END) {
             forward(c, center, &h, msg, sz);
@@ -114,4 +119,13 @@ void client_connect_cb(conn *c)
 void client_disconnect_cb(conn *c)
 {
     mdebug("client_disconnect_cb");
+}
+
+void client_cb_init(user_callback *cb)
+{
+    cb->rpc = client_rpc_cb;
+    cb->connect = client_connect_cb;
+    cb->disconnect = client_disconnect_cb;
+    memset(cbs, 0, sizeof(cb) * (CG_END - CG_BEGIN));
+    cbs[cg_user_session - CG_BEGIN] = user_session_cb;
 }
