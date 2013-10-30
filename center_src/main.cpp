@@ -7,20 +7,21 @@
 #include <arpa/inet.h>
 #include <signal.h>
 
+#define WORKER_NUM 8
+
 static void signal_cb(evutil_socket_t, short, void *);
 
-/* rpc callback */
-void game_rpc_cb(conn *, unsigned char *, size_t);
-void game_connect_cb(conn *);
-void game_disconnect_cb(conn *);
-void gate_rpc_cb(conn *, unsigned char *, size_t);
-void gate_connect_cb(conn *);
-void gate_disconnect_cb(conn *);
-void login_rpc_cb(conn *, unsigned char *, size_t);
-void login_connect_cb(conn *);
-void login_disconnect_cb(conn *);
+/* game_cb */
+static user_callback game_cb;
+void game_cb_init(user_callback *cb);
 
-#define WORKER_NUM 8
+/* gate_cb */
+static user_callback gate_cb;
+void gate_cb_init(user_callback *cb);
+
+/* login_cb */
+static user_callback login_cb;
+void login_cb_init(user_callback *cb);
 
 int main(int argc, char **argv)
 {
@@ -33,6 +34,9 @@ int main(int argc, char **argv)
     if (0 != check_cmd()) {
         return 1;
     }
+    game_cb_init(&game_cb);
+    gate_cb_init(&gate_cb);
+    login_cb_init(&login_cb);
 
     /* protobuf verify version */
     GOOGLE_PROTOBUF_VERIFY_VERSION;
@@ -65,9 +69,9 @@ int main(int argc, char **argv)
     sa.sin_port = htons(43000);
 
     listener *lg = listener_new(main_base, (struct sockaddr *)&sa, sizeof(sa),
-            gate_rpc_cb,
-            gate_connect_cb,
-            gate_disconnect_cb);
+            gate_cb.rpc,
+            gate_cb.connect,
+            gate_cb.disconnect);
     if (NULL == lg) {
         mfatal("create client listener failed!");
         return 1;
@@ -80,9 +84,9 @@ int main(int argc, char **argv)
     sa.sin_port = htons(43001);
 
     listener *lm = listener_new(main_base, (struct sockaddr *)&sa, sizeof(sa),
-            game_rpc_cb,
-            game_connect_cb,
-            game_disconnect_cb);
+            game_cb.rpc,
+            game_cb.connect,
+            game_cb.disconnect);
     if (NULL == lm) {
         mfatal("create game listener failed!");
         return 1;
@@ -96,9 +100,9 @@ int main(int argc, char **argv)
     csa.sin_port = htons(41001);
 
     connector *cl = connector_new((struct sockaddr *)&csa, sizeof(csa),
-            login_rpc_cb,
-            login_connect_cb,
-            login_disconnect_cb);
+            login_cb.rpc,
+            login_cb.connect,
+            login_cb.disconnect);
     if (NULL == cl) {
         mfatal("create center connector failed!");
         return 1;
