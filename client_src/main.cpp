@@ -77,7 +77,7 @@ int main(int argc, char **argv)
 
     event_base_dispatch(main_base);
 
-    pthread_join(logic.thread, NULL);
+    //pthread_join(logic.thread, NULL);
 
     for (int i = 0; i < WORKER_NUM; i++)
         pthread_join(worker[i], NULL);

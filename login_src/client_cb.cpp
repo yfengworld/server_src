@@ -59,6 +59,7 @@ void client_rpc_cb(conn *c, unsigned char *msg, size_t sz)
         disconnect(c);
         return;
     }
+    mdebug("client_rpc_cb cmd:%d", h.cmd);
 
     if (h.cmd > CL_BEGIN && h.cmd < CL_END) {
         if (cbs[h.cmd - CL_BEGIN]) {
