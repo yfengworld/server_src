@@ -1,20 +1,24 @@
 #include "log.h"
 #include "net.h"
 #include "cmd.h"
+#include "fwd.h"
+#include "logic_thread.h"
 
 #include <strings.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
 #include <signal.h>
 
+#define WORKER_NUM 1
+
+LOGIC_THREAD logic;
+
 static void signal_cb(evutil_socket_t, short, void *);
 
-/* callback */
-void server_rpc_cb(conn *, unsigned char *, size_t);
-void server_connect_cb(conn *);
-void server_disconnect_cb(conn *);
-
-#define WORKER_NUM 1
+/* server_cb */
+static user_callback server_cb;
+static user_callback logic_server_cb;
+void server_cb_init(user_callback *, user_callback *);
 
 int main(int argc, char **argv)
 {
@@ -27,6 +31,7 @@ int main(int argc, char **argv)
     if (0 != check_cmd()) {
         return 1;
     }
+    server_cb_init(&server_cb, &logic_server_cb);
 
     /* protobuf verify version */
     GOOGLE_PROTOBUF_VERIFY_VERSION;
@@ -43,6 +48,9 @@ int main(int argc, char **argv)
     pthread_t worker[WORKER_NUM];
     thread_init(main_base, WORKER_NUM, worker);
 
+    /* logic thread */
+    logic_thread_init(&logic, &logic_server_cb);
+
     /* signal */
     struct event *signal_event;
     signal_event = evsignal_new(main_base, SIGINT, signal_cb, (void *)main_base);
@@ -51,26 +59,30 @@ int main(int argc, char **argv)
         return 1;
     }
 
-    /* connector to gate */
+    /* connector to login */
     struct sockaddr_in csa;
     bzero(&csa, sizeof(csa));
     csa.sin_family = AF_INET;
     csa.sin_addr.s_addr = inet_addr("127.0.0.1");
-    csa.sin_port = htons(42000);
+    csa.sin_port = htons(41000);
 
-    connector *cg = connector_new((struct sockaddr *)&csa, sizeof(csa),
-            server_rpc_cb, server_connect_cb, server_disconnect_cb);
-    if (NULL == cg) {
-        mfatal("create gate connector failed!");
+    connector *cl = connector_new((struct sockaddr *)&csa, sizeof(csa),
+            server_cb.rpc,
+            server_cb.connect,
+            server_cb.disconnect);
+    if (NULL == cl) {
+        mfatal("create login connector failed!");
         return 1;
     }
 
     event_base_dispatch(main_base);
 
+    pthread_join(logic.thread, NULL);
+
     for (int i = 0; i < WORKER_NUM; i++)
         pthread_join(worker[i], NULL);
 
-    connector_free(cg);
+    connector_free(cl);
     event_free(signal_event);
     event_base_free(main_base);
 
