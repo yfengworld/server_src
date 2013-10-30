@@ -58,9 +58,10 @@ typedef struct {
 
 typedef struct {
     user_callback cb;
+    pthread_rwlock_t rwlock;
 #define STATE_NOT_CONNECTED 0
 #define STATE_CONNECTED 1
-    volatile int state;
+    int state;
     conn *c;
     struct sockaddr *sa;
     int socklen;

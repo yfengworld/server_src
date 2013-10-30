@@ -9,7 +9,6 @@
 typedef struct
 {
     uint64_t id;
-    char c;
     pthread_mutex_t lock;
 } user_t;
 

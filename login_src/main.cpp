@@ -1,26 +1,27 @@
 #include "log.h"
 #include "net.h"
 #include "cmd.h"
+#include "fwd.h"
+#include "user.h"
 
 #include <strings.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
 #include <signal.h>
 
+#define WORKER_NUM 8
+
 static void signal_cb(evutil_socket_t, short, void *);
 
-/* reg */
-void client_cb_reg();
+/* client_cb */
+static user_callback client_cb;
+void client_cb_init(user_callback *cb);
 
-/* callback */
-void client_rpc_cb(conn *, unsigned char *, size_t);
-void client_connect_cb(conn *c);
-void client_disconnect_cb(conn *c);
-void center_rpc_cb(conn *, unsigned char *, size_t);
-void center_connect_cb(conn *c);
-void center_disconnect_cb(conn *c);
+/* center_cb */
+static user_callback center_cb;
+void center_cb_init(user_callback *cb);
 
-#define WORKER_NUM 8
+user_manager_t *user_mgr = NULL;
 
 int main(int argc, char **argv)
 {
@@ -33,7 +34,8 @@ int main(int argc, char **argv)
     if (0 != check_cmd()) {
         return 1;
     }
-    client_cb_reg();
+    client_cb_init(&client_cb);
+    center_cb_init(&center_cb);
 
     /* protobuf verify version */
     GOOGLE_PROTOBUF_VERIFY_VERSION;
@@ -66,9 +68,9 @@ int main(int argc, char **argv)
     sa.sin_port = htons(41000);
 
     listener *lc = listener_new(main_base, (struct sockaddr *)&sa, sizeof(sa),
-            client_rpc_cb,
-            client_connect_cb,
-            client_disconnect_cb);
+            client_cb.rpc,
+            client_cb.connect,
+            client_cb.disconnect);
     if (NULL == lc) {
         mfatal("create client listener failed!");
         return 1;
@@ -81,11 +83,17 @@ int main(int argc, char **argv)
     sa.sin_port = htons(41001);
 
     listener *le = listener_new(main_base, (struct sockaddr *)&sa, sizeof(sa),
-            center_rpc_cb,
-            center_connect_cb,
-            center_disconnect_cb);
+            center_cb.rpc,
+            center_cb.connect,
+            center_cb.disconnect);
     if (NULL == le) {
         mfatal("create center listener failed!");
+        return 1;
+    }
+    
+    user_mgr = user_manager_new();
+    if (NULL == user_mgr) {
+        mfatal("create user manager failed!");
         return 1;
     }
 

@@ -264,29 +264,38 @@ static void thread_libevent_process(int fd, short which, void *arg)
                 item = cq_pop(me->new_conn_queue);
 
                 if (NULL != item) {
-                    connector *cr = (connector *)item->data;
-                    conn *c = conn_new();
-                    if (NULL == c) {
-                    } else {
-                        struct bufferevent *bev = bufferevent_socket_new(me->base, -1,
-                                BEV_OPT_CLOSE_ON_FREE | BEV_OPT_DEFER_CALLBACKS);
-                        c->bev = bev;
-                        if (NULL == bev) {
-                            merror("create bufferevent failed!");
-                            conn_free(c);
-                        } else {
-                            /* multi-thread write */
-                            evbuffer *output = bufferevent_get_output(bev);
-                            evbuffer_enable_locking(output, NULL);
-                            bufferevent_setcb(bev, NULL, NULL, connecting_event_cb, c);
-                            c->data = cr;
-                            c->thread = me;
-                            cr->c = c;
-                            cr->state = STATE_NOT_CONNECTED;
-                            minfo("connecting %s!", cr->addrtext);
-                            bufferevent_socket_connect(c->bev, cr->sa, cr->socklen);
+                    do {
+                        connector *cr = (connector *)item->data;
+                        conn *c = conn_new();
+
+                        if (c) {
+                            struct bufferevent *bev = bufferevent_socket_new(me->base, -1,
+                                    BEV_OPT_CLOSE_ON_FREE | BEV_OPT_DEFER_CALLBACKS);
+                            c->bev = bev;
+                            if (NULL == bev) {
+                                merror("create bufferevent failed!");
+                                conn_free(c);
+                                break;
+                            } else {
+                                /* multi-thread write */
+                                evbuffer *output = bufferevent_get_output(bev);
+                                evbuffer_enable_locking(output, NULL);
+                                bufferevent_setcb(bev, NULL, NULL, connecting_event_cb, c);
+                                c->data = cr;
+                                c->thread = me;
+                                
+                                pthread_rwlock_wrlock(&cr->rwlock);
+                                cr->c = c;
+                                cr->state = STATE_NOT_CONNECTED;
+                                pthread_rwlock_unlock(&cr->rwlock);
+
+                                minfo("connecting %s!", cr->addrtext);
+                                bufferevent_socket_connect(c->bev, cr->sa, cr->socklen);
+                            }
                         }
-                    }
+
+                    } while (0);
+
                     cqi_free(item);
                 } 
             }
@@ -510,6 +519,9 @@ connector *connector_new(struct sockaddr *sa, int socklen,
     cr->cb.rpc = rpc;
     cr->cb.connect = connect;
     cr->cb.disconnect = disconnect;
+
+    pthread_rwlock_init(&cr->rwlock, NULL);
+
     cr->state = STATE_NOT_CONNECTED;
     cr->c = NULL;
     memcpy(cr->sa, sa, socklen);
@@ -530,9 +542,12 @@ void connector_free(connector *cr)
 
 int connector_write(connector *cr, unsigned char *msg, size_t sz)
 {
-    if (cr && cr->state == STATE_CONNECTED) {
-        return conn_write(cr->c, msg, sz);
+    int ret = -1;
+    pthread_rwlock_rdlock(&cr->rwlock);
+    if (cr->state == STATE_CONNECTED) {
+        ret = conn_write(cr->c, msg, sz);
     }
+    pthread_rwlock_unlock(&cr->rwlock);
     return -1;
 }
 

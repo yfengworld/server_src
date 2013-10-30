@@ -195,7 +195,9 @@ void connecting_event_cb(struct bufferevent *bev, short what, void *arg)
 
         connector *cr = (connector *)c->data;
         minfo("connect %s success!", cr->addrtext);
+        pthread_rwlock_wrlock(&cr->rwlock);
         cr->state = STATE_CONNECTED;
+        pthread_rwlock_unlock(&cr->rwlock);
         int fd = bufferevent_getfd(bev);
         linger l;
         l.l_onoff = 1;

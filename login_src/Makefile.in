@@ -50,7 +50,7 @@ PROGRAMS = $(bin_PROGRAMS)
 am_login_OBJECTS = cb.$(OBJEXT) htable.$(OBJEXT) log.$(OBJEXT) \
 	msg_protobuf.$(OBJEXT) net.$(OBJEXT) cmd_util.$(OBJEXT) \
 	login.pb.$(OBJEXT) client_cb.$(OBJEXT) center_cb.$(OBJEXT) \
-	main.$(OBJEXT)
+	user.$(OBJEXT) main.$(OBJEXT)
 login_OBJECTS = $(am_login_OBJECTS)
 login_DEPENDENCIES =
 DEFAULT_INCLUDES = -I.@am__isrc@ -I$(top_builddir)
@@ -202,6 +202,7 @@ login_SOURCES = \
 			   ../proto_src/login.pb.cc \
 			   client_cb.cpp \
 			   center_cb.cpp \
+			   user.cpp \
 			   main.cpp
 
 all: all-am
@@ -301,6 +302,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/main.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/msg_protobuf.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/net.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/user.Po@am__quote@
 
 .cc.o:
 @am__fastdepCXX_TRUE@	$(CXXCOMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ $<

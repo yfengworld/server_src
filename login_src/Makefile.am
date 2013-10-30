@@ -18,5 +18,6 @@ login_SOURCES = \
 			   ../proto_src/login.pb.cc \
 			   client_cb.cpp \
 			   center_cb.cpp \
+			   user.cpp \
 			   main.cpp
 
