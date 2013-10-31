@@ -1,5 +1,8 @@
 #include "net.h"
+#include "log.h"
 #include "cmd.h"
+#include "msg_protobuf.h"
+
 #include "fwd.h"
 
 center_conn *centers = NULL;

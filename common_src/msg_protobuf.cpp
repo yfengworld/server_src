@@ -47,3 +47,51 @@ int message_head(unsigned char *src, size_t src_sz, msg_head *h)
     h->flags = ntohs(*cur);
     return 0;
 }
+
+int conn_write(conn *c, unsigned short cmd)
+{
+    unsigned char *msg;
+    size_t sz;
+    int ret = create_msg(cmd, &msg, &sz);
+    if (0 != ret)
+        return ret;
+    ret = conn_write(c, msg, sz);
+    free(msg);
+    return ret;
+}
+
+int conn_write(conn *c, unsigned short cmd, uint64_t uid)
+{
+    unsigned char *msg;
+    size_t sz;
+    int ret = create_msg(cmd, uid, &msg, &sz);
+    if (0 != ret)
+        return ret;
+    ret = conn_write(c, msg, sz);
+    free(msg);
+    return ret;
+}
+
+int connector_write(connector *cr, unsigned short cmd)
+{
+    unsigned char *msg;
+    size_t sz;
+    int ret = create_msg(cmd, &msg, &sz);
+    if (ret != 0)
+        return ret;
+    ret = connector_write(cr, msg, sz);
+    free(msg);
+    return ret;
+}
+
+int connector_write(connector *cr, unsigned short cmd, uint64_t uid)
+{
+    unsigned char *msg;
+    size_t sz;
+    int ret = create_msg(cmd, uid,  &msg, &sz);
+    if (ret != 0)
+        return ret;
+    ret = connector_write(cr, msg, sz);
+    free(msg);
+    return ret;
+}

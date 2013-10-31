@@ -3,6 +3,7 @@
 
 #include "log.h"
 #include "msg.h"
+#include "net.h"
 
 #include <google/protobuf/stubs/common.h>
 #include <google/protobuf/wire_format_lite_inl.h>
@@ -117,5 +118,63 @@ int msg_body(unsigned char *src, size_t src_sz, S *s)
     s->ParseFromCodedStream(&input);
     return 0;
 }
+
+template<typename S>
+int conn_write(conn *c, unsigned short cmd, S *s)
+{
+    unsigned char *msg;
+    size_t sz;
+    int ret = create_msg(cmd, s, &msg, &sz);
+    if (ret != 0)
+        return ret;
+    ret = conn_write(c, msg, sz);
+    free(msg);
+    return ret;
+}
+
+template<typename S>
+int conn_write(conn *c, unsigned short cmd, uint64_t uid, S *s)
+{
+    unsigned char *msg;
+    size_t sz;
+    int ret = create_msg(cmd, uid, s, &msg, &sz);
+    if (ret != 0)
+        return ret;
+    ret = conn_write(c, msg, sz);
+    free(msg);
+    return ret;
+}
+
+int conn_write(conn *c, unsigned short cmd);
+int conn_write(conn *c, unsigned short cmd, uint64_t uid);
+
+template<typename S>
+int connector_write(connector *cr, unsigned short cmd, S *s)
+{
+    unsigned char *msg;
+    size_t sz;
+    int ret = create_msg<S>(cmd, s, &msg, &sz);
+    if (ret != 0)
+        return ret;
+    ret = connector_write(cr, msg, sz);
+    free(msg);
+    return ret;
+}
+
+template<typename S>
+int connector_write(connector *cr, unsigned short cmd, uint64_t uid, S *s)
+{
+    unsigned char *msg;
+    size_t sz;
+    int ret = create_msg(cmd, uid, s, &msg, &sz);
+    if (ret != 0)
+        return ret;
+    ret = connector_write(cr, msg, sz);
+    free(msg);
+    return ret;
+}
+
+int connector_write(connector *cr, unsigned short cmd);
+int connector_write(connector *cr, unsigned short cmd, uint64_t uid);
 
 #endif /* MSG_PROTOBUF_H_INCLUDED */

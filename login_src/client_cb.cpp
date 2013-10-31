@@ -1,5 +1,8 @@
 #include "net.h"
 #include "cmd.h"
+#include "log.h"
+#include "msg_protobuf.h"
+
 #include "fwd.h"
 #include "login.pb.h"
 #include "user.h"
