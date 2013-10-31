@@ -1,5 +1,5 @@
-#include "net.h"
 #include "msg.h"
+#include "net.h"
 #include "log.h"
 
 #include <event2/bufferevent.h>
@@ -9,22 +9,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+/* forward declare */
 void conn_read_cb(struct bufferevent *, void *);
 void conn_write_cb(struct bufferevent *, void *);
-void conn_event_cb(struct bufferevent *bev, short what, void *arg)
-{
-    conn *c = (conn *)arg;
-
-    if (what & BEV_EVENT_EOF || what & BEV_EVENT_ERROR) {
-        user_callback *cb = (user_callback *)c->data;
-        if (cb->disconnect) {
-            (*(cb->disconnect))(c);
-        }
-
-        /* free bufferevent */
-        bufferevent_free(c->bev);
-    }
-}
 
 static void go_connecting(int fd, short what, void *arg)
 {
@@ -54,10 +41,14 @@ static void conn_event_cb2(struct bufferevent *bev, short what, void *arg)
     conn *c = (conn *)arg;
 
     if (what & BEV_EVENT_EOF || what & BEV_EVENT_ERROR) {
-        /* cb */
-        user_callback *cb = (user_callback *)c->data;
-        if (cb->disconnect) {
-            (*(cb->disconnect))(c);
+        connector *cr = (connector *)c->data;
+        if (0 == cr->keep_connect) {
+            /* cb */
+            user_callback *cb = (user_callback *)c->data;
+            if (cb->connect) {
+                (*(cb->disconnect))(c);
+            }
+            return;
         }
 
         /* free bufferevent */
@@ -71,8 +62,9 @@ static void conn_event_cb2(struct bufferevent *bev, short what, void *arg)
             return;
         } else {
             bufferevent_setcb(c->bev, NULL, NULL, connecting_event_cb, c);
-            connector *cr = (connector *)c->data;
+            pthread_mutex_lock(&cr->lock);
             cr->state = STATE_NOT_CONNECTED;
+            pthread_mutex_unlock(&cr->lock);
             delay_connecting(c);
         }
     }
@@ -81,20 +73,28 @@ static void conn_event_cb2(struct bufferevent *bev, short what, void *arg)
 void connecting_event_cb(struct bufferevent *bev, short what, void *arg)
 {
     conn *c = (conn *)arg;
+    connector *cr = (connector *)c->data;
 
     if (!(what & BEV_EVENT_CONNECTED)) {
         mdebug("connecting failed!");
-        delay_connecting(c);
+        if (0 == cr->keep_connect) {
+            user_callback *cb = (user_callback *)c->data;
+            if (cb->connect)
+                (*(cb->connect))(c, 0);
+        } else {
+            delay_connecting(c);
+        }
     } else {
         user_callback *cb = (user_callback *)c->data;
         if (cb->connect)
-            (*(cb->connect))(c);
+            (*(cb->connect))(c, 1);
 
-        connector *cr = (connector *)c->data;
         minfo("connect %s success!", cr->addrtext);
         pthread_mutex_lock(&cr->lock);
         cr->state = STATE_CONNECTED;
         pthread_mutex_unlock(&cr->lock);
+
+        /* prevent CLOSE_WAIT */
         int fd = bufferevent_getfd(bev);
         linger l;
         l.l_onoff = 1;

@@ -69,10 +69,7 @@ int main(int argc, char **argv)
     sa.sin_addr.s_addr = htonl(INADDR_ANY);
     sa.sin_port = htons(41000);
 
-    listener *lc = listener_new(main_base, (struct sockaddr *)&sa, sizeof(sa),
-            client_cb.rpc,
-            client_cb.connect,
-            client_cb.disconnect);
+    listener *lc = listener_new(main_base, (struct sockaddr *)&sa, sizeof(sa), &client_cb);
     if (NULL == lc) {
         mfatal("create client listener failed!");
         return 1;
@@ -84,10 +81,7 @@ int main(int argc, char **argv)
     sa.sin_addr.s_addr = htonl(INADDR_ANY);
     sa.sin_port = htons(41001);
 
-    listener *le = listener_new(main_base, (struct sockaddr *)&sa, sizeof(sa),
-            center_cb.rpc,
-            center_cb.connect,
-            center_cb.disconnect);
+    listener *le = listener_new(main_base, (struct sockaddr *)&sa, sizeof(sa), &center_cb);
     if (NULL == le) {
         mfatal("create center listener failed!");
         return 1;

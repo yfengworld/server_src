@@ -26,7 +26,7 @@ static void cache_rpc_cb(conn *c, unsigned char *msg, size_t sz)
     }
 }
 
-static void cache_connect_cb(conn *c)
+static void cache_connect_cb(conn *c, int ok)
 {
     mdebug("cache_connect_cb");
 }

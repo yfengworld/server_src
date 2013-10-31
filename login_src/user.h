@@ -6,9 +6,15 @@
 #include <pthread.h>
 #include <inttypes.h>
 
+#define MAX_SESSION_SECS 30
+
 typedef struct
 {
     uint64_t id;
+
+    /* recycle client socket */
+    struct event *expire_timer;
+
     pthread_mutex_t lock;
 } user_t;
 

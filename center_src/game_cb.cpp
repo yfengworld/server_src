@@ -12,7 +12,7 @@ void game_rpc_cb(conn *c, unsigned char *msg, size_t sz)
     mdebug("game_rpc_cb");
 }
 
-void game_connect_cb(conn *c)
+void game_connect_cb(conn *c, int ok)
 {
     mdebug("game_connect_cb");
 }

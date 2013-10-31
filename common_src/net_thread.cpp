@@ -251,7 +251,7 @@ static void thread_libevent_process(int fd, short which, void *arg)
                             c->data = li->l;
                             c->thread = me;
                             if (li->l->cb.connect)
-                                (*(li->l->cb.connect))(c);
+                                (*(li->l->cb.connect))(c, 1);
                             mdebug("new connection %s established!", c->addrtext);
                         }
                     }

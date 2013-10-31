@@ -31,7 +31,7 @@ static void gate_rpc_cb(conn *c, unsigned char *msg, size_t sz)
     }
 }
 
-static void gate_connect_cb(conn *c)
+static void gate_connect_cb(conn *c, int ok)
 {
     mdebug("gate_connect_cb");
 }

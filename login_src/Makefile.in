@@ -50,9 +50,9 @@ PROGRAMS = $(bin_PROGRAMS)
 am_login_OBJECTS = log.$(OBJEXT) net_thread.$(OBJEXT) \
 	msg_protobuf.$(OBJEXT) listener.$(OBJEXT) connector.$(OBJEXT) \
 	accept_cb.$(OBJEXT) read_cb.$(OBJEXT) write_cb.$(OBJEXT) \
-	event_cb.$(OBJEXT) cmd_util.$(OBJEXT) login.pb.$(OBJEXT) \
-	client_cb.$(OBJEXT) center_cb.$(OBJEXT) user.$(OBJEXT) \
-	main.$(OBJEXT)
+	conn_event_cb.$(OBJEXT) connector_event_cb.$(OBJEXT) \
+	cmd_util.$(OBJEXT) login.pb.$(OBJEXT) client_cb.$(OBJEXT) \
+	center_cb.$(OBJEXT) user.$(OBJEXT) main.$(OBJEXT)
 login_OBJECTS = $(am_login_OBJECTS)
 login_DEPENDENCIES =
 DEFAULT_INCLUDES = -I.@am__isrc@ -I$(top_builddir)
@@ -203,7 +203,8 @@ login_SOURCES = \
 			   ../common_src/accept_cb.cpp \
 			   ../common_src/read_cb.cpp \
 			   ../common_src/write_cb.cpp \
-			   ../common_src/event_cb.cpp \
+			   ../common_src/conn_event_cb.cpp \
+			   ../common_src/connector_event_cb.cpp \
 			   ../proto_src/cmd_util.cpp \
 			   ../proto_src/login.pb.cc \
 			   client_cb.cpp \
@@ -302,8 +303,9 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/center_cb.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/client_cb.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/cmd_util.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/conn_event_cb.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/connector.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/event_cb.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/connector_event_cb.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/listener.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/log.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/login.pb.Po@am__quote@
@@ -447,19 +449,33 @@ write_cb.obj: ../common_src/write_cb.cpp
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o write_cb.obj `if test -f '../common_src/write_cb.cpp'; then $(CYGPATH_W) '../common_src/write_cb.cpp'; else $(CYGPATH_W) '$(srcdir)/../common_src/write_cb.cpp'; fi`
 
-event_cb.o: ../common_src/event_cb.cpp
-@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT event_cb.o -MD -MP -MF $(DEPDIR)/event_cb.Tpo -c -o event_cb.o `test -f '../common_src/event_cb.cpp' || echo '$(srcdir)/'`../common_src/event_cb.cpp
-@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/event_cb.Tpo $(DEPDIR)/event_cb.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='../common_src/event_cb.cpp' object='event_cb.o' libtool=no @AMDEPBACKSLASH@
+conn_event_cb.o: ../common_src/conn_event_cb.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT conn_event_cb.o -MD -MP -MF $(DEPDIR)/conn_event_cb.Tpo -c -o conn_event_cb.o `test -f '../common_src/conn_event_cb.cpp' || echo '$(srcdir)/'`../common_src/conn_event_cb.cpp
+@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/conn_event_cb.Tpo $(DEPDIR)/conn_event_cb.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='../common_src/conn_event_cb.cpp' object='conn_event_cb.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o event_cb.o `test -f '../common_src/event_cb.cpp' || echo '$(srcdir)/'`../common_src/event_cb.cpp
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o conn_event_cb.o `test -f '../common_src/conn_event_cb.cpp' || echo '$(srcdir)/'`../common_src/conn_event_cb.cpp
 
-event_cb.obj: ../common_src/event_cb.cpp
-@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT event_cb.obj -MD -MP -MF $(DEPDIR)/event_cb.Tpo -c -o event_cb.obj `if test -f '../common_src/event_cb.cpp'; then $(CYGPATH_W) '../common_src/event_cb.cpp'; else $(CYGPATH_W) '$(srcdir)/../common_src/event_cb.cpp'; fi`
-@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/event_cb.Tpo $(DEPDIR)/event_cb.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='../common_src/event_cb.cpp' object='event_cb.obj' libtool=no @AMDEPBACKSLASH@
+conn_event_cb.obj: ../common_src/conn_event_cb.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT conn_event_cb.obj -MD -MP -MF $(DEPDIR)/conn_event_cb.Tpo -c -o conn_event_cb.obj `if test -f '../common_src/conn_event_cb.cpp'; then $(CYGPATH_W) '../common_src/conn_event_cb.cpp'; else $(CYGPATH_W) '$(srcdir)/../common_src/conn_event_cb.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/conn_event_cb.Tpo $(DEPDIR)/conn_event_cb.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='../common_src/conn_event_cb.cpp' object='conn_event_cb.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o event_cb.obj `if test -f '../common_src/event_cb.cpp'; then $(CYGPATH_W) '../common_src/event_cb.cpp'; else $(CYGPATH_W) '$(srcdir)/../common_src/event_cb.cpp'; fi`
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o conn_event_cb.obj `if test -f '../common_src/conn_event_cb.cpp'; then $(CYGPATH_W) '../common_src/conn_event_cb.cpp'; else $(CYGPATH_W) '$(srcdir)/../common_src/conn_event_cb.cpp'; fi`
+
+connector_event_cb.o: ../common_src/connector_event_cb.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT connector_event_cb.o -MD -MP -MF $(DEPDIR)/connector_event_cb.Tpo -c -o connector_event_cb.o `test -f '../common_src/connector_event_cb.cpp' || echo '$(srcdir)/'`../common_src/connector_event_cb.cpp
+@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/connector_event_cb.Tpo $(DEPDIR)/connector_event_cb.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='../common_src/connector_event_cb.cpp' object='connector_event_cb.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o connector_event_cb.o `test -f '../common_src/connector_event_cb.cpp' || echo '$(srcdir)/'`../common_src/connector_event_cb.cpp
+
+connector_event_cb.obj: ../common_src/connector_event_cb.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT connector_event_cb.obj -MD -MP -MF $(DEPDIR)/connector_event_cb.Tpo -c -o connector_event_cb.obj `if test -f '../common_src/connector_event_cb.cpp'; then $(CYGPATH_W) '../common_src/connector_event_cb.cpp'; else $(CYGPATH_W) '$(srcdir)/../common_src/connector_event_cb.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/connector_event_cb.Tpo $(DEPDIR)/connector_event_cb.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='../common_src/connector_event_cb.cpp' object='connector_event_cb.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o connector_event_cb.obj `if test -f '../common_src/connector_event_cb.cpp'; then $(CYGPATH_W) '../common_src/connector_event_cb.cpp'; else $(CYGPATH_W) '$(srcdir)/../common_src/connector_event_cb.cpp'; fi`
 
 cmd_util.o: ../proto_src/cmd_util.cpp
 @am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT cmd_util.o -MD -MP -MF $(DEPDIR)/cmd_util.Tpo -c -o cmd_util.o `test -f '../proto_src/cmd_util.cpp' || echo '$(srcdir)/'`../proto_src/cmd_util.cpp

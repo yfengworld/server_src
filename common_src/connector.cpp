@@ -5,10 +5,7 @@
 #include <stdlib.h>
 #include <arpa/inet.h>
 
-connector *connector_new(struct sockaddr *sa, int socklen,
-        rpc_cb_func rpc,
-        connect_cb_func connect,
-        disconnect_cb_func disconnect)
+connector *connector_new(struct sockaddr *sa, int socklen, int kc, user_callback *cb)
 {
     connector *cr = (connector *)malloc(sizeof(connector));
     if (NULL == cr) {
@@ -23,10 +20,12 @@ connector *connector_new(struct sockaddr *sa, int socklen,
         return NULL;
     }
 
+    cr->keep_connect = kc;
+
     cr->cb.type = 'c';
-    cr->cb.rpc = rpc;
-    cr->cb.connect = connect;
-    cr->cb.disconnect = disconnect;
+    cr->cb.rpc = cb ? cb->rpc : NULL;
+    cr->cb.connect = cb ? cb->connect : NULL;
+    cr->cb.disconnect = cb ? cb->disconnect : NULL;
 
     pthread_mutex_init(&cr->lock, NULL);
 

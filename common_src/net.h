@@ -33,7 +33,7 @@ typedef struct {
 } conn;
 
 typedef void (*rpc_cb_func)(conn *, unsigned char *, size_t);
-typedef void (*connect_cb_func)(conn *);
+typedef void (*connect_cb_func)(conn *, int);
 typedef void (*disconnect_cb_func)(conn *);
 
 typedef struct {
@@ -56,6 +56,7 @@ typedef struct {
 
 typedef struct {
     user_callback cb;
+    int keep_connect;
     pthread_mutex_t lock;
 #define STATE_NOT_CONNECTED 0
 #define STATE_CONNECTED 1
@@ -82,19 +83,15 @@ int conn_write(conn *c, unsigned char *msg, size_t sz);
 
 /* listener */
 listener *listener_new(struct event_base* base,
-        struct sockaddr *sa, int socklen,
-        rpc_cb_func rpc,
-        connect_cb_func connect,
-        disconnect_cb_func disconnect);
+        struct sockaddr *sa, int socklen, user_callback *cb);
 void listener_free(listener *l);
 
-/* connector */
-connector *connector_new(struct sockaddr *sa, int socklen, 
-        rpc_cb_func rpc,
-        connect_cb_func connect,
-        disconnect_cb_func disconnect);
+/* 
+ * connector
+ * kc mean keep connect
+ */
+connector *connector_new(struct sockaddr *sa, int socklen, int kc, user_callback *cb);
 void connector_free(connector *cr);
 int connector_write(connector *cr, unsigned char *msg, size_t sz);
-
 
 #endif /* NET_H_INCLUDED */

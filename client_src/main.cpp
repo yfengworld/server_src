@@ -68,10 +68,7 @@ int main(int argc, char **argv)
     csa.sin_addr.s_addr = inet_addr("127.0.0.1");
     csa.sin_port = htons(41000);
 
-    connector *cl = connector_new((struct sockaddr *)&csa, sizeof(csa),
-            server_cb.rpc,
-            server_cb.connect,
-            server_cb.disconnect);
+    connector *cl = connector_new((struct sockaddr *)&csa, sizeof(csa), 1, &server_cb);
     if (NULL == cl) {
         mfatal("create login connector failed!");
         return 1;

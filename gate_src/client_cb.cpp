@@ -100,7 +100,7 @@ void client_rpc_cb(conn *c, unsigned char *msg, size_t sz)
     }
 }
 
-void client_connect_cb(conn *c)
+void client_connect_cb(conn *c, int ok)
 {
     mdebug("client_connect_cb");
     /*

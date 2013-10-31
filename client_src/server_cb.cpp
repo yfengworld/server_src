@@ -18,7 +18,7 @@ static void logic_server_rpc_cb(conn *c, unsigned char *msg, size_t sz)
     }
 }
 
-static void logic_server_connect_cb(conn *c)
+static void logic_server_connect_cb(conn *c, int ok)
 {
     mdebug("logic_server_connect_cb");
     login_request lr;
@@ -37,9 +37,9 @@ static void server_rpc_cb(conn *c, unsigned char *msg, size_t sz)
     logic_thread_add_rpc_event(&logic, c, msg, sz);
 }
 
-static void server_connect_cb(conn *c)
+static void server_connect_cb(conn *c, int ok)
 {
-    logic_thread_add_connect_event(&logic, c);
+    logic_thread_add_connect_event(&logic, c, ok);
 }
 
 static void server_disconnect_cb(conn *c)

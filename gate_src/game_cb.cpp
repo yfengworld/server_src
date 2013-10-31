@@ -26,7 +26,7 @@ static void game_rpc_cb(conn *c, unsigned char *msg, size_t sz)
     }
 }
 
-static void game_connect_cb(conn *c)
+static void game_connect_cb(conn *c, int ok)
 {
     mdebug("game_connect_cb");
 }

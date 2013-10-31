@@ -5,11 +5,7 @@
 #include <arpa/inet.h>
 
 void accept_cb(struct evconnlistener *, evutil_socket_t, struct sockaddr *, int, void *);
-listener *listener_new(struct event_base* base,
-        struct sockaddr *sa, int socklen,
-        rpc_cb_func rpc,
-        connect_cb_func connect,
-        disconnect_cb_func disconnect)
+listener *listener_new(struct event_base* base, struct sockaddr *sa, int socklen, user_callback *cb)
 {
     listener * l = (listener *)malloc(sizeof(listener));
     if (NULL == l) {
@@ -29,9 +25,9 @@ listener *listener_new(struct event_base* base,
     }
 
     l->cb.type = 'l';
-    l->cb.rpc = rpc;
-    l->cb.connect = connect;
-    l->cb.disconnect = disconnect;
+    l->cb.rpc = cb? cb->rpc : NULL;
+    l->cb.connect = cb ? cb->connect : NULL;
+    l->cb.disconnect = cb ? disconnect : NULL;
     l->l = listener;
     snprintf(l->addrtext, 32, "%s:%d",
             inet_ntoa(((struct sockaddr_in *)sa)->sin_addr),

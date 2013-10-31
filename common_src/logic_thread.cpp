@@ -26,6 +26,9 @@ struct logic_event_item {
                 int sz;
             };
         };
+        struct {
+            int ok;
+        };
     };
 };
 
@@ -88,7 +91,7 @@ static void exec_logic_event(LOGIC_THREAD *logic, LE_ITEM *item)
         }
     } else if ('c' == item->type) {
         if (logic->cb.connect) {
-            (*(logic->cb.connect))(item->c);
+            (*(logic->cb.connect))(item->c, item->ok);
         }
     } else if ('d' == item->type) {
         if (logic->cb.disconnect) {
@@ -202,7 +205,7 @@ int logic_thread_add_rpc_event(LOGIC_THREAD *logic, conn *c, unsigned char *msg,
     return 0;
 }
 
-int logic_thread_add_connect_event(LOGIC_THREAD *logic, conn *c)
+int logic_thread_add_connect_event(LOGIC_THREAD *logic, conn *c, int ok)
 {
     LE_ITEM *item = (LE_ITEM *)malloc(sizeof(LE_ITEM));
     if (NULL == item) {
@@ -212,6 +215,7 @@ int logic_thread_add_connect_event(LOGIC_THREAD *logic, conn *c)
 
     item->type = 'c';
     item->c = c;
+    item->ok = ok;
     leq_push(&sleq, item);
 
     char buf[1];

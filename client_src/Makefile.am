@@ -14,7 +14,8 @@ client_SOURCES = \
 				 ../common_src/connector.cpp \
 				 ../common_src/read_cb.cpp \
 				 ../common_src/write_cb.cpp \
-				 ../common_src/event_cb.cpp \
+				 ../common_src/conn_event_cb.cpp \
+				 ../common_src/connector_event_cb.cpp \
 				 ../common_src/log.cpp \
 				 ../common_src/logic_thread.cpp \
 				 ../proto_src/cmd_util.cpp \

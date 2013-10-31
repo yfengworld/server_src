@@ -69,12 +69,9 @@ int main(int argc, char **argv)
     sa.sin_addr.s_addr = htonl(INADDR_ANY);
     sa.sin_port = htons(43000);
 
-    listener *lg = listener_new(main_base, (struct sockaddr *)&sa, sizeof(sa),
-            gate_cb.rpc,
-            gate_cb.connect,
-            gate_cb.disconnect);
+    listener *lg = listener_new(main_base, (struct sockaddr *)&sa, sizeof(sa), &gate_cb);
     if (NULL == lg) {
-        mfatal("create client listener failed!");
+        mfatal("create gate listener failed!");
         return 1;
     }
 
@@ -84,10 +81,7 @@ int main(int argc, char **argv)
     sa.sin_addr.s_addr = htonl(INADDR_ANY);
     sa.sin_port = htons(43001);
 
-    listener *lm = listener_new(main_base, (struct sockaddr *)&sa, sizeof(sa),
-            game_cb.rpc,
-            game_cb.connect,
-            game_cb.disconnect);
+    listener *lm = listener_new(main_base, (struct sockaddr *)&sa, sizeof(sa), &game_cb);
     if (NULL == lm) {
         mfatal("create game listener failed!");
         return 1;
@@ -100,10 +94,7 @@ int main(int argc, char **argv)
     csa.sin_addr.s_addr = inet_addr("127.0.0.1");
     csa.sin_port = htons(41001);
 
-    connector *cl = connector_new((struct sockaddr *)&csa, sizeof(csa),
-            login_cb.rpc,
-            login_cb.connect,
-            login_cb.disconnect);
+    connector *cl = connector_new((struct sockaddr *)&csa, sizeof(csa), 1, &login_cb);
     if (NULL == cl) {
         mfatal("create center connector failed!");
         return 1;

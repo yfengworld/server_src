@@ -26,7 +26,7 @@ static void center_rpc_cb(conn *c, unsigned char *msg, size_t sz)
     }
 }
 
-static void center_connect_cb(conn *c)
+static void center_connect_cb(conn *c, int ok)
 {
     mdebug("center_connect_cb");
 }

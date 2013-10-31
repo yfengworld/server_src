@@ -32,7 +32,7 @@ static void login_rpc_cb(conn *c, unsigned char *msg, size_t sz)
     }
 }
 
-static void login_connect_cb(conn *c)
+static void login_connect_cb(conn *c, int ok)
 {
     mdebug("login_connect_cb");
 }
