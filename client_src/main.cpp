@@ -1,8 +1,10 @@
-#include "log.h"
-#include "net.h"
-#include "cmd.h"
 #include "fwd.h"
+
+#include "msg_protobuf.h"
+#include "cmd.h"
 #include "logic_thread.h"
+#include "net.h"
+#include "log.h"
 
 #include <strings.h>
 #include <netinet/in.h>

@@ -47,8 +47,10 @@ CONFIG_CLEAN_FILES =
 CONFIG_CLEAN_VPATH_FILES =
 am__installdirs = "$(DESTDIR)$(bindir)"
 PROGRAMS = $(bin_PROGRAMS)
-am_center_OBJECTS = cb.$(OBJEXT) log.$(OBJEXT) msg_protobuf.$(OBJEXT) \
-	net.$(OBJEXT) cmd_util.$(OBJEXT) login.pb.$(OBJEXT) \
+am_center_OBJECTS = net_thread.$(OBJEXT) listener.$(OBJEXT) \
+	connector.$(OBJEXT) msg_protobuf.$(OBJEXT) accept_cb.$(OBJEXT) \
+	read_cb.$(OBJEXT) write_cb.$(OBJEXT) event_cb.$(OBJEXT) \
+	log.$(OBJEXT) cmd_util.$(OBJEXT) login.pb.$(OBJEXT) \
 	game_cb.$(OBJEXT) gate_cb.$(OBJEXT) login_cb.$(OBJEXT) \
 	main.$(OBJEXT)
 center_OBJECTS = $(am_center_OBJECTS)
@@ -193,16 +195,21 @@ INCLUDES = \
 AM_CXXFLAGS = 
 center_LDADD = -lpthread -levent -lprotobuf
 center_SOURCES = \
-			   ../common_src/cb.cpp \
-			   ../common_src/log.cpp \
-			   ../common_src/msg_protobuf.cpp \
-			   ../common_src/net.cpp \
-			   ../proto_src/cmd_util.cpp \
-			   ../proto_src/login.pb.cc \
-			   game_cb.cpp \
-			   gate_cb.cpp \
-			   login_cb.cpp \
-			   main.cpp
+				 ../common_src/net_thread.cpp \
+				 ../common_src/listener.cpp \
+				 ../common_src/connector.cpp \
+				 ../common_src/msg_protobuf.cpp \
+				 ../common_src/accept_cb.cpp \
+				 ../common_src/read_cb.cpp \
+				 ../common_src/write_cb.cpp \
+				 ../common_src/event_cb.cpp \
+				 ../common_src/log.cpp \
+				 ../proto_src/cmd_util.cpp \
+				 ../proto_src/login.pb.cc \
+				 game_cb.cpp \
+				 gate_cb.cpp \
+				 login_cb.cpp \
+				 main.cpp
 
 all: all-am
 
@@ -291,16 +298,21 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/cb.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/accept_cb.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/cmd_util.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/connector.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/event_cb.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/game_cb.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gate_cb.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/listener.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/log.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/login.pb.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/login_cb.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/main.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/msg_protobuf.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/net.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/net_thread.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/read_cb.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/write_cb.Po@am__quote@
 
 .cc.o:
 @am__fastdepCXX_TRUE@	$(CXXCOMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ $<
@@ -323,33 +335,47 @@ distclean-compile:
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(LTCXXCOMPILE) -c -o $@ $<
 
-cb.o: ../common_src/cb.cpp
-@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT cb.o -MD -MP -MF $(DEPDIR)/cb.Tpo -c -o cb.o `test -f '../common_src/cb.cpp' || echo '$(srcdir)/'`../common_src/cb.cpp
-@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/cb.Tpo $(DEPDIR)/cb.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='../common_src/cb.cpp' object='cb.o' libtool=no @AMDEPBACKSLASH@
+net_thread.o: ../common_src/net_thread.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT net_thread.o -MD -MP -MF $(DEPDIR)/net_thread.Tpo -c -o net_thread.o `test -f '../common_src/net_thread.cpp' || echo '$(srcdir)/'`../common_src/net_thread.cpp
+@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/net_thread.Tpo $(DEPDIR)/net_thread.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='../common_src/net_thread.cpp' object='net_thread.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o cb.o `test -f '../common_src/cb.cpp' || echo '$(srcdir)/'`../common_src/cb.cpp
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o net_thread.o `test -f '../common_src/net_thread.cpp' || echo '$(srcdir)/'`../common_src/net_thread.cpp
 
-cb.obj: ../common_src/cb.cpp
-@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT cb.obj -MD -MP -MF $(DEPDIR)/cb.Tpo -c -o cb.obj `if test -f '../common_src/cb.cpp'; then $(CYGPATH_W) '../common_src/cb.cpp'; else $(CYGPATH_W) '$(srcdir)/../common_src/cb.cpp'; fi`
-@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/cb.Tpo $(DEPDIR)/cb.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='../common_src/cb.cpp' object='cb.obj' libtool=no @AMDEPBACKSLASH@
+net_thread.obj: ../common_src/net_thread.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT net_thread.obj -MD -MP -MF $(DEPDIR)/net_thread.Tpo -c -o net_thread.obj `if test -f '../common_src/net_thread.cpp'; then $(CYGPATH_W) '../common_src/net_thread.cpp'; else $(CYGPATH_W) '$(srcdir)/../common_src/net_thread.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/net_thread.Tpo $(DEPDIR)/net_thread.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='../common_src/net_thread.cpp' object='net_thread.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o cb.obj `if test -f '../common_src/cb.cpp'; then $(CYGPATH_W) '../common_src/cb.cpp'; else $(CYGPATH_W) '$(srcdir)/../common_src/cb.cpp'; fi`
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o net_thread.obj `if test -f '../common_src/net_thread.cpp'; then $(CYGPATH_W) '../common_src/net_thread.cpp'; else $(CYGPATH_W) '$(srcdir)/../common_src/net_thread.cpp'; fi`
 
-log.o: ../common_src/log.cpp
-@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT log.o -MD -MP -MF $(DEPDIR)/log.Tpo -c -o log.o `test -f '../common_src/log.cpp' || echo '$(srcdir)/'`../common_src/log.cpp
-@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/log.Tpo $(DEPDIR)/log.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='../common_src/log.cpp' object='log.o' libtool=no @AMDEPBACKSLASH@
+listener.o: ../common_src/listener.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT listener.o -MD -MP -MF $(DEPDIR)/listener.Tpo -c -o listener.o `test -f '../common_src/listener.cpp' || echo '$(srcdir)/'`../common_src/listener.cpp
+@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/listener.Tpo $(DEPDIR)/listener.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='../common_src/listener.cpp' object='listener.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o log.o `test -f '../common_src/log.cpp' || echo '$(srcdir)/'`../common_src/log.cpp
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o listener.o `test -f '../common_src/listener.cpp' || echo '$(srcdir)/'`../common_src/listener.cpp
 
-log.obj: ../common_src/log.cpp
-@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT log.obj -MD -MP -MF $(DEPDIR)/log.Tpo -c -o log.obj `if test -f '../common_src/log.cpp'; then $(CYGPATH_W) '../common_src/log.cpp'; else $(CYGPATH_W) '$(srcdir)/../common_src/log.cpp'; fi`
-@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/log.Tpo $(DEPDIR)/log.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='../common_src/log.cpp' object='log.obj' libtool=no @AMDEPBACKSLASH@
+listener.obj: ../common_src/listener.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT listener.obj -MD -MP -MF $(DEPDIR)/listener.Tpo -c -o listener.obj `if test -f '../common_src/listener.cpp'; then $(CYGPATH_W) '../common_src/listener.cpp'; else $(CYGPATH_W) '$(srcdir)/../common_src/listener.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/listener.Tpo $(DEPDIR)/listener.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='../common_src/listener.cpp' object='listener.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o log.obj `if test -f '../common_src/log.cpp'; then $(CYGPATH_W) '../common_src/log.cpp'; else $(CYGPATH_W) '$(srcdir)/../common_src/log.cpp'; fi`
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o listener.obj `if test -f '../common_src/listener.cpp'; then $(CYGPATH_W) '../common_src/listener.cpp'; else $(CYGPATH_W) '$(srcdir)/../common_src/listener.cpp'; fi`
+
+connector.o: ../common_src/connector.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT connector.o -MD -MP -MF $(DEPDIR)/connector.Tpo -c -o connector.o `test -f '../common_src/connector.cpp' || echo '$(srcdir)/'`../common_src/connector.cpp
+@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/connector.Tpo $(DEPDIR)/connector.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='../common_src/connector.cpp' object='connector.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o connector.o `test -f '../common_src/connector.cpp' || echo '$(srcdir)/'`../common_src/connector.cpp
+
+connector.obj: ../common_src/connector.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT connector.obj -MD -MP -MF $(DEPDIR)/connector.Tpo -c -o connector.obj `if test -f '../common_src/connector.cpp'; then $(CYGPATH_W) '../common_src/connector.cpp'; else $(CYGPATH_W) '$(srcdir)/../common_src/connector.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/connector.Tpo $(DEPDIR)/connector.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='../common_src/connector.cpp' object='connector.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o connector.obj `if test -f '../common_src/connector.cpp'; then $(CYGPATH_W) '../common_src/connector.cpp'; else $(CYGPATH_W) '$(srcdir)/../common_src/connector.cpp'; fi`
 
 msg_protobuf.o: ../common_src/msg_protobuf.cpp
 @am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT msg_protobuf.o -MD -MP -MF $(DEPDIR)/msg_protobuf.Tpo -c -o msg_protobuf.o `test -f '../common_src/msg_protobuf.cpp' || echo '$(srcdir)/'`../common_src/msg_protobuf.cpp
@@ -365,19 +391,75 @@ msg_protobuf.obj: ../common_src/msg_protobuf.cpp
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o msg_protobuf.obj `if test -f '../common_src/msg_protobuf.cpp'; then $(CYGPATH_W) '../common_src/msg_protobuf.cpp'; else $(CYGPATH_W) '$(srcdir)/../common_src/msg_protobuf.cpp'; fi`
 
-net.o: ../common_src/net.cpp
-@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT net.o -MD -MP -MF $(DEPDIR)/net.Tpo -c -o net.o `test -f '../common_src/net.cpp' || echo '$(srcdir)/'`../common_src/net.cpp
-@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/net.Tpo $(DEPDIR)/net.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='../common_src/net.cpp' object='net.o' libtool=no @AMDEPBACKSLASH@
+accept_cb.o: ../common_src/accept_cb.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT accept_cb.o -MD -MP -MF $(DEPDIR)/accept_cb.Tpo -c -o accept_cb.o `test -f '../common_src/accept_cb.cpp' || echo '$(srcdir)/'`../common_src/accept_cb.cpp
+@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/accept_cb.Tpo $(DEPDIR)/accept_cb.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='../common_src/accept_cb.cpp' object='accept_cb.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o net.o `test -f '../common_src/net.cpp' || echo '$(srcdir)/'`../common_src/net.cpp
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o accept_cb.o `test -f '../common_src/accept_cb.cpp' || echo '$(srcdir)/'`../common_src/accept_cb.cpp
 
-net.obj: ../common_src/net.cpp
-@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT net.obj -MD -MP -MF $(DEPDIR)/net.Tpo -c -o net.obj `if test -f '../common_src/net.cpp'; then $(CYGPATH_W) '../common_src/net.cpp'; else $(CYGPATH_W) '$(srcdir)/../common_src/net.cpp'; fi`
-@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/net.Tpo $(DEPDIR)/net.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='../common_src/net.cpp' object='net.obj' libtool=no @AMDEPBACKSLASH@
+accept_cb.obj: ../common_src/accept_cb.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT accept_cb.obj -MD -MP -MF $(DEPDIR)/accept_cb.Tpo -c -o accept_cb.obj `if test -f '../common_src/accept_cb.cpp'; then $(CYGPATH_W) '../common_src/accept_cb.cpp'; else $(CYGPATH_W) '$(srcdir)/../common_src/accept_cb.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/accept_cb.Tpo $(DEPDIR)/accept_cb.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='../common_src/accept_cb.cpp' object='accept_cb.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o net.obj `if test -f '../common_src/net.cpp'; then $(CYGPATH_W) '../common_src/net.cpp'; else $(CYGPATH_W) '$(srcdir)/../common_src/net.cpp'; fi`
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o accept_cb.obj `if test -f '../common_src/accept_cb.cpp'; then $(CYGPATH_W) '../common_src/accept_cb.cpp'; else $(CYGPATH_W) '$(srcdir)/../common_src/accept_cb.cpp'; fi`
+
+read_cb.o: ../common_src/read_cb.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT read_cb.o -MD -MP -MF $(DEPDIR)/read_cb.Tpo -c -o read_cb.o `test -f '../common_src/read_cb.cpp' || echo '$(srcdir)/'`../common_src/read_cb.cpp
+@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/read_cb.Tpo $(DEPDIR)/read_cb.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='../common_src/read_cb.cpp' object='read_cb.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o read_cb.o `test -f '../common_src/read_cb.cpp' || echo '$(srcdir)/'`../common_src/read_cb.cpp
+
+read_cb.obj: ../common_src/read_cb.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT read_cb.obj -MD -MP -MF $(DEPDIR)/read_cb.Tpo -c -o read_cb.obj `if test -f '../common_src/read_cb.cpp'; then $(CYGPATH_W) '../common_src/read_cb.cpp'; else $(CYGPATH_W) '$(srcdir)/../common_src/read_cb.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/read_cb.Tpo $(DEPDIR)/read_cb.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='../common_src/read_cb.cpp' object='read_cb.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o read_cb.obj `if test -f '../common_src/read_cb.cpp'; then $(CYGPATH_W) '../common_src/read_cb.cpp'; else $(CYGPATH_W) '$(srcdir)/../common_src/read_cb.cpp'; fi`
+
+write_cb.o: ../common_src/write_cb.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT write_cb.o -MD -MP -MF $(DEPDIR)/write_cb.Tpo -c -o write_cb.o `test -f '../common_src/write_cb.cpp' || echo '$(srcdir)/'`../common_src/write_cb.cpp
+@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/write_cb.Tpo $(DEPDIR)/write_cb.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='../common_src/write_cb.cpp' object='write_cb.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o write_cb.o `test -f '../common_src/write_cb.cpp' || echo '$(srcdir)/'`../common_src/write_cb.cpp
+
+write_cb.obj: ../common_src/write_cb.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT write_cb.obj -MD -MP -MF $(DEPDIR)/write_cb.Tpo -c -o write_cb.obj `if test -f '../common_src/write_cb.cpp'; then $(CYGPATH_W) '../common_src/write_cb.cpp'; else $(CYGPATH_W) '$(srcdir)/../common_src/write_cb.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/write_cb.Tpo $(DEPDIR)/write_cb.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='../common_src/write_cb.cpp' object='write_cb.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o write_cb.obj `if test -f '../common_src/write_cb.cpp'; then $(CYGPATH_W) '../common_src/write_cb.cpp'; else $(CYGPATH_W) '$(srcdir)/../common_src/write_cb.cpp'; fi`
+
+event_cb.o: ../common_src/event_cb.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT event_cb.o -MD -MP -MF $(DEPDIR)/event_cb.Tpo -c -o event_cb.o `test -f '../common_src/event_cb.cpp' || echo '$(srcdir)/'`../common_src/event_cb.cpp
+@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/event_cb.Tpo $(DEPDIR)/event_cb.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='../common_src/event_cb.cpp' object='event_cb.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o event_cb.o `test -f '../common_src/event_cb.cpp' || echo '$(srcdir)/'`../common_src/event_cb.cpp
+
+event_cb.obj: ../common_src/event_cb.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT event_cb.obj -MD -MP -MF $(DEPDIR)/event_cb.Tpo -c -o event_cb.obj `if test -f '../common_src/event_cb.cpp'; then $(CYGPATH_W) '../common_src/event_cb.cpp'; else $(CYGPATH_W) '$(srcdir)/../common_src/event_cb.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/event_cb.Tpo $(DEPDIR)/event_cb.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='../common_src/event_cb.cpp' object='event_cb.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o event_cb.obj `if test -f '../common_src/event_cb.cpp'; then $(CYGPATH_W) '../common_src/event_cb.cpp'; else $(CYGPATH_W) '$(srcdir)/../common_src/event_cb.cpp'; fi`
+
+log.o: ../common_src/log.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT log.o -MD -MP -MF $(DEPDIR)/log.Tpo -c -o log.o `test -f '../common_src/log.cpp' || echo '$(srcdir)/'`../common_src/log.cpp
+@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/log.Tpo $(DEPDIR)/log.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='../common_src/log.cpp' object='log.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o log.o `test -f '../common_src/log.cpp' || echo '$(srcdir)/'`../common_src/log.cpp
+
+log.obj: ../common_src/log.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT log.obj -MD -MP -MF $(DEPDIR)/log.Tpo -c -o log.obj `if test -f '../common_src/log.cpp'; then $(CYGPATH_W) '../common_src/log.cpp'; else $(CYGPATH_W) '$(srcdir)/../common_src/log.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/log.Tpo $(DEPDIR)/log.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='../common_src/log.cpp' object='log.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o log.obj `if test -f '../common_src/log.cpp'; then $(CYGPATH_W) '../common_src/log.cpp'; else $(CYGPATH_W) '$(srcdir)/../common_src/log.cpp'; fi`
 
 cmd_util.o: ../proto_src/cmd_util.cpp
 @am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT cmd_util.o -MD -MP -MF $(DEPDIR)/cmd_util.Tpo -c -o cmd_util.o `test -f '../proto_src/cmd_util.cpp' || echo '$(srcdir)/'`../proto_src/cmd_util.cpp

@@ -1,6 +1,9 @@
-#include "net.h"
-#include "cmd.h"
 #include "fwd.h"
+
+#include "msg_protobuf.h"
+#include "cmd.h"
+#include "net.h"
+#include "log.h"
 
 typedef void (*cb)(conn *, unsigned char *msg, size_t sz);
 static cb cbs[CG_END - CG_BEGIN];
@@ -69,7 +72,6 @@ void client_rpc_cb(conn *c, unsigned char *msg, size_t sz)
     msg_head h;
     if (0 != message_head(msg, sz, &h)) {
         /* close connection */
-        disconnect(c);
         return;
     }
 
@@ -91,12 +93,10 @@ void client_rpc_cb(conn *c, unsigned char *msg, size_t sz)
         } else {
             merror("invalid cmd:%d connection %s", h.cmd, c->addrtext);
             /* close connection */
-            disconnect(c);
         }
     } else {
         merror("invalid cmd:%d connection %s", h.cmd, c->addrtext);
         /* close connection */
-        disconnect(c);
     }
 }
 

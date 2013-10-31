@@ -1,4 +1,9 @@
 #include "logic_thread.h"
+#include "log.h"
+
+#include <string.h>
+#include <stdlib.h>
+#include <unistd.h>
 
 /************************************* logic event queue *************************************/
 

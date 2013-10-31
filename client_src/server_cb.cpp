@@ -1,8 +1,11 @@
-#include "net.h"
-#include "cmd.h"
 #include "fwd.h"
-#include "logic_thread.h"
 #include "login.pb.h"
+
+#include "msg_protobuf.h"
+#include "cmd.h"
+#include "logic_thread.h"
+#include "net.h"
+#include "log.h"
 
 typedef void (*cb)(conn *, unsigned char *, size_t);
 static cb cbs[SC_END - SC_BEGIN];

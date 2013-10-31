@@ -1,6 +1,7 @@
-#include "log.h"
-#include "net.h"
+#include "msg_protobuf.h"
 #include "cmd.h"
+#include "net.h"
+#include "log.h"
 
 #include <strings.h>
 #include <netinet/in.h>

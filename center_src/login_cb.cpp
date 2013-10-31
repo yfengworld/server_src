@@ -1,5 +1,9 @@
-#include "net.h"
+#include "msg_protobuf.h"
 #include "cmd.h"
+#include "net.h"
+#include "log.h"
+
+#include <string.h>
 
 typedef void (*cb)(conn *, unsigned char *, size_t);
 static cb cbs[LE_END - LE_BEGIN];
