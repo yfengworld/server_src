@@ -52,6 +52,7 @@ static void conn_event_cb2(struct bufferevent *bev, short what, void *arg)
         }
 
         /* free bufferevent */
+        pthread_mutex_lock(&c->lock);
         bufferevent_free(c->bev);
 
         /* reconnect */
@@ -59,12 +60,12 @@ static void conn_event_cb2(struct bufferevent *bev, short what, void *arg)
                 BEV_OPT_CLOSE_ON_FREE | BEV_OPT_DEFER_CALLBACKS);
         if (NULL == c->bev) {
             merror("create bufferevent failed!");
+            pthread_mutex_unlock(&c->lock);
             return;
         } else {
             bufferevent_setcb(c->bev, NULL, NULL, connecting_event_cb, c);
-            pthread_mutex_lock(&cr->lock);
             cr->state = STATE_NOT_CONNECTED;
-            pthread_mutex_unlock(&cr->lock);
+            pthread_mutex_unlock(&c->lock);
             delay_connecting(c);
         }
     }
@@ -90,9 +91,9 @@ void connecting_event_cb(struct bufferevent *bev, short what, void *arg)
             (*(cb->connect))(c, 1);
 
         minfo("connect %s success!", cr->addrtext);
-        pthread_mutex_lock(&cr->lock);
+        pthread_mutex_lock(&c->lock);
         cr->state = STATE_CONNECTED;
-        pthread_mutex_unlock(&cr->lock);
+        pthread_mutex_unlock(&c->lock);
 
         /* prevent CLOSE_WAIT */
         int fd = bufferevent_getfd(bev);

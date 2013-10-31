@@ -27,8 +27,6 @@ connector *connector_new(struct sockaddr *sa, int socklen, int kc, user_callback
     cr->cb.connect = cb ? cb->connect : NULL;
     cr->cb.disconnect = cb ? cb->disconnect : NULL;
 
-    pthread_mutex_init(&cr->lock, NULL);
-
     cr->state = STATE_NOT_CONNECTED;
     cr->c = NULL;
     memcpy(cr->sa, sa, socklen);
@@ -50,10 +48,16 @@ void connector_free(connector *cr)
 int connector_write(connector *cr, unsigned char *msg, size_t sz)
 {
     int ret = -1;
-    pthread_mutex_lock(&cr->lock);
-    if (cr->state == STATE_CONNECTED) {
-        ret = conn_write(cr->c, msg, sz);
+    if (cr->c)
+    {
+        pthread_mutex_lock(&cr->c->lock);
+        if (cr->state == STATE_CONNECTED && cr->c->bev) {
+            if (0 == bufferevent_write(cr->c->bev, msg, sz)) {
+                pthread_mutex_unlock(&cr->c->lock);
+                return bufferevent_enable(cr->c->bev, EV_WRITE);
+            }
+        }
     }
-    pthread_mutex_unlock(&cr->lock);
+    pthread_mutex_unlock(&cr->c->lock);
     return ret;
 }

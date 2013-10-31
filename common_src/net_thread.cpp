@@ -141,6 +141,7 @@ conn *conn_new()
             return NULL;
         }
     }
+    pthread_mutex_init(&c->lock, NULL);
     return c;
 }
 
@@ -185,23 +186,20 @@ void disconnect(conn *c)
 {
     if (!c || !c->bev)
         return;
-
-    user_callback *cb = (user_callback *)c->data;
-    if (cb && cb->type == 'l') {
-        if (cb->disconnect)
-            (*(cb->disconnect))(c);
-
-        conn_free(c);
-    } else {
-        mfatal("invalid type!");
-    }
+    pthread_mutex_lock(&c->lock);
+    bufferevent_free(c->bev);
+    c->bev = NULL;
+    pthread_mutex_unlock(&c->lock);
 }
 
 int conn_write(conn *c, unsigned char *msg, size_t sz) {
-    if (c && c->bev) {
-        if (0 == bufferevent_write(c->bev, msg, sz)) {
+    if (c) {
+        pthread_mutex_lock(&c->lock);
+        if (c->bev && 0 == bufferevent_write(c->bev, msg, sz)) {
+            pthread_mutex_unlock(&c->lock);
             return bufferevent_enable(c->bev, EV_WRITE);
         }
+        pthread_mutex_unlock(&c->lock);
     }
     return -1;
 }
@@ -247,11 +245,11 @@ static void thread_libevent_process(int fd, short which, void *arg)
                             evbuffer *output = bufferevent_get_output(bev);
                             evbuffer_enable_locking(output, NULL);
                             bufferevent_setcb(bev, conn_read_cb, conn_write_cb, conn_event_cb, c);
-                            bufferevent_enable(bev, EV_READ);
                             c->data = li->l;
                             c->thread = me;
                             if (li->l->cb.connect)
                                 (*(li->l->cb.connect))(c, 1);
+                            bufferevent_enable(bev, EV_READ);
                             mdebug("new connection %s established!", c->addrtext);
                         }
                     }
@@ -285,10 +283,8 @@ static void thread_libevent_process(int fd, short which, void *arg)
                                 c->user = NULL;
                                 c->thread = me;
                                 
-                                pthread_mutex_lock(&cr->lock);
                                 cr->c = c;
                                 cr->state = STATE_NOT_CONNECTED;
-                                pthread_mutex_unlock(&cr->lock);
 
                                 bufferevent_socket_connect(c->bev, cr->sa, cr->socklen);
                             }

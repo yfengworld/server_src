@@ -28,6 +28,7 @@ typedef struct {
     void *data;
     void *user;
     bufferevent *bev;
+    pthread_mutex_t lock;
     char addrtext[32];
     LIBEVENT_THREAD *thread;
 } conn;
@@ -57,10 +58,9 @@ typedef struct {
 typedef struct {
     user_callback cb;
     int keep_connect;
-    pthread_mutex_t lock;
 #define STATE_NOT_CONNECTED 0
 #define STATE_CONNECTED 1
-    int state;
+    volatile int state;
     conn *c;
     struct sockaddr *sa;
     int socklen;
