@@ -34,6 +34,11 @@ static void logic_server_disconnect_cb(conn *c)
 
 static void server_rpc_cb(conn *c, unsigned char *msg, size_t sz)
 {
+    msg_head h;
+    if (0 != message_head(msg, sz, &h)) {
+        return;
+    }
+    mdebug("server_rpc_cb cmd:%d", h.cmd);
     logic_thread_add_rpc_event(&logic, c, msg, sz);
 }
 

@@ -82,9 +82,9 @@ static void exec_logic_event(LOGIC_THREAD *logic, LE_ITEM *item)
         if (logic->cb.rpc) {
             if ('s' == item->sub_type) {
                 (*(logic->cb.rpc))(item->c, item->smsg, item->ssz);
-                free(item->smsg);
             } else if ('h' == item->sub_type) {
                 (*(logic->cb.rpc))(item->c, item->msg, item->sz);
+                free(item->msg);
             } else {
                 mfatal("invalid sub type!");
             }
@@ -100,7 +100,6 @@ static void exec_logic_event(LOGIC_THREAD *logic, LE_ITEM *item)
     } else {
         mfatal("invalid logic event type!");
     }
-    free(item);
 }
 
 static void thread_logic_process(int fd, short which, void *arg)
@@ -117,6 +116,8 @@ static void thread_logic_process(int fd, short which, void *arg)
             item = leq_pop(&sleq);
             if (NULL != item) {
                 exec_logic_event(logic, item);
+                conn_decref(item->c);
+                free(item);
             }
         }
         break;
@@ -177,11 +178,13 @@ int logic_thread_add_rpc_event(LOGIC_THREAD *logic, conn *c, unsigned char *msg,
 
     item->type = 'r';
     item->c = c;
+    conn_incref(c);
 
     if (sz > STACK_ALLOC_THRESHOLD) {
         item->msg = (unsigned char *)malloc(sz);
         if (NULL == item->msg) {
             merror("msg alloc failed!");
+            conn_decref(c);
             free(item);
             return -1;
         }
@@ -215,6 +218,7 @@ int logic_thread_add_connect_event(LOGIC_THREAD *logic, conn *c, int ok)
 
     item->type = 'c';
     item->c = c;
+    conn_incref(c);
     item->ok = ok;
     leq_push(&sleq, item);
 
@@ -237,6 +241,7 @@ int logic_thread_add_disconnect_event(LOGIC_THREAD *logic, conn *c)
 
     item->type = 'd';
     item->c = c;
+    conn_decref(c);
     leq_push(&sleq, item);
 
     char buf[1];
