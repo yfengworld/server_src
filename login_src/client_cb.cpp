@@ -10,41 +10,15 @@
 typedef void (*cb)(conn *, unsigned char *, size_t);
 static cb cbs[CL_END - CL_BEGIN];
 
-static void expire_user(user_t *user)
-{
-    pthread_rwlock_wrlock(&user_mgr->rwlock);
-    pthread_mutex_lock(&user->lock);
-    user_map_t::iterator itr = user_mgr->users_.find(user->id);
-    if (itr != user_mgr->users_.end()) {
-        user_mgr->users_.erase(itr);
-    }
-    if (user->c) {
-        pthread_mutex_lock(&user->c->lock);
-        user->c->user = NULL;
-        pthread_mutex_unlock(&user->c->lock);
-        user->c = NULL;
-    }
-    pthread_mutex_unlock(&user->lock);
-    pthread_rwlock_unlock(&user_mgr->rwlock);
-}
-
 static void expire_timer_cb(int fd, short what, void *arg)
 {
     uint64_t *uid = (uint64_t *)arg;
-    pthread_rwlock_wrlock(&user_mgr->rwlock);
-    user_map_t::iterator itr = user_mgr->users_.find(*uid);
-    if (itr != user_mgr->users_.end()) {
-        user_t *user = itr->second;
-        pthread_mutex_lock(&user->lock);
-        if (user->c) {
-            pthread_mutex_lock(&user->c->lock);
-            user->c->user = NULL;
-            pthread_mutex_unlock(&user->c->lock);
-            user->c = NULL;
-        }
-        pthread_mutex_unlock(&user->lock);
+    user_t *user = user_mgr->get_user_incref(*uid);
+    if (user)
+    {
+        user->decref_unlock();
+        user->decref();
     }
-    pthread_rwlock_unlock(&user_mgr->rwlock);
     free(uid);
 }
 
@@ -55,78 +29,70 @@ static void login_request_cb(conn *c, unsigned char *msg, size_t sz)
     /* TODO account passwd check */
     uint64_t uid = 1;
 
-    user_t *user = user_new(uid);
+    int guid = user_t::get_guid();
+    user_t *user = new (std::nothrow) user_t(guid);
     if (NULL == user) {
         login_reply lr;
-        lr.set_err(1);
+        lr.set_err(99);
         conn_write<login_reply>(c, lc_login_reply, &lr);
         return;
     }
 
-    /* add new user to map */
-    int add_res = 0;
-    pthread_rwlock_wrlock(&user_mgr->rwlock);
-    user_map_t::iterator itr = user_mgr->users_.find(uid);
-    if (itr == user_mgr->users_.end()) {
-        pthread_mutex_lock(&user->lock);
-        user_mgr->users_.insert(std::make_pair(uid, user));
-        user->c = c;
-        pthread_mutex_unlock(&user->lock);
-        pthread_mutex_lock(&c->lock);
-        c->user = user;
-        pthread_mutex_unlock(&c->lock);
-        add_res = 1;
-    }
-    pthread_rwlock_unlock(&user_mgr->rwlock);
-
-    if (0 == add_res) {
+    if (0 > user_mgr->add_user(user)) {
         login_reply lr;
-        lr.set_err(1);
+        lr.set_err(99);
         conn_write<login_reply>(c, lc_login_reply, &lr);
         return;
     }
 
-    /* start expire timer */
-    uint64_t *data = (uint64_t *)malloc(sizeof(uint64_t));
-    if (NULL == data) {
-        login_reply lr;
-        lr.set_err(2);
-        conn_write<login_reply>(c, lc_login_reply, &lr);
-        expire_user(user);
-        return;
-    }
+    user->set_conn(c);
 
-    user->timer = evtimer_new(c->thread->base, expire_timer_cb, data);
-    if (NULL == user->timer) {
-        free(data);
-        login_reply lr;
-        lr.set_err(3);
-        conn_write<login_reply>(c, lc_login_reply, &lr);
-        expire_user(user);
-        return;
-    }
+    int error = 0;
 
-    user->tv.tv_sec = 5;
-    user->tv.tv_usec = 0;
-    if (evtimer_add(user->timer, &user->tv) < 0) {
-        free(data);
-        /* TODO free timer */
-        login_reply lr;
-        lr.set_err(4);
-        conn_write<login_reply>(c, lc_login_reply, &lr);
-        expire_user(user);
-        return;
-    }
-
-    /* tell center */
-    pthread_rwlock_rdlock(&centers_rwlock);
-    if (centers)
+    do
     {
-        user_login_request ulr;
-        ulr.set_uid(uid);
-        conn_write<user_login_request>(centers->c, le_user_login_request, &ulr);
-    }
-    pthread_rwlock_unlock(&centers_rwlock);
+        /*
+        uint64_t *data = (uint64_t *)malloc(sizeof(uint64_t));
+        if (NULL == data) {
+            error = 99;
+            break;
+            
+        }
+
+        user->timer = evtimer_new(c->thread->base, expire_timer_cb, data);
+        if (NULL == user->timer) {
+            free(data);
+            error = 99;
+            break;
+        }
+
+        user->tv.tv_sec = 5;
+        user->tv.tv_usec = 0;
+        if (evtimer_add(user->timer, &user->tv) < 0) {
+            free(data);
+            error = 99;
+            break;
+        }
+        */
+
+        /* tell center */
+        pthread_rwlock_rdlock(&centers_rwlock);
+        if (centers)
+        {
+            user_login_request ulr;
+            ulr.set_uid(uid);
+            conn_write<user_login_request>(centers->c, le_user_login_request, &ulr);
+        }
+        pthread_rwlock_unlock(&centers_rwlock);
+        return;
+    } while (0);
+
+    user_mgr->del_user(user);
+    user->decref();
+
+    login_reply lr;
+    lr.set_err(error);
+    conn_write<login_reply>(c, lc_login_reply, &lr);
 }
 
 void client_rpc_cb(conn *c, unsigned char *msg, size_t sz)
@@ -160,22 +126,11 @@ void client_connect_cb(conn *c, int ok)
 void client_disconnect_cb(conn *c)
 {
     mdebug("client_disconnect_cb");
-    pthread_mutex_lock(&c->lock);
-    user_t *user = (user_t*)c->user;
-    if (NULL != user) {
-        pthread_rwlock_wrlock(&user_mgr->rwlock);
-        user_map_t::iterator itr = user_mgr->users_.find(user->id);
-        if (itr != user_mgr->users_.end()) {
-            pthread_mutex_lock(&user->lock);
-            user_mgr->users_.erase(itr);
-            pthread_mutex_unlock(&user->lock);
-            user_free(&user);
-            c->user = NULL;
-        }
-        pthread_rwlock_unlock(&user_mgr->rwlock);
-    }
-    pthread_mutex_unlock(&c->lock);
-    conn_free(c);
+    conn_lock_incref(c);
+    user_t* user = (user_t *)c->user;
+    user_mgr->del_user(user);
+    user->decref();
+    conn_decref_unlock(c);
 }
 
 void client_cb_init(user_callback *cb)

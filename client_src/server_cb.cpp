@@ -10,12 +10,27 @@
 typedef void (*cb)(conn *, unsigned char *, size_t);
 static cb cbs[SC_END - SC_BEGIN];
 
+static void login_reply_cb(conn *c, unsigned char *msg, size_t sz)
+{
+    login_reply lr;
+    msg_body<login_reply>(msg, sz, &lr);
+    mdebug("login_reply_cb err:%d", lr.err());
+}
+
 static void logic_server_rpc_cb(conn *c, unsigned char *msg, size_t sz)
 {
     msg_head h;
     if (0 != message_head(msg, sz, &h)) {
         return;
     }
+
+    if (h.cmd > SC_BEGIN && h.cmd < SC_END) {
+        if (cbs[h.cmd - SC_BEGIN])
+            (*(cbs[h.cmd - SC_BEGIN]))(c, msg, sz);
+    } else {
+        merror("invalid cmd:%d", h.cmd);
+    }
+    conn_decref(c);
 }
 
 static void logic_server_connect_cb(conn *c, int ok)

@@ -6,32 +6,55 @@
 #include <map>
 
 #include <pthread.h>
-#include <inttypes.h>
 
 #define MAX_SESSION_SECS 30
 
-typedef struct
+class user_t
 {
-    uint64_t id;
-    conn *c;
+public:
+    user_t(int id);
 
-    struct event *timer;
-    struct timeval tv;
+public:
+    int get_id();
+    void set_conn(conn *c);
+    void lock_incref();
+    int decref_unlock();
+    void incref();
+    int decref();
 
+public:
+    static int get_guid();
+
+private:
+    static int guid;
+
+private:
+    int id_;
+    conn *c_;
+    int refcnt;
     pthread_mutex_t lock;
-} user_t;
+};
 
-typedef std::map<uint64_t, user_t*> user_map_t;
+typedef std::map<int, user_t*> user_map_t;
 
-typedef struct
+class user_manager_t
 {
+public:
+    user_manager_t();
+    
+public:
+    user_t *get_user_incref(int id);
+    int add_user(user_t *user);
+    int del_user(user_t *user);
+
+public:
+    void rdlock();
+    void wrlock();
+    void unlock();
+
+private:
     user_map_t users_;
     pthread_rwlock_t rwlock;
-} user_manager_t;
-
-user_t *user_new(uint64_t uid);
-void user_free(user_t **user);
-user_manager_t *user_manager_new();
-void user_manager_free(user_manager_t **user_mgr);
+};
 
 #endif /* USER_H_INCLUDED */

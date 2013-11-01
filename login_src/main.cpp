@@ -87,7 +87,7 @@ int main(int argc, char **argv)
         return 1;
     }
     
-    user_mgr = user_manager_new();
+    user_mgr = new user_manager_t;
     if (NULL == user_mgr) {
         mfatal("create user manager failed!");
         return 1;
@@ -97,6 +97,9 @@ int main(int argc, char **argv)
 
     for (int i = 0; i < WORKER_NUM; i++)
         pthread_join(worker[i], NULL);
+
+    delete user_mgr;
+    user_mgr = NULL;
 
     listener_free(lc);
     listener_free(le);
