@@ -1,31 +1,39 @@
+// client -> login
 message login_request {
     required string account = 1;
     required string passwd = 2;
 }
 
+// login -> center
 message user_login_request {
-    required uint64 uid = 1;
+    required int32 tempid = 1;
+    required uint64 uid = 2;
 }
 
+// center -> gate
 message user_session_request {
-    required uint64 uid = 1;
-    required string sk = 2;
+    required int32 tempid = 1;
+    required uint64 uid = 2;
+    required string sk = 3;
 }
 
+// gate -> center
 message user_session_reply {
     required int32 err = 1;
-    required uint64 uid = 2;
+    required int32 tempid = 2;
     optional string sk = 3;
 }
 
+// center -> login
 message user_login_reply {
     required int32 err = 1;
-    required uint64 uid = 2;
+    required int32 tempid = 2;
     optional string sk = 3;
     optional string gateip = 4;
     optional int32 gateport = 5;
 }
 
+// login -> client
 message login_reply {
     required int32 err = 1;
     optional uint64 uid = 2;

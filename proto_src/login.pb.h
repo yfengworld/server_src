@@ -196,24 +196,34 @@ class user_login_request : public ::google::protobuf::Message {
 
   // accessors -------------------------------------------------------
 
-  // required uint64 uid = 1;
+  // required int32 tempid = 1;
+  inline bool has_tempid() const;
+  inline void clear_tempid();
+  static const int kTempidFieldNumber = 1;
+  inline ::google::protobuf::int32 tempid() const;
+  inline void set_tempid(::google::protobuf::int32 value);
+
+  // required uint64 uid = 2;
   inline bool has_uid() const;
   inline void clear_uid();
-  static const int kUidFieldNumber = 1;
+  static const int kUidFieldNumber = 2;
   inline ::google::protobuf::uint64 uid() const;
   inline void set_uid(::google::protobuf::uint64 value);
 
   // @@protoc_insertion_point(class_scope:user_login_request)
  private:
+  inline void set_has_tempid();
+  inline void clear_has_tempid();
   inline void set_has_uid();
   inline void clear_has_uid();
 
   ::google::protobuf::UnknownFieldSet _unknown_fields_;
 
   ::google::protobuf::uint64 uid_;
+  ::google::protobuf::int32 tempid_;
 
   mutable int _cached_size_;
-  ::google::protobuf::uint32 _has_bits_[(1 + 31) / 32];
+  ::google::protobuf::uint32 _has_bits_[(2 + 31) / 32];
 
   friend void  protobuf_AddDesc_login_2eproto();
   friend void protobuf_AssignDesc_login_2eproto();
@@ -278,17 +288,24 @@ class user_session_request : public ::google::protobuf::Message {
 
   // accessors -------------------------------------------------------
 
-  // required uint64 uid = 1;
+  // required int32 tempid = 1;
+  inline bool has_tempid() const;
+  inline void clear_tempid();
+  static const int kTempidFieldNumber = 1;
+  inline ::google::protobuf::int32 tempid() const;
+  inline void set_tempid(::google::protobuf::int32 value);
+
+  // required uint64 uid = 2;
   inline bool has_uid() const;
   inline void clear_uid();
-  static const int kUidFieldNumber = 1;
+  static const int kUidFieldNumber = 2;
   inline ::google::protobuf::uint64 uid() const;
   inline void set_uid(::google::protobuf::uint64 value);
 
-  // required string sk = 2;
+  // required string sk = 3;
   inline bool has_sk() const;
   inline void clear_sk();
-  static const int kSkFieldNumber = 2;
+  static const int kSkFieldNumber = 3;
   inline const ::std::string& sk() const;
   inline void set_sk(const ::std::string& value);
   inline void set_sk(const char* value);
@@ -299,6 +316,8 @@ class user_session_request : public ::google::protobuf::Message {
 
   // @@protoc_insertion_point(class_scope:user_session_request)
  private:
+  inline void set_has_tempid();
+  inline void clear_has_tempid();
   inline void set_has_uid();
   inline void clear_has_uid();
   inline void set_has_sk();
@@ -308,9 +327,10 @@ class user_session_request : public ::google::protobuf::Message {
 
   ::google::protobuf::uint64 uid_;
   ::std::string* sk_;
+  ::google::protobuf::int32 tempid_;
 
   mutable int _cached_size_;
-  ::google::protobuf::uint32 _has_bits_[(2 + 31) / 32];
+  ::google::protobuf::uint32 _has_bits_[(3 + 31) / 32];
 
   friend void  protobuf_AddDesc_login_2eproto();
   friend void protobuf_AssignDesc_login_2eproto();
@@ -382,12 +402,12 @@ class user_session_reply : public ::google::protobuf::Message {
   inline ::google::protobuf::int32 err() const;
   inline void set_err(::google::protobuf::int32 value);
 
-  // required uint64 uid = 2;
-  inline bool has_uid() const;
-  inline void clear_uid();
-  static const int kUidFieldNumber = 2;
-  inline ::google::protobuf::uint64 uid() const;
-  inline void set_uid(::google::protobuf::uint64 value);
+  // required int32 tempid = 2;
+  inline bool has_tempid() const;
+  inline void clear_tempid();
+  static const int kTempidFieldNumber = 2;
+  inline ::google::protobuf::int32 tempid() const;
+  inline void set_tempid(::google::protobuf::int32 value);
 
   // optional string sk = 3;
   inline bool has_sk() const;
@@ -405,16 +425,16 @@ class user_session_reply : public ::google::protobuf::Message {
  private:
   inline void set_has_err();
   inline void clear_has_err();
-  inline void set_has_uid();
-  inline void clear_has_uid();
+  inline void set_has_tempid();
+  inline void clear_has_tempid();
   inline void set_has_sk();
   inline void clear_has_sk();
 
   ::google::protobuf::UnknownFieldSet _unknown_fields_;
 
-  ::google::protobuf::uint64 uid_;
-  ::std::string* sk_;
   ::google::protobuf::int32 err_;
+  ::google::protobuf::int32 tempid_;
+  ::std::string* sk_;
 
   mutable int _cached_size_;
   ::google::protobuf::uint32 _has_bits_[(3 + 31) / 32];
@@ -489,12 +509,12 @@ class user_login_reply : public ::google::protobuf::Message {
   inline ::google::protobuf::int32 err() const;
   inline void set_err(::google::protobuf::int32 value);
 
-  // required uint64 uid = 2;
-  inline bool has_uid() const;
-  inline void clear_uid();
-  static const int kUidFieldNumber = 2;
-  inline ::google::protobuf::uint64 uid() const;
-  inline void set_uid(::google::protobuf::uint64 value);
+  // required int32 tempid = 2;
+  inline bool has_tempid() const;
+  inline void clear_tempid();
+  static const int kTempidFieldNumber = 2;
+  inline ::google::protobuf::int32 tempid() const;
+  inline void set_tempid(::google::protobuf::int32 value);
 
   // optional string sk = 3;
   inline bool has_sk() const;
@@ -531,8 +551,8 @@ class user_login_reply : public ::google::protobuf::Message {
  private:
   inline void set_has_err();
   inline void clear_has_err();
-  inline void set_has_uid();
-  inline void clear_has_uid();
+  inline void set_has_tempid();
+  inline void clear_has_tempid();
   inline void set_has_sk();
   inline void clear_has_sk();
   inline void set_has_gateip();
@@ -542,11 +562,11 @@ class user_login_reply : public ::google::protobuf::Message {
 
   ::google::protobuf::UnknownFieldSet _unknown_fields_;
 
-  ::google::protobuf::uint64 uid_;
-  ::std::string* sk_;
   ::google::protobuf::int32 err_;
-  ::google::protobuf::int32 gateport_;
+  ::google::protobuf::int32 tempid_;
+  ::std::string* sk_;
   ::std::string* gateip_;
+  ::google::protobuf::int32 gateport_;
 
   mutable int _cached_size_;
   ::google::protobuf::uint32 _has_bits_[(5 + 31) / 32];
@@ -841,15 +861,37 @@ inline void login_request::set_allocated_passwd(::std::string* passwd) {
 
 // user_login_request
 
-// required uint64 uid = 1;
-inline bool user_login_request::has_uid() const {
+// required int32 tempid = 1;
+inline bool user_login_request::has_tempid() const {
   return (_has_bits_[0] & 0x00000001u) != 0;
 }
-inline void user_login_request::set_has_uid() {
+inline void user_login_request::set_has_tempid() {
   _has_bits_[0] |= 0x00000001u;
 }
-inline void user_login_request::clear_has_uid() {
+inline void user_login_request::clear_has_tempid() {
   _has_bits_[0] &= ~0x00000001u;
+}
+inline void user_login_request::clear_tempid() {
+  tempid_ = 0;
+  clear_has_tempid();
+}
+inline ::google::protobuf::int32 user_login_request::tempid() const {
+  return tempid_;
+}
+inline void user_login_request::set_tempid(::google::protobuf::int32 value) {
+  set_has_tempid();
+  tempid_ = value;
+}
+
+// required uint64 uid = 2;
+inline bool user_login_request::has_uid() const {
+  return (_has_bits_[0] & 0x00000002u) != 0;
+}
+inline void user_login_request::set_has_uid() {
+  _has_bits_[0] |= 0x00000002u;
+}
+inline void user_login_request::clear_has_uid() {
+  _has_bits_[0] &= ~0x00000002u;
 }
 inline void user_login_request::clear_uid() {
   uid_ = GOOGLE_ULONGLONG(0);
@@ -867,15 +909,37 @@ inline void user_login_request::set_uid(::google::protobuf::uint64 value) {
 
 // user_session_request
 
-// required uint64 uid = 1;
-inline bool user_session_request::has_uid() const {
+// required int32 tempid = 1;
+inline bool user_session_request::has_tempid() const {
   return (_has_bits_[0] & 0x00000001u) != 0;
 }
-inline void user_session_request::set_has_uid() {
+inline void user_session_request::set_has_tempid() {
   _has_bits_[0] |= 0x00000001u;
 }
-inline void user_session_request::clear_has_uid() {
+inline void user_session_request::clear_has_tempid() {
   _has_bits_[0] &= ~0x00000001u;
+}
+inline void user_session_request::clear_tempid() {
+  tempid_ = 0;
+  clear_has_tempid();
+}
+inline ::google::protobuf::int32 user_session_request::tempid() const {
+  return tempid_;
+}
+inline void user_session_request::set_tempid(::google::protobuf::int32 value) {
+  set_has_tempid();
+  tempid_ = value;
+}
+
+// required uint64 uid = 2;
+inline bool user_session_request::has_uid() const {
+  return (_has_bits_[0] & 0x00000002u) != 0;
+}
+inline void user_session_request::set_has_uid() {
+  _has_bits_[0] |= 0x00000002u;
+}
+inline void user_session_request::clear_has_uid() {
+  _has_bits_[0] &= ~0x00000002u;
 }
 inline void user_session_request::clear_uid() {
   uid_ = GOOGLE_ULONGLONG(0);
@@ -889,15 +953,15 @@ inline void user_session_request::set_uid(::google::protobuf::uint64 value) {
   uid_ = value;
 }
 
-// required string sk = 2;
+// required string sk = 3;
 inline bool user_session_request::has_sk() const {
-  return (_has_bits_[0] & 0x00000002u) != 0;
+  return (_has_bits_[0] & 0x00000004u) != 0;
 }
 inline void user_session_request::set_has_sk() {
-  _has_bits_[0] |= 0x00000002u;
+  _has_bits_[0] |= 0x00000004u;
 }
 inline void user_session_request::clear_has_sk() {
-  _has_bits_[0] &= ~0x00000002u;
+  _has_bits_[0] &= ~0x00000004u;
 }
 inline void user_session_request::clear_sk() {
   if (sk_ != &::google::protobuf::internal::kEmptyString) {
@@ -985,26 +1049,26 @@ inline void user_session_reply::set_err(::google::protobuf::int32 value) {
   err_ = value;
 }
 
-// required uint64 uid = 2;
-inline bool user_session_reply::has_uid() const {
+// required int32 tempid = 2;
+inline bool user_session_reply::has_tempid() const {
   return (_has_bits_[0] & 0x00000002u) != 0;
 }
-inline void user_session_reply::set_has_uid() {
+inline void user_session_reply::set_has_tempid() {
   _has_bits_[0] |= 0x00000002u;
 }
-inline void user_session_reply::clear_has_uid() {
+inline void user_session_reply::clear_has_tempid() {
   _has_bits_[0] &= ~0x00000002u;
 }
-inline void user_session_reply::clear_uid() {
-  uid_ = GOOGLE_ULONGLONG(0);
-  clear_has_uid();
+inline void user_session_reply::clear_tempid() {
+  tempid_ = 0;
+  clear_has_tempid();
 }
-inline ::google::protobuf::uint64 user_session_reply::uid() const {
-  return uid_;
+inline ::google::protobuf::int32 user_session_reply::tempid() const {
+  return tempid_;
 }
-inline void user_session_reply::set_uid(::google::protobuf::uint64 value) {
-  set_has_uid();
-  uid_ = value;
+inline void user_session_reply::set_tempid(::google::protobuf::int32 value) {
+  set_has_tempid();
+  tempid_ = value;
 }
 
 // optional string sk = 3;
@@ -1103,26 +1167,26 @@ inline void user_login_reply::set_err(::google::protobuf::int32 value) {
   err_ = value;
 }
 
-// required uint64 uid = 2;
-inline bool user_login_reply::has_uid() const {
+// required int32 tempid = 2;
+inline bool user_login_reply::has_tempid() const {
   return (_has_bits_[0] & 0x00000002u) != 0;
 }
-inline void user_login_reply::set_has_uid() {
+inline void user_login_reply::set_has_tempid() {
   _has_bits_[0] |= 0x00000002u;
 }
-inline void user_login_reply::clear_has_uid() {
+inline void user_login_reply::clear_has_tempid() {
   _has_bits_[0] &= ~0x00000002u;
 }
-inline void user_login_reply::clear_uid() {
-  uid_ = GOOGLE_ULONGLONG(0);
-  clear_has_uid();
+inline void user_login_reply::clear_tempid() {
+  tempid_ = 0;
+  clear_has_tempid();
 }
-inline ::google::protobuf::uint64 user_login_reply::uid() const {
-  return uid_;
+inline ::google::protobuf::int32 user_login_reply::tempid() const {
+  return tempid_;
 }
-inline void user_login_reply::set_uid(::google::protobuf::uint64 value) {
-  set_has_uid();
-  uid_ = value;
+inline void user_login_reply::set_tempid(::google::protobuf::int32 value) {
+  set_has_tempid();
+  tempid_ = value;
 }
 
 // optional string sk = 3;
