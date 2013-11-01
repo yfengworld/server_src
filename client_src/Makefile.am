@@ -11,6 +11,7 @@ bin_PROGRAMS = client
 client_SOURCES = \
 				 ../common_src/net_thread.cpp \
 				 ../common_src/msg_protobuf.cpp \
+				 ../common_src/connection.cpp \
 				 ../common_src/connector.cpp \
 				 ../common_src/read_cb.cpp \
 				 ../common_src/write_cb.cpp \

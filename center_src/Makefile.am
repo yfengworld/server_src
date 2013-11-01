@@ -10,6 +10,7 @@ bin_PROGRAMS = center
 
 center_SOURCES = \
 				 ../common_src/net_thread.cpp \
+				 ../common_src/connection.cpp \
 				 ../common_src/listener.cpp \
 				 ../common_src/connector.cpp \
 				 ../common_src/msg_protobuf.cpp \

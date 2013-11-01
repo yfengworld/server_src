@@ -12,6 +12,7 @@ login_SOURCES = \
 			   ../common_src/log.cpp \
 			   ../common_src/net_thread.cpp \
 			   ../common_src/msg_protobuf.cpp \
+			   ../common_src/connection.cpp \
 			   ../common_src/listener.cpp \
 			   ../common_src/connector.cpp \
 			   ../common_src/accept_cb.cpp \

@@ -1,6 +1,8 @@
 #ifndef USER_H_INCLUDED
 #define USER_H_INCLUDED
 
+#include "net.h"
+
 #include <map>
 
 #include <pthread.h>
@@ -11,9 +13,10 @@
 typedef struct
 {
     uint64_t id;
+    conn *c;
 
-    /* recycle client socket */
-    struct event *expire_timer;
+    struct event *timer;
+    struct timeval tv;
 
     pthread_mutex_t lock;
 } user_t;

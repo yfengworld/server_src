@@ -18,5 +18,6 @@ void conn_event_cb(struct bufferevent *bev, short what, void *arg)
         if (cb->disconnect) {
             (*(cb->disconnect))(c);
         }
+        conn_free(c);
     }
 }

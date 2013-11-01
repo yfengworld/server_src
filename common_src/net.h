@@ -28,6 +28,7 @@ typedef struct {
     void *data;
     void *user;
     bufferevent *bev;
+    int refcnt;
     pthread_mutex_t lock;
     char addrtext[32];
     LIBEVENT_THREAD *thread;
@@ -62,6 +63,7 @@ typedef struct {
 #define STATE_CONNECTED 1
     volatile int state;
     conn *c;
+    pthread_mutex_t lock;
     struct sockaddr *sa;
     int socklen;
     char addrtext[32];
@@ -75,8 +77,12 @@ void thread_init(struct event_base *base, int nthreads, pthread_t *th);
 
 /* connection */
 void conn_init();
-conn *conn_new(int fd);
+conn *conn_new();
 void conn_free(conn *c);
+void conn_lock_incref(conn *c);
+void conn_decref_unlock(conn *c);
+void conn_incref(conn *c);
+void conn_decref(conn *c);
 void disconnect(conn *c);
 void dispatch_conn_new(int fd, char key, void *arg);
 int conn_write(conn *c, unsigned char *msg, size_t sz);

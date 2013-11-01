@@ -75,7 +75,7 @@ void client_rpc_cb(conn *c, unsigned char *msg, size_t sz)
         return;
     }
 
-    if (h.cmd >= CG_BEGIN && h.cmd < CS_END) {
+    if (h.cmd >= CS_BEGIN && h.cmd < CS_END) {
         /* client -> gate */
         if (h.cmd >= CG_BEGIN && h.cmd < CG_END) {
             if (cbs[h.cmd - CG_BEGIN]) {
