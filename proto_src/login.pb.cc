@@ -99,9 +99,10 @@ void protobuf_AssignDesc_login_2eproto() {
       ::google::protobuf::MessageFactory::generated_factory(),
       sizeof(user_session_request));
   user_session_reply_descriptor_ = file->message_type(3);
-  static const int user_session_reply_offsets_[3] = {
+  static const int user_session_reply_offsets_[4] = {
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(user_session_reply, err_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(user_session_reply, tempid_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(user_session_reply, uid_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(user_session_reply, sk_),
   };
   user_session_reply_reflection_ =
@@ -116,9 +117,10 @@ void protobuf_AssignDesc_login_2eproto() {
       ::google::protobuf::MessageFactory::generated_factory(),
       sizeof(user_session_reply));
   user_login_reply_descriptor_ = file->message_type(4);
-  static const int user_login_reply_offsets_[5] = {
+  static const int user_login_reply_offsets_[6] = {
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(user_login_reply, err_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(user_login_reply, tempid_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(user_login_reply, uid_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(user_login_reply, sk_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(user_login_reply, gateip_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(user_login_reply, gateport_),
@@ -208,16 +210,17 @@ void protobuf_AddDesc_login_2eproto() {
     "\007account\030\001 \002(\t\022\016\n\006passwd\030\002 \002(\t\"1\n\022user_l"
     "ogin_request\022\016\n\006tempid\030\001 \002(\005\022\013\n\003uid\030\002 \002("
     "\004\"\?\n\024user_session_request\022\016\n\006tempid\030\001 \002("
-    "\005\022\013\n\003uid\030\002 \002(\004\022\n\n\002sk\030\003 \002(\t\"T\n\022user_sessi"
+    "\005\022\013\n\003uid\030\002 \002(\004\022\n\n\002sk\030\003 \002(\t\"a\n\022user_sessi"
     "on_reply\022\"\n\003err\030\001 \002(\0162\014.login.error:\007suc"
-    "cess\022\016\n\006tempid\030\002 \002(\005\022\n\n\002sk\030\003 \001(\t\"t\n\020user"
-    "_login_reply\022\"\n\003err\030\001 \002(\0162\014.login.error:"
-    "\007success\022\016\n\006tempid\030\002 \002(\005\022\n\n\002sk\030\003 \001(\t\022\016\n\006"
-    "gateip\030\004 \001(\t\022\020\n\010gateport\030\005 \001(\005\"l\n\013login_"
-    "reply\022\"\n\003err\030\001 \002(\0162\014.login.error:\007succes"
-    "s\022\013\n\003uid\030\002 \001(\004\022\n\n\002sk\030\003 \001(\t\022\016\n\006gateip\030\004 \001"
-    "(\t\022\020\n\010gateport\030\005 \001(\005*4\n\005error\022\013\n\007success"
-    "\020\000\022\010\n\004auth\020\001\022\010\n\004freq\020\002\022\n\n\006unknow\020c", 554);
+    "cess\022\016\n\006tempid\030\002 \002(\005\022\013\n\003uid\030\003 \001(\004\022\n\n\002sk\030"
+    "\004 \001(\t\"\201\001\n\020user_login_reply\022\"\n\003err\030\001 \002(\0162"
+    "\014.login.error:\007success\022\016\n\006tempid\030\002 \002(\005\022\013"
+    "\n\003uid\030\003 \001(\004\022\n\n\002sk\030\004 \001(\t\022\016\n\006gateip\030\005 \001(\t\022"
+    "\020\n\010gateport\030\006 \001(\005\"l\n\013login_reply\022\"\n\003err\030"
+    "\001 \002(\0162\014.login.error:\007success\022\013\n\003uid\030\002 \001("
+    "\004\022\n\n\002sk\030\003 \001(\t\022\016\n\006gateip\030\004 \001(\t\022\020\n\010gatepor"
+    "t\030\005 \001(\005*4\n\005error\022\013\n\007success\020\000\022\010\n\004auth\020\001\022"
+    "\010\n\004freq\020\002\022\n\n\006unknow\020c", 581);
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedFile(
     "login.proto", &protobuf_RegisterTypes);
   login_request::default_instance_ = new login_request();
@@ -1101,6 +1104,7 @@ void user_session_request::Swap(user_session_request* other) {
 #ifndef _MSC_VER
 const int user_session_reply::kErrFieldNumber;
 const int user_session_reply::kTempidFieldNumber;
+const int user_session_reply::kUidFieldNumber;
 const int user_session_reply::kSkFieldNumber;
 #endif  // !_MSC_VER
 
@@ -1122,6 +1126,7 @@ void user_session_reply::SharedCtor() {
   _cached_size_ = 0;
   err_ = 0;
   tempid_ = 0;
+  uid_ = GOOGLE_ULONGLONG(0);
   sk_ = const_cast< ::std::string*>(&::google::protobuf::internal::kEmptyString);
   ::memset(_has_bits_, 0, sizeof(_has_bits_));
 }
@@ -1163,6 +1168,7 @@ void user_session_reply::Clear() {
   if (_has_bits_[0 / 32] & (0xffu << (0 % 32))) {
     err_ = 0;
     tempid_ = 0;
+    uid_ = GOOGLE_ULONGLONG(0);
     if (has_sk()) {
       if (sk_ != &::google::protobuf::internal::kEmptyString) {
         sk_->clear();
@@ -1211,12 +1217,28 @@ bool user_session_reply::MergePartialFromCodedStream(
         } else {
           goto handle_uninterpreted;
         }
-        if (input->ExpectTag(26)) goto parse_sk;
+        if (input->ExpectTag(24)) goto parse_uid;
         break;
       }
 
-      // optional string sk = 3;
+      // optional uint64 uid = 3;
       case 3: {
+        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
+            ::google::protobuf::internal::WireFormatLite::WIRETYPE_VARINT) {
+         parse_uid:
+          DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
+                   ::google::protobuf::uint64, ::google::protobuf::internal::WireFormatLite::TYPE_UINT64>(
+                 input, &uid_)));
+          set_has_uid();
+        } else {
+          goto handle_uninterpreted;
+        }
+        if (input->ExpectTag(34)) goto parse_sk;
+        break;
+      }
+
+      // optional string sk = 4;
+      case 4: {
         if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
             ::google::protobuf::internal::WireFormatLite::WIRETYPE_LENGTH_DELIMITED) {
          parse_sk:
@@ -1261,13 +1283,18 @@ void user_session_reply::SerializeWithCachedSizes(
     ::google::protobuf::internal::WireFormatLite::WriteInt32(2, this->tempid(), output);
   }
 
-  // optional string sk = 3;
+  // optional uint64 uid = 3;
+  if (has_uid()) {
+    ::google::protobuf::internal::WireFormatLite::WriteUInt64(3, this->uid(), output);
+  }
+
+  // optional string sk = 4;
   if (has_sk()) {
     ::google::protobuf::internal::WireFormat::VerifyUTF8String(
       this->sk().data(), this->sk().length(),
       ::google::protobuf::internal::WireFormat::SERIALIZE);
     ::google::protobuf::internal::WireFormatLite::WriteString(
-      3, this->sk(), output);
+      4, this->sk(), output);
   }
 
   if (!unknown_fields().empty()) {
@@ -1289,14 +1316,19 @@ void user_session_reply::SerializeWithCachedSizes(
     target = ::google::protobuf::internal::WireFormatLite::WriteInt32ToArray(2, this->tempid(), target);
   }
 
-  // optional string sk = 3;
+  // optional uint64 uid = 3;
+  if (has_uid()) {
+    target = ::google::protobuf::internal::WireFormatLite::WriteUInt64ToArray(3, this->uid(), target);
+  }
+
+  // optional string sk = 4;
   if (has_sk()) {
     ::google::protobuf::internal::WireFormat::VerifyUTF8String(
       this->sk().data(), this->sk().length(),
       ::google::protobuf::internal::WireFormat::SERIALIZE);
     target =
       ::google::protobuf::internal::WireFormatLite::WriteStringToArray(
-        3, this->sk(), target);
+        4, this->sk(), target);
   }
 
   if (!unknown_fields().empty()) {
@@ -1323,7 +1355,14 @@ int user_session_reply::ByteSize() const {
           this->tempid());
     }
 
-    // optional string sk = 3;
+    // optional uint64 uid = 3;
+    if (has_uid()) {
+      total_size += 1 +
+        ::google::protobuf::internal::WireFormatLite::UInt64Size(
+          this->uid());
+    }
+
+    // optional string sk = 4;
     if (has_sk()) {
       total_size += 1 +
         ::google::protobuf::internal::WireFormatLite::StringSize(
@@ -1363,6 +1402,9 @@ void user_session_reply::MergeFrom(const user_session_reply& from) {
     if (from.has_tempid()) {
       set_tempid(from.tempid());
     }
+    if (from.has_uid()) {
+      set_uid(from.uid());
+    }
     if (from.has_sk()) {
       set_sk(from.sk());
     }
@@ -1392,6 +1434,7 @@ void user_session_reply::Swap(user_session_reply* other) {
   if (other != this) {
     std::swap(err_, other->err_);
     std::swap(tempid_, other->tempid_);
+    std::swap(uid_, other->uid_);
     std::swap(sk_, other->sk_);
     std::swap(_has_bits_[0], other->_has_bits_[0]);
     _unknown_fields_.Swap(&other->_unknown_fields_);
@@ -1413,6 +1456,7 @@ void user_session_reply::Swap(user_session_reply* other) {
 #ifndef _MSC_VER
 const int user_login_reply::kErrFieldNumber;
 const int user_login_reply::kTempidFieldNumber;
+const int user_login_reply::kUidFieldNumber;
 const int user_login_reply::kSkFieldNumber;
 const int user_login_reply::kGateipFieldNumber;
 const int user_login_reply::kGateportFieldNumber;
@@ -1436,6 +1480,7 @@ void user_login_reply::SharedCtor() {
   _cached_size_ = 0;
   err_ = 0;
   tempid_ = 0;
+  uid_ = GOOGLE_ULONGLONG(0);
   sk_ = const_cast< ::std::string*>(&::google::protobuf::internal::kEmptyString);
   gateip_ = const_cast< ::std::string*>(&::google::protobuf::internal::kEmptyString);
   gateport_ = 0;
@@ -1482,6 +1527,7 @@ void user_login_reply::Clear() {
   if (_has_bits_[0 / 32] & (0xffu << (0 % 32))) {
     err_ = 0;
     tempid_ = 0;
+    uid_ = GOOGLE_ULONGLONG(0);
     if (has_sk()) {
       if (sk_ != &::google::protobuf::internal::kEmptyString) {
         sk_->clear();
@@ -1536,12 +1582,28 @@ bool user_login_reply::MergePartialFromCodedStream(
         } else {
           goto handle_uninterpreted;
         }
-        if (input->ExpectTag(26)) goto parse_sk;
+        if (input->ExpectTag(24)) goto parse_uid;
         break;
       }
 
-      // optional string sk = 3;
+      // optional uint64 uid = 3;
       case 3: {
+        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
+            ::google::protobuf::internal::WireFormatLite::WIRETYPE_VARINT) {
+         parse_uid:
+          DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
+                   ::google::protobuf::uint64, ::google::protobuf::internal::WireFormatLite::TYPE_UINT64>(
+                 input, &uid_)));
+          set_has_uid();
+        } else {
+          goto handle_uninterpreted;
+        }
+        if (input->ExpectTag(34)) goto parse_sk;
+        break;
+      }
+
+      // optional string sk = 4;
+      case 4: {
         if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
             ::google::protobuf::internal::WireFormatLite::WIRETYPE_LENGTH_DELIMITED) {
          parse_sk:
@@ -1553,12 +1615,12 @@ bool user_login_reply::MergePartialFromCodedStream(
         } else {
           goto handle_uninterpreted;
         }
-        if (input->ExpectTag(34)) goto parse_gateip;
+        if (input->ExpectTag(42)) goto parse_gateip;
         break;
       }
 
-      // optional string gateip = 4;
-      case 4: {
+      // optional string gateip = 5;
+      case 5: {
         if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
             ::google::protobuf::internal::WireFormatLite::WIRETYPE_LENGTH_DELIMITED) {
          parse_gateip:
@@ -1570,12 +1632,12 @@ bool user_login_reply::MergePartialFromCodedStream(
         } else {
           goto handle_uninterpreted;
         }
-        if (input->ExpectTag(40)) goto parse_gateport;
+        if (input->ExpectTag(48)) goto parse_gateport;
         break;
       }
 
-      // optional int32 gateport = 5;
-      case 5: {
+      // optional int32 gateport = 6;
+      case 6: {
         if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
             ::google::protobuf::internal::WireFormatLite::WIRETYPE_VARINT) {
          parse_gateport:
@@ -1619,27 +1681,32 @@ void user_login_reply::SerializeWithCachedSizes(
     ::google::protobuf::internal::WireFormatLite::WriteInt32(2, this->tempid(), output);
   }
 
-  // optional string sk = 3;
+  // optional uint64 uid = 3;
+  if (has_uid()) {
+    ::google::protobuf::internal::WireFormatLite::WriteUInt64(3, this->uid(), output);
+  }
+
+  // optional string sk = 4;
   if (has_sk()) {
     ::google::protobuf::internal::WireFormat::VerifyUTF8String(
       this->sk().data(), this->sk().length(),
       ::google::protobuf::internal::WireFormat::SERIALIZE);
     ::google::protobuf::internal::WireFormatLite::WriteString(
-      3, this->sk(), output);
+      4, this->sk(), output);
   }
 
-  // optional string gateip = 4;
+  // optional string gateip = 5;
   if (has_gateip()) {
     ::google::protobuf::internal::WireFormat::VerifyUTF8String(
       this->gateip().data(), this->gateip().length(),
       ::google::protobuf::internal::WireFormat::SERIALIZE);
     ::google::protobuf::internal::WireFormatLite::WriteString(
-      4, this->gateip(), output);
+      5, this->gateip(), output);
   }
 
-  // optional int32 gateport = 5;
+  // optional int32 gateport = 6;
   if (has_gateport()) {
-    ::google::protobuf::internal::WireFormatLite::WriteInt32(5, this->gateport(), output);
+    ::google::protobuf::internal::WireFormatLite::WriteInt32(6, this->gateport(), output);
   }
 
   if (!unknown_fields().empty()) {
@@ -1661,29 +1728,34 @@ void user_login_reply::SerializeWithCachedSizes(
     target = ::google::protobuf::internal::WireFormatLite::WriteInt32ToArray(2, this->tempid(), target);
   }
 
-  // optional string sk = 3;
+  // optional uint64 uid = 3;
+  if (has_uid()) {
+    target = ::google::protobuf::internal::WireFormatLite::WriteUInt64ToArray(3, this->uid(), target);
+  }
+
+  // optional string sk = 4;
   if (has_sk()) {
     ::google::protobuf::internal::WireFormat::VerifyUTF8String(
       this->sk().data(), this->sk().length(),
       ::google::protobuf::internal::WireFormat::SERIALIZE);
     target =
       ::google::protobuf::internal::WireFormatLite::WriteStringToArray(
-        3, this->sk(), target);
+        4, this->sk(), target);
   }
 
-  // optional string gateip = 4;
+  // optional string gateip = 5;
   if (has_gateip()) {
     ::google::protobuf::internal::WireFormat::VerifyUTF8String(
       this->gateip().data(), this->gateip().length(),
       ::google::protobuf::internal::WireFormat::SERIALIZE);
     target =
       ::google::protobuf::internal::WireFormatLite::WriteStringToArray(
-        4, this->gateip(), target);
+        5, this->gateip(), target);
   }
 
-  // optional int32 gateport = 5;
+  // optional int32 gateport = 6;
   if (has_gateport()) {
-    target = ::google::protobuf::internal::WireFormatLite::WriteInt32ToArray(5, this->gateport(), target);
+    target = ::google::protobuf::internal::WireFormatLite::WriteInt32ToArray(6, this->gateport(), target);
   }
 
   if (!unknown_fields().empty()) {
@@ -1710,21 +1782,28 @@ int user_login_reply::ByteSize() const {
           this->tempid());
     }
 
-    // optional string sk = 3;
+    // optional uint64 uid = 3;
+    if (has_uid()) {
+      total_size += 1 +
+        ::google::protobuf::internal::WireFormatLite::UInt64Size(
+          this->uid());
+    }
+
+    // optional string sk = 4;
     if (has_sk()) {
       total_size += 1 +
         ::google::protobuf::internal::WireFormatLite::StringSize(
           this->sk());
     }
 
-    // optional string gateip = 4;
+    // optional string gateip = 5;
     if (has_gateip()) {
       total_size += 1 +
         ::google::protobuf::internal::WireFormatLite::StringSize(
           this->gateip());
     }
 
-    // optional int32 gateport = 5;
+    // optional int32 gateport = 6;
     if (has_gateport()) {
       total_size += 1 +
         ::google::protobuf::internal::WireFormatLite::Int32Size(
@@ -1764,6 +1843,9 @@ void user_login_reply::MergeFrom(const user_login_reply& from) {
     if (from.has_tempid()) {
       set_tempid(from.tempid());
     }
+    if (from.has_uid()) {
+      set_uid(from.uid());
+    }
     if (from.has_sk()) {
       set_sk(from.sk());
     }
@@ -1799,6 +1881,7 @@ void user_login_reply::Swap(user_login_reply* other) {
   if (other != this) {
     std::swap(err_, other->err_);
     std::swap(tempid_, other->tempid_);
+    std::swap(uid_, other->uid_);
     std::swap(sk_, other->sk_);
     std::swap(gateip_, other->gateip_);
     std::swap(gateport_, other->gateport_);

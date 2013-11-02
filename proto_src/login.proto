@@ -30,16 +30,18 @@ message user_session_request {
 message user_session_reply {
     required error err = 1 [default = success];
     required int32 tempid = 2;
-    optional string sk = 3;
+    optional uint64 uid = 3;
+    optional string sk = 4;
 }
 
 // center -> login
 message user_login_reply {
     required error err = 1 [default = success];
     required int32 tempid = 2;
-    optional string sk = 3;
-    optional string gateip = 4;
-    optional int32 gateport = 5;
+    optional uint64 uid = 3;
+    optional string sk = 4;
+    optional string gateip = 5;
+    optional int32 gateport = 6;
 }
 
 // login -> client

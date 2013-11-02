@@ -433,10 +433,17 @@ class user_session_reply : public ::google::protobuf::Message {
   inline ::google::protobuf::int32 tempid() const;
   inline void set_tempid(::google::protobuf::int32 value);
 
-  // optional string sk = 3;
+  // optional uint64 uid = 3;
+  inline bool has_uid() const;
+  inline void clear_uid();
+  static const int kUidFieldNumber = 3;
+  inline ::google::protobuf::uint64 uid() const;
+  inline void set_uid(::google::protobuf::uint64 value);
+
+  // optional string sk = 4;
   inline bool has_sk() const;
   inline void clear_sk();
-  static const int kSkFieldNumber = 3;
+  static const int kSkFieldNumber = 4;
   inline const ::std::string& sk() const;
   inline void set_sk(const ::std::string& value);
   inline void set_sk(const char* value);
@@ -451,6 +458,8 @@ class user_session_reply : public ::google::protobuf::Message {
   inline void clear_has_err();
   inline void set_has_tempid();
   inline void clear_has_tempid();
+  inline void set_has_uid();
+  inline void clear_has_uid();
   inline void set_has_sk();
   inline void clear_has_sk();
 
@@ -458,10 +467,11 @@ class user_session_reply : public ::google::protobuf::Message {
 
   int err_;
   ::google::protobuf::int32 tempid_;
+  ::google::protobuf::uint64 uid_;
   ::std::string* sk_;
 
   mutable int _cached_size_;
-  ::google::protobuf::uint32 _has_bits_[(3 + 31) / 32];
+  ::google::protobuf::uint32 _has_bits_[(4 + 31) / 32];
 
   friend void  protobuf_AddDesc_login_2eproto();
   friend void protobuf_AssignDesc_login_2eproto();
@@ -540,10 +550,17 @@ class user_login_reply : public ::google::protobuf::Message {
   inline ::google::protobuf::int32 tempid() const;
   inline void set_tempid(::google::protobuf::int32 value);
 
-  // optional string sk = 3;
+  // optional uint64 uid = 3;
+  inline bool has_uid() const;
+  inline void clear_uid();
+  static const int kUidFieldNumber = 3;
+  inline ::google::protobuf::uint64 uid() const;
+  inline void set_uid(::google::protobuf::uint64 value);
+
+  // optional string sk = 4;
   inline bool has_sk() const;
   inline void clear_sk();
-  static const int kSkFieldNumber = 3;
+  static const int kSkFieldNumber = 4;
   inline const ::std::string& sk() const;
   inline void set_sk(const ::std::string& value);
   inline void set_sk(const char* value);
@@ -552,10 +569,10 @@ class user_login_reply : public ::google::protobuf::Message {
   inline ::std::string* release_sk();
   inline void set_allocated_sk(::std::string* sk);
 
-  // optional string gateip = 4;
+  // optional string gateip = 5;
   inline bool has_gateip() const;
   inline void clear_gateip();
-  static const int kGateipFieldNumber = 4;
+  static const int kGateipFieldNumber = 5;
   inline const ::std::string& gateip() const;
   inline void set_gateip(const ::std::string& value);
   inline void set_gateip(const char* value);
@@ -564,10 +581,10 @@ class user_login_reply : public ::google::protobuf::Message {
   inline ::std::string* release_gateip();
   inline void set_allocated_gateip(::std::string* gateip);
 
-  // optional int32 gateport = 5;
+  // optional int32 gateport = 6;
   inline bool has_gateport() const;
   inline void clear_gateport();
-  static const int kGateportFieldNumber = 5;
+  static const int kGateportFieldNumber = 6;
   inline ::google::protobuf::int32 gateport() const;
   inline void set_gateport(::google::protobuf::int32 value);
 
@@ -577,6 +594,8 @@ class user_login_reply : public ::google::protobuf::Message {
   inline void clear_has_err();
   inline void set_has_tempid();
   inline void clear_has_tempid();
+  inline void set_has_uid();
+  inline void clear_has_uid();
   inline void set_has_sk();
   inline void clear_has_sk();
   inline void set_has_gateip();
@@ -588,12 +607,13 @@ class user_login_reply : public ::google::protobuf::Message {
 
   int err_;
   ::google::protobuf::int32 tempid_;
+  ::google::protobuf::uint64 uid_;
   ::std::string* sk_;
   ::std::string* gateip_;
   ::google::protobuf::int32 gateport_;
 
   mutable int _cached_size_;
-  ::google::protobuf::uint32 _has_bits_[(5 + 31) / 32];
+  ::google::protobuf::uint32 _has_bits_[(6 + 31) / 32];
 
   friend void  protobuf_AddDesc_login_2eproto();
   friend void protobuf_AssignDesc_login_2eproto();
@@ -1096,15 +1116,37 @@ inline void user_session_reply::set_tempid(::google::protobuf::int32 value) {
   tempid_ = value;
 }
 
-// optional string sk = 3;
-inline bool user_session_reply::has_sk() const {
+// optional uint64 uid = 3;
+inline bool user_session_reply::has_uid() const {
   return (_has_bits_[0] & 0x00000004u) != 0;
 }
-inline void user_session_reply::set_has_sk() {
+inline void user_session_reply::set_has_uid() {
   _has_bits_[0] |= 0x00000004u;
 }
-inline void user_session_reply::clear_has_sk() {
+inline void user_session_reply::clear_has_uid() {
   _has_bits_[0] &= ~0x00000004u;
+}
+inline void user_session_reply::clear_uid() {
+  uid_ = GOOGLE_ULONGLONG(0);
+  clear_has_uid();
+}
+inline ::google::protobuf::uint64 user_session_reply::uid() const {
+  return uid_;
+}
+inline void user_session_reply::set_uid(::google::protobuf::uint64 value) {
+  set_has_uid();
+  uid_ = value;
+}
+
+// optional string sk = 4;
+inline bool user_session_reply::has_sk() const {
+  return (_has_bits_[0] & 0x00000008u) != 0;
+}
+inline void user_session_reply::set_has_sk() {
+  _has_bits_[0] |= 0x00000008u;
+}
+inline void user_session_reply::clear_has_sk() {
+  _has_bits_[0] &= ~0x00000008u;
 }
 inline void user_session_reply::clear_sk() {
   if (sk_ != &::google::protobuf::internal::kEmptyString) {
@@ -1215,15 +1257,37 @@ inline void user_login_reply::set_tempid(::google::protobuf::int32 value) {
   tempid_ = value;
 }
 
-// optional string sk = 3;
-inline bool user_login_reply::has_sk() const {
+// optional uint64 uid = 3;
+inline bool user_login_reply::has_uid() const {
   return (_has_bits_[0] & 0x00000004u) != 0;
 }
-inline void user_login_reply::set_has_sk() {
+inline void user_login_reply::set_has_uid() {
   _has_bits_[0] |= 0x00000004u;
 }
-inline void user_login_reply::clear_has_sk() {
+inline void user_login_reply::clear_has_uid() {
   _has_bits_[0] &= ~0x00000004u;
+}
+inline void user_login_reply::clear_uid() {
+  uid_ = GOOGLE_ULONGLONG(0);
+  clear_has_uid();
+}
+inline ::google::protobuf::uint64 user_login_reply::uid() const {
+  return uid_;
+}
+inline void user_login_reply::set_uid(::google::protobuf::uint64 value) {
+  set_has_uid();
+  uid_ = value;
+}
+
+// optional string sk = 4;
+inline bool user_login_reply::has_sk() const {
+  return (_has_bits_[0] & 0x00000008u) != 0;
+}
+inline void user_login_reply::set_has_sk() {
+  _has_bits_[0] |= 0x00000008u;
+}
+inline void user_login_reply::clear_has_sk() {
+  _has_bits_[0] &= ~0x00000008u;
 }
 inline void user_login_reply::clear_sk() {
   if (sk_ != &::google::protobuf::internal::kEmptyString) {
@@ -1285,15 +1349,15 @@ inline void user_login_reply::set_allocated_sk(::std::string* sk) {
   }
 }
 
-// optional string gateip = 4;
+// optional string gateip = 5;
 inline bool user_login_reply::has_gateip() const {
-  return (_has_bits_[0] & 0x00000008u) != 0;
+  return (_has_bits_[0] & 0x00000010u) != 0;
 }
 inline void user_login_reply::set_has_gateip() {
-  _has_bits_[0] |= 0x00000008u;
+  _has_bits_[0] |= 0x00000010u;
 }
 inline void user_login_reply::clear_has_gateip() {
-  _has_bits_[0] &= ~0x00000008u;
+  _has_bits_[0] &= ~0x00000010u;
 }
 inline void user_login_reply::clear_gateip() {
   if (gateip_ != &::google::protobuf::internal::kEmptyString) {
@@ -1355,15 +1419,15 @@ inline void user_login_reply::set_allocated_gateip(::std::string* gateip) {
   }
 }
 
-// optional int32 gateport = 5;
+// optional int32 gateport = 6;
 inline bool user_login_reply::has_gateport() const {
-  return (_has_bits_[0] & 0x00000010u) != 0;
+  return (_has_bits_[0] & 0x00000020u) != 0;
 }
 inline void user_login_reply::set_has_gateport() {
-  _has_bits_[0] |= 0x00000010u;
+  _has_bits_[0] |= 0x00000020u;
 }
 inline void user_login_reply::clear_has_gateport() {
-  _has_bits_[0] &= ~0x00000010u;
+  _has_bits_[0] &= ~0x00000020u;
 }
 inline void user_login_reply::clear_gateport() {
   gateport_ = 0;

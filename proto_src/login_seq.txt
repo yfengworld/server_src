@@ -1,0 +1,20 @@
+                       client                    login                     center                    gate
+                         |                         |                         |                         |
+                         |    (account, passwd)    |                         |                         |
+                         |------login_request----->|                         |                         |
+                         |                         |      (tempid, uid)      |                         |
+                         |                         |---user_login_request--->|                         |
+                         |                         |                         |   (tempid, uid, sk)     |
+                         |                         |                         |--user_session_request-->|
+                         |                         |                         |                         |
+                         |                         |                         |  (err, tempid, uid, sk) | 
+                         |                         |                         |<---user_session_repy----|
+                         |                         |                         |                         |
+                         |                         |    (err, tempid, uid,   |                         |
+                         |                         |   sk, gateip, gateport) |                         |
+                         |                         |<----user_login_reply----|                         |
+                         |                         |                         |                         |
+                         |      (err, uid, sk,     |                         |                         |
+                         |     gateip, gateport)   |                         |                         |
+                         |<------login_reply-------|                         |                         |
+                         |                         |                         |                         |
