@@ -12,6 +12,9 @@
 
 #define WORKER_NUM 8
 
+std::string gate_ip;
+short gate_port;
+
 connector *center = NULL;
 connector *game = NULL;
 connector *cache = NULL;
@@ -75,10 +78,12 @@ int main(int argc, char **argv)
     }
 
     /* listener for client */
+    gate_ip = "127.0.0.1";
+    gate_port = 42000;
     struct sockaddr_in sa;
     bzero(&sa, sizeof(sa));
     sa.sin_family = AF_INET;
-    sa.sin_addr.s_addr = htonl(INADDR_ANY);
+    sa.sin_addr.s_addr = inet_addr(gate_ip.c_str());
     sa.sin_port = htons(42000);
 
     listener *lc = listener_new(main_base, (struct sockaddr *)&sa, sizeof(sa), &client_cb);

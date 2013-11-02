@@ -50,16 +50,23 @@ void connector_free(connector *cr)
 int connector_write(connector *cr, unsigned char *msg, size_t sz)
 {
     int ret = -1;
+    conn *c = NULL;
     pthread_mutex_lock(&cr->lock);
     if (cr->state == STATE_CONNECTED && cr->c) {
-        pthread_mutex_lock(&cr->c->lock);
+        conn_incref(cr->c);
+        c = cr->c;
+    }
+    pthread_mutex_unlock(&cr->lock);
+
+    if (c) {
+        conn_lock(c);
         if (cr->c->bev) {
             if (0 == bufferevent_write(cr->c->bev, msg, sz)) {
                 ret = bufferevent_enable(cr->c->bev, EV_WRITE);
             }
         }
-        pthread_mutex_unlock(&cr->c->lock);
+        conn_decref_unlock(c);
     }
-    pthread_mutex_unlock(&cr->lock);
+
     return ret;
 }

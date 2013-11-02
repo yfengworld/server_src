@@ -4,13 +4,12 @@
 #include "net.h"
 
 #include <vector>
-#include <string>
 
 #include <pthread.h>
 
 struct gate_info {
     conn *c;
-    std::string ip;
+    char ip[32];
     short port;
     int refcnt;
     pthread_mutex_t lock;

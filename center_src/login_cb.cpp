@@ -1,3 +1,7 @@
+#include "fwd.h"
+#include "gate_info.h"
+#include "login.pb.h"
+
 #include "msg_protobuf.h"
 #include "cmd.h"
 #include "net.h"
@@ -11,6 +15,26 @@ static cb cbs[LE_END - LE_BEGIN];
 static void user_login_request_cb(conn *c, unsigned char *msg, size_t sz)
 {
     mdebug("user_login_request_cb");
+    login::user_login_request ulr;
+    if (0 > msg_body<login::user_login_request>(msg, sz, &ulr)) {
+        merror("msg_body<login::user_user_login_request failed!");
+        return;
+    }
+
+    struct gate_info *info = gate_info_mgr->get_best_gate_incref(ulr.uid());
+    if (NULL == info) {
+        minfo("get_best_gate_incref failed!");
+        return;
+    }
+
+    const char *sk = "12345678";
+    login::user_session_request usr;
+    usr.set_tempid(ulr.tempid());
+    usr.set_uid(ulr.uid());
+    usr.set_sk(sk);
+    conn_write<login::user_session_request>(info->c, eg_user_session_request, &usr);
+
+    gate_info_decref(info);
 }
 
 static void login_rpc_cb(conn *c, unsigned char *msg, size_t sz)

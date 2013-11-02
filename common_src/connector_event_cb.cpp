@@ -80,14 +80,14 @@ void connecting_event_cb(struct bufferevent *bev, short what, void *arg)
             delay_connecting(c);
         }
     } else {
+        minfo("connect %s success!", cr->addrtext);
+        conn_lock(c);
+        cr->state = STATE_CONNECTED;
+        conn_unlock(c);
+        
         user_callback *cb = (user_callback *)c->data;
         if (cb->connect)
             (*(cb->connect))(c, 1);
-
-        minfo("connect %s success!", cr->addrtext);
-        pthread_mutex_lock(&c->lock);
-        cr->state = STATE_CONNECTED;
-        pthread_mutex_unlock(&c->lock);
 
         /* prevent CLOSE_WAIT */
         int fd = bufferevent_getfd(bev);

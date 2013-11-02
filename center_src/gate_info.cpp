@@ -2,6 +2,7 @@
 
 #include "log.h"
 
+#include <string.h>
 #include <stdlib.h>
 
 void gate_info_incref(struct gate_info *info)
@@ -56,7 +57,8 @@ int gate_info_manager_t::add_gate_info(conn *c, const char *ip, short port)
     info->c = c;
     conn_incref(c);
 
-    info->ip = ip;
+    strncpy(info->ip, ip, 32);
+    info->ip[31] = '\0';
     info->port = port;
     info->refcnt = 1;
     pthread_mutex_init(&info->lock, NULL);
