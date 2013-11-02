@@ -12,8 +12,8 @@ static cb cbs[SC_END - SC_BEGIN];
 
 static void login_reply_cb(conn *c, unsigned char *msg, size_t sz)
 {
-    login_reply lr;
-    msg_body<login_reply>(msg, sz, &lr);
+    login::login_reply lr;
+    msg_body<login::login_reply>(msg, sz, &lr);
     mdebug("login_reply_cb err:%d", lr.err());
 }
 
@@ -36,10 +36,10 @@ static void logic_server_rpc_cb(conn *c, unsigned char *msg, size_t sz)
 static void logic_server_connect_cb(conn *c, int ok)
 {
     mdebug("logic_server_connect_cb");
-    login_request lr;
+    login::login_request lr;
     lr.set_account("abc");
     lr.set_passwd("xxx");
-    conn_write<login_request>(c, cl_login_request, &lr);
+    conn_write<login::login_request>(c, cl_login_request, &lr);
 }
 
 static void logic_server_disconnect_cb(conn *c)
