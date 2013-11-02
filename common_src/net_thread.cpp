@@ -15,6 +15,7 @@
 typedef struct conn_queue_item CQ_ITEM;
 struct conn_queue_item {
     int fd;
+    int type;
     void *data;
     CQ_ITEM *next;
 };
@@ -121,82 +122,67 @@ static void thread_libevent_process(int fd, short which, void *arg)
     if (read(fd, buf, 1) != 1)
         merror("can't read from libevent pipe!");
 
-    switch(buf[0]) {
-        case 'c': {
-                item = cq_pop(me->new_conn_queue);
+    if ('c' == buf[0]) {
+        item = cq_pop(me->new_conn_queue);
 
-                if (NULL != item) {
-                    listener_info *li = (listener_info *)item->data;
-                    conn *c = conn_new();
-                    if (NULL == c) {
+        if (NULL != item) {
+            if (0 == item->type) {
+                listener_info *li = (listener_info *)item->data;
+                conn *c = conn_new();
+                if (NULL != c) {
+                    struct bufferevent* bev = bufferevent_socket_new(me->base, item->fd,
+                            BEV_OPT_CLOSE_ON_FREE | BEV_OPT_DEFER_CALLBACKS);
+                    c->bev = bev;
+                    if (NULL == bev) {
+                        merror("create bufferevent failed!");
+                        conn_free(c);
                     } else {
-                        struct bufferevent* bev = bufferevent_socket_new(me->base, item->fd,
+                        strncpy(c->addrtext, li->addrtext, 32);
+                        /* multi-thread write */
+                        evbuffer *output = bufferevent_get_output(bev);
+                        evbuffer_enable_locking(output, NULL);
+                        bufferevent_setcb(bev, conn_read_cb, conn_write_cb, conn_event_cb, c);
+                        c->data = li->l;
+                        c->thread = me;
+                        if (li->l->cb.connect)
+                            (*(li->l->cb.connect))(c, 1);
+                        bufferevent_enable(bev, EV_READ);
+                        mdebug("new connection %s established!", c->addrtext);
+                    }
+                }
+                free(item->data);
+            } else if (1 == item->type) {
+                do {
+                    connector *cr = (connector *)item->data;
+                    conn *c = conn_new();
+                    if (c) {
+                        struct bufferevent *bev = bufferevent_socket_new(me->base, -1,
                                 BEV_OPT_CLOSE_ON_FREE | BEV_OPT_DEFER_CALLBACKS);
                         c->bev = bev;
-                        if (NULL == bev) {
-                            merror("create bufferevent failed!");
-                            conn_free(c);
-                        } else {
-                            strncpy(c->addrtext, li->addrtext, 32);
+                        if (NULL != bev) {
                             /* multi-thread write */
                             evbuffer *output = bufferevent_get_output(bev);
                             evbuffer_enable_locking(output, NULL);
-                            bufferevent_setcb(bev, conn_read_cb, conn_write_cb, conn_event_cb, c);
-                            c->data = li->l;
+                            bufferevent_setcb(bev, NULL, NULL, connecting_event_cb, c);
+                            c->data = cr;
+                            c->user = NULL;
                             c->thread = me;
-                            if (li->l->cb.connect)
-                                (*(li->l->cb.connect))(c, 1);
-                            bufferevent_enable(bev, EV_READ);
-                            mdebug("new connection %s established!", c->addrtext);
+
+                            cr->c = c;
+                            cr->state = STATE_NOT_CONNECTED;
+
+                            bufferevent_socket_connect(c->bev, cr->sa, cr->socklen);
+                        } else {
                         }
                     }
-                    free(item->data);
-                    cqi_free(item);
-                }
+
+                } while (0);
             }
-            break;
-        case 't': {
-                item = cq_pop(me->new_conn_queue);
+            cqi_free(item);
+        }
 
-                if (NULL != item) {
-                    do {
-                        connector *cr = (connector *)item->data;
-                        conn *c = conn_new();
-
-                        if (c) {
-                            struct bufferevent *bev = bufferevent_socket_new(me->base, -1,
-                                    BEV_OPT_CLOSE_ON_FREE | BEV_OPT_DEFER_CALLBACKS);
-                            c->bev = bev;
-                            if (NULL == bev) {
-                                merror("create bufferevent failed!");
-                                conn_free(c);
-                                break;
-                            } else {
-                                /* multi-thread write */
-                                evbuffer *output = bufferevent_get_output(bev);
-                                evbuffer_enable_locking(output, NULL);
-                                bufferevent_setcb(bev, NULL, NULL, connecting_event_cb, c);
-                                c->data = cr;
-                                c->user = NULL;
-                                c->thread = me;
-                                
-                                cr->c = c;
-                                cr->state = STATE_NOT_CONNECTED;
-
-                                bufferevent_socket_connect(c->bev, cr->sa, cr->socklen);
-                            }
-                        }
-
-                    } while (0);
-
-                    cqi_free(item);
-                } 
-            }
-            break;
-        case 'k': {
-                event_base_loopbreak(me->base);
-            }
-            break;
+    } else if ('k' == buf[0]) {
+        event_base_loopbreak(me->base);
     }
 }
 
@@ -325,7 +311,6 @@ void dispatch_conn_new(int fd, char key, void *arg) {
             return;
         }
 
-        char buf[1];
         int tid = (last_thread + 1) % num_threads;
 
         LIBEVENT_THREAD *thread = threads + tid;
@@ -333,11 +318,14 @@ void dispatch_conn_new(int fd, char key, void *arg) {
         last_thread = tid;
 
         item->fd = fd;
+        item->type = 0;
+        if ('t' == key)
+            item->type = 1;
         item->data = arg;
 
         cq_push(thread->new_conn_queue, item);
 
-        buf[0] = key;
+        char buf[1] = {'c'};
         if (write(thread->notify_send_fd, buf, 1) != 1) {
             merror("writing to thread notify pipe failed!");
         }
