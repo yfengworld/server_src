@@ -18,7 +18,7 @@ short gate_port;
 connector *center = NULL;
 connector *game = NULL;
 connector *cache = NULL;
-user_manager_t *user_mgr = NULL;
+user_manager_t* user_mgr = NULL;
 
 static void signal_cb(evutil_socket_t, short, void *);
 
@@ -53,6 +53,13 @@ int main(int argc, char **argv)
     center_cb_init(&center_cb);
     game_cb_init(&game_cb);
     cache_cb_init(&cache_cb);
+
+    /* user manager */
+    user_mgr = new (std::nothrow) user_manager_t;
+    if (NULL == user_mgr) {
+        mfatal("create user_manager_t instance failed!");
+        return 1;
+    }
 
     /* protobuf verify version */
     GOOGLE_PROTOBUF_VERIFY_VERSION;
@@ -132,13 +139,6 @@ int main(int argc, char **argv)
         return 1;
     }
 
-    /* user manager */
-    user_mgr = user_manager_new();
-    if (NULL == user_mgr) {
-        mfatal("create user_manager_t instance failed!");
-        return 1;
-    }
-
     event_base_dispatch(main_base);
 
     for (int i = 0; i < WORKER_NUM; i++)
@@ -153,6 +153,8 @@ int main(int argc, char **argv)
 
     /* shutdown protobuf */
     google::protobuf::ShutdownProtobufLibrary();
+
+    delete user_mgr;
 
     /* close log */
     LOG_CLOSE();

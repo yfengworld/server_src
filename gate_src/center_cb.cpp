@@ -12,6 +12,50 @@ static cb cbs[EG_END - EG_BEGIN];
 static void user_session_request_cb(conn *c, unsigned char *msg, size_t sz)
 {
     mdebug("user_session_request_cb");
+
+    login::user_session_request usr;
+    msg_body<login::user_session_request>(msg, sz, &usr);
+
+    int res = 0;
+    pthread_rwlock_wrlock(&user_mgr->rwlock);
+    user_map_t::iterator itr = user_mgr->users.find(usr.uid());
+    if (itr != user_mgr->users.end()) {
+        user_t *user = itr->second;
+        strncpy(user->sk, usr.sk().c_str(), 32);
+        user->sk[31] = '\0';
+        if (user->c) {
+            disconnect(user->c);
+            conn_decref(user->c);
+            user->c = NULL;
+        }
+    } else {
+        user_t *user = (user_t *)malloc(sizeof(user_t));
+        if (NULL == user) {
+            merror("user_t alloc failed!");
+            res = -1;
+        } else {
+            user->uid = usr.uid();
+            strncpy(user->sk, usr.sk().c_str(), 32);
+            user->sk[31] = '\0';
+            user->c = NULL;
+            user->refcnt = 1;
+            pthread_mutex_init(&user->lock, NULL);
+            user_incref(user);
+            user_mgr->users.insert(std::make_pair(user->uid, user));
+        }
+    }
+    pthread_rwlock_unlock(&user_mgr->rwlock);
+
+    login::user_session_reply r;
+    if (0 == res) {
+        r.set_err(login::success);
+        r.set_tempid(usr.tempid());
+        r.set_uid(usr.uid());
+        r.set_sk(usr.sk());
+    } else {
+        r.set_err(login::unknow);
+    }
+    conn_write<login::user_session_reply>(c, ge_user_session_reply, &r);
 }
 
 static void center_rpc_cb(conn *c, unsigned char *msg, size_t sz)
