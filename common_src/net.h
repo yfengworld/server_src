@@ -27,6 +27,7 @@ typedef struct {
 typedef struct {
     void *data;
     void *user;
+    void *arg;
     bufferevent *bev;
     int refcnt;
     pthread_mutex_t lock;
@@ -82,6 +83,8 @@ void conn_lock_incref(conn *c);
 void conn_decref_unlock(conn *c);
 void conn_incref(conn *c);
 void conn_decref(conn *c);
+void conn_lock(conn *c);
+void conn_unlock(conn *c);
 void disconnect(conn *c);
 void dispatch_conn_new(int fd, char key, void *arg);
 int conn_write(conn *c, unsigned char *msg, size_t sz);

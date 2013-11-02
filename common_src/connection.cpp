@@ -7,7 +7,7 @@ static conn **freeconns;
 static int freetotal;
 static int freecurr;
 /* lock for connection freelist */
-static pthread_mutex_t conn_lock = PTHREAD_MUTEX_INITIALIZER;
+static pthread_mutex_t freelist_lock = PTHREAD_MUTEX_INITIALIZER;
 
 void conn_init() {
     freetotal = 200;
@@ -21,13 +21,13 @@ void conn_init() {
 static conn *conn_from_freelist() {
     conn *c;
 
-    pthread_mutex_lock(&conn_lock);
+    pthread_mutex_lock(&freelist_lock);
     if (freecurr > 0) {
         c = freeconns[--freecurr];
     } else {
         c = NULL;
     }
-    pthread_mutex_unlock(&conn_lock);
+    pthread_mutex_unlock(&freelist_lock);
 
     return c;
 }
@@ -41,8 +41,13 @@ conn *conn_new()
             return NULL;
         }
     }
-    pthread_mutex_init(&c->lock, NULL);
+    c->data = NULL;
+    c->user = NULL;
+    c->arg = NULL;
+    c->bev = NULL;
     c->refcnt = 1;
+    pthread_mutex_init(&c->lock, NULL);
+    c->thread = NULL;
     return c;
 }
 
@@ -50,7 +55,7 @@ conn *conn_new()
 
 static int conn_add_to_freelist(conn *c) {
     int ret = -1;
-    pthread_mutex_lock(&conn_lock);
+    pthread_mutex_lock(&freelist_lock);
     if (MAX_CONN_FREELIST > freecurr) {
         if (freecurr < freetotal) {
             freeconns[freecurr++] = c;
@@ -68,7 +73,7 @@ static int conn_add_to_freelist(conn *c) {
     } else {
         mdebug("reach MAX_CONN_FREELIST:%d", MAX_CONN_FREELIST);
     }
-    pthread_mutex_unlock(&conn_lock);
+    pthread_mutex_unlock(&freelist_lock);
     return ret;
 }
 
@@ -110,6 +115,16 @@ void conn_decref(conn *c)
 {
     pthread_mutex_lock(&c->lock);
     return conn_decref_unlock(c);
+}
+
+void conn_lock(conn *c)
+{
+    pthread_mutex_lock(&c->lock);
+}
+
+void conn_unlock(conn *c)
+{
+    pthread_mutex_unlock(&c->lock);
 }
 
 void disconnect(conn *c)

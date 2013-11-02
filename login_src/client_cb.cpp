@@ -10,75 +10,71 @@
 typedef void (*cb)(conn *, unsigned char *, size_t);
 static cb cbs[CL_END - CL_BEGIN];
 
+struct timeout_info {
+    struct event *timer;
+    int tempid;
+    conn *c;
+};
+
 static void expire_timer_cb(int fd, short what, void *arg)
 {
     mdebug("expire_timer_cb");
-    long id = (long)arg;
-    user_t *user = user_mgr->get_user_incref((int)id);
-    if (user)
-    {
-        user->decref_unlock();
-        user->decref();
-    }
+    struct timeout_info *ti = (struct timeout_info *)arg;
+    disconnect(ti->c);
+    free(ti->timer);
+    free(ti);
 }
 
 static void login_request_cb(conn *c, unsigned char *msg, size_t sz)
 {
     mdebug("login_request_cb");
 
-    uint64_t uid = 1;
+    login::error err = login::success;
 
-    /* TODO account passwd check */
-    if (0) {
-        login::login_reply lr;
-        lr.set_err(login::auth);
-        conn_write<login::login_reply>(c, lc_login_reply, &lr);
+    do {
+        uint64_t uid = 1;
+
+        /* TODO account passwd check */
+        if (0) {
+            err = login::auth;
+            break;
+        }
+
+        int tempid = 0;
+        conn_lock(c);
+        tempid = (int)(long)(c->arg);
+        conn_unlock(c);
+
+        user_t *user = new (std::nothrow) user_t(tempid);
+        if (NULL == user) {
+            err = login::unknow;
+            break;
+        }
+
+        if (0 > user_mgr->add_user(user)) {
+            err = login::unknow;
+            break;
+        }
+
+        user->set_conn(c);
+
+        /* tell center */
+        pthread_rwlock_rdlock(&centers_rwlock);
+        if (centers)
+        {
+            login::user_login_request ulr;
+            ulr.set_tempid(tempid);
+            ulr.set_uid(uid);
+            conn_write<login::user_login_request>(centers->c, le_user_login_request, &ulr);
+        }
+        pthread_rwlock_unlock(&centers_rwlock);
         return;
-    }
 
-    int tempid = user_t::get_guid();
-    user_t *user = new (std::nothrow) user_t(tempid);
-    if (NULL == user) {
-        login::login_reply lr;
-        lr.set_err(login::unknow);
-        conn_write<login::login_reply>(c, lc_login_reply, &lr);
-        return;
-    }
+    } while (0);
 
-    if (0 > user_mgr->add_user(user)) {
-        login::login_reply lr;
-        lr.set_err(login::unknow);
-        conn_write<login::login_reply>(c, lc_login_reply, &lr);
-        return;
-    }
-
-    user->set_conn(c);
-
-    /* start expire timer */
-    struct event *timer = user->get_expire_timer();
-    struct timeval tv = {5, 0};
-    evtimer_set(timer, expire_timer_cb, (void *)tempid);
-    event_base_set(c->thread->base, timer);
-    if (0 > evtimer_add(timer, &tv)) {
-        user_mgr->del_user(user);
-        user->decref();
-
-        login::login_reply lr;
-        lr.set_err(login::unknow);
-        conn_write<login::login_reply>(c, lc_login_reply, &lr);
-        return;
-    }
-
-    /* tell center */
-    pthread_rwlock_rdlock(&centers_rwlock);
-    if (centers)
-    {
-        login::user_login_request ulr;
-        ulr.set_tempid(tempid);
-        ulr.set_uid(uid);
-        conn_write<login::user_login_request>(centers->c, le_user_login_request, &ulr);
-    }
-    pthread_rwlock_unlock(&centers_rwlock);
+    login::login_reply lr;
+    lr.set_err(err);
+    conn_write<login::login_reply>(c, lc_login_reply, &lr);
 }
 
 void client_rpc_cb(conn *c, unsigned char *msg, size_t sz)
@@ -107,18 +103,46 @@ void client_rpc_cb(conn *c, unsigned char *msg, size_t sz)
 void client_connect_cb(conn *c, int ok)
 {
     mdebug("client_connect_cb ok:%d", ok);
+    if (0 == ok)
+        return;
+    do
+    {
+        struct timeout_info *ti = (struct timeout_info *)malloc(sizeof(struct timeout_info));
+        if (NULL == ti)
+            break;
+
+        ti->c = c;
+
+        ti->timer = evtimer_new(c->thread->base, expire_timer_cb, ti);
+        if (NULL == ti->timer) {
+            free(ti);
+            break;
+        }
+        struct timeval tv = {5, 0};
+        if (0 > evtimer_add(ti->timer, &tv)) {
+            free(ti->timer);
+            free(ti);
+            break;
+        }
+
+        int tempid = user_t::get_guid();
+        conn_lock_incref(c);
+        c->arg = (void*)tempid;
+        conn_unlock(c);
+        return;
+
+    } while (0);
+    
+    disconnect(c);
 }
 
 void client_disconnect_cb(conn *c)
 {
     mdebug("client_disconnect_cb");
-    conn_lock_incref(c);
-    user_t* user = (user_t *)c->user;
-    if (user) {
-        user_mgr->del_user(user);
-        user->decref();
+    if (c->user) {
+        user_mgr->del_user((user_t *)c->user);
+        ((user_t*)(c->user))->decref();
     }
-    conn_decref_unlock(c);
 }
 
 void client_cb_init(user_callback *cb)
