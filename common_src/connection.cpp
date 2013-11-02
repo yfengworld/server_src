@@ -115,12 +115,10 @@ void conn_decref(conn *c)
 void disconnect(conn *c)
 {
     if (c) {
-        conn_lock_incref(c);
-        if (c->bev) {
-            bufferevent_free(c->bev);
-            c->bev = NULL;
-        }
-        conn_decref_unlock(c);
+        user_callback *cb = (user_callback *)(c->data);
+        if (cb->disconnect)
+            (*(cb->disconnect))(c);
+        conn_free(c);
     }
 }
 

@@ -36,8 +36,8 @@ static void login_request_cb(conn *c, unsigned char *msg, size_t sz)
         return;
     }
 
-    int guid = user_t::get_guid();
-    user_t *user = new (std::nothrow) user_t(guid);
+    int tempid = user_t::get_guid();
+    user_t *user = new (std::nothrow) user_t(tempid);
     if (NULL == user) {
         login::login_reply lr;
         lr.set_err(login::unknow);
@@ -57,7 +57,7 @@ static void login_request_cb(conn *c, unsigned char *msg, size_t sz)
     /* start expire timer */
     struct event *timer = user->get_expire_timer();
     struct timeval tv = {5, 0};
-    evtimer_set(timer, expire_timer_cb, (void *)guid);
+    evtimer_set(timer, expire_timer_cb, (void *)tempid);
     event_base_set(c->thread->base, timer);
     if (0 > evtimer_add(timer, &tv)) {
         user_mgr->del_user(user);
@@ -74,6 +74,7 @@ static void login_request_cb(conn *c, unsigned char *msg, size_t sz)
     if (centers)
     {
         login::user_login_request ulr;
+        ulr.set_tempid(tempid);
         ulr.set_uid(uid);
         conn_write<login::user_login_request>(centers->c, le_user_login_request, &ulr);
     }
