@@ -7,10 +7,11 @@
 
 void conn_read_cb(struct bufferevent *bev, void *arg)
 {
-    size_t total_len;
+    conn *c = (conn *)arg;
+    user_callback *cb = (user_callback *)(c->data);
 
     struct evbuffer* input = bufferevent_get_input(bev);
-    total_len = evbuffer_get_length(input);
+    size_t total_len = evbuffer_get_length(input);
 
     while (1)
     {
@@ -18,19 +19,16 @@ void conn_read_cb(struct bufferevent *bev, void *arg)
             goto conti;
         }
         else {
-            unsigned char *buffer;
-            unsigned short *cur;
-            unsigned int len;
-            unsigned short cmd, flags;
-
-            buffer = evbuffer_pullup(input, MSG_HEAD_SIZE);
+            unsigned char *buffer = evbuffer_pullup(input, MSG_HEAD_SIZE);
             if (NULL == buffer)
             {
                 merror("evbuffer_pullup MSG_HEAD_SIZE failed!");
                 goto err;
             }
 
-            len = ntohs(*(unsigned int *)cur++);
+            unsigned short *cur = (unsigned short *)buffer;
+            unsigned int len = ntohs(*(unsigned int *)cur);
+            cur += 2;
 
             if (MSG_MAX_SIZE < len)
             {
@@ -41,8 +39,8 @@ void conn_read_cb(struct bufferevent *bev, void *arg)
             if (total_len < MSG_HEAD_SIZE + len)
                 goto conti;
 
-            cmd = ntohs(*(unsigned short *)cur++);
-            flags = ntohs(*(unsigned short *)cur);
+            unsigned short cmd = ntohs(*(unsigned short *)cur++);
+            unsigned short flags = ntohs(*(unsigned short *)cur);
 
             size_t msg_len = MSG_HEAD_SIZE + len;
             buffer = evbuffer_pullup(input, msg_len);
@@ -55,8 +53,6 @@ void conn_read_cb(struct bufferevent *bev, void *arg)
             /* TODO frequency limit */
 
             /* callback */
-            conn *c = (conn *)arg;
-            user_callback *cb = (user_callback *)(c->data);
             if (cb->rpc)
                 (*(cb->rpc))(c, buffer, msg_len);
 
@@ -73,8 +69,12 @@ void conn_read_cb(struct bufferevent *bev, void *arg)
 
 err:
     mdebug("close sockect!");
-    bufferevent_free(bev);
+    if (cb->disconnect) {
+        (*(cb->disconnect))(c);
+    }
+    conn_free(c);
     return;
+
 conti:
     bufferevent_enable(bev, EV_READ);
     return;
