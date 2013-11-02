@@ -16,6 +16,8 @@
 #include <google/protobuf/wire_format.h>
 // @@protoc_insertion_point(includes)
 
+namespace login {
+
 namespace {
 
 const ::google::protobuf::Descriptor* login_request_descriptor_ = NULL;
@@ -36,6 +38,7 @@ const ::google::protobuf::internal::GeneratedMessageReflection*
 const ::google::protobuf::Descriptor* login_reply_descriptor_ = NULL;
 const ::google::protobuf::internal::GeneratedMessageReflection*
   login_reply_reflection_ = NULL;
+const ::google::protobuf::EnumDescriptor* error_descriptor_ = NULL;
 
 }  // namespace
 
@@ -150,6 +153,7 @@ void protobuf_AssignDesc_login_2eproto() {
       ::google::protobuf::DescriptorPool::generated_pool(),
       ::google::protobuf::MessageFactory::generated_factory(),
       sizeof(login_reply));
+  error_descriptor_ = file->enum_type(0);
 }
 
 namespace {
@@ -200,17 +204,20 @@ void protobuf_AddDesc_login_2eproto() {
   GOOGLE_PROTOBUF_VERIFY_VERSION;
 
   ::google::protobuf::DescriptorPool::InternalAddGeneratedFile(
-    "\n\013login.proto\"0\n\rlogin_request\022\017\n\007accoun"
-    "t\030\001 \002(\t\022\016\n\006passwd\030\002 \002(\t\"1\n\022user_login_re"
-    "quest\022\016\n\006tempid\030\001 \002(\005\022\013\n\003uid\030\002 \002(\004\"\?\n\024us"
-    "er_session_request\022\016\n\006tempid\030\001 \002(\005\022\013\n\003ui"
-    "d\030\002 \002(\004\022\n\n\002sk\030\003 \002(\t\"=\n\022user_session_repl"
-    "y\022\013\n\003err\030\001 \002(\005\022\016\n\006tempid\030\002 \002(\005\022\n\n\002sk\030\003 \001"
-    "(\t\"]\n\020user_login_reply\022\013\n\003err\030\001 \002(\005\022\016\n\006t"
-    "empid\030\002 \002(\005\022\n\n\002sk\030\003 \001(\t\022\016\n\006gateip\030\004 \001(\t\022"
-    "\020\n\010gateport\030\005 \001(\005\"U\n\013login_reply\022\013\n\003err\030"
-    "\001 \002(\005\022\013\n\003uid\030\002 \001(\004\022\n\n\002sk\030\003 \001(\t\022\016\n\006gateip"
-    "\030\004 \001(\t\022\020\n\010gateport\030\005 \001(\005", 424);
+    "\n\013login.proto\022\005login\"0\n\rlogin_request\022\017\n"
+    "\007account\030\001 \002(\t\022\016\n\006passwd\030\002 \002(\t\"1\n\022user_l"
+    "ogin_request\022\016\n\006tempid\030\001 \002(\005\022\013\n\003uid\030\002 \002("
+    "\004\"\?\n\024user_session_request\022\016\n\006tempid\030\001 \002("
+    "\005\022\013\n\003uid\030\002 \002(\004\022\n\n\002sk\030\003 \002(\t\"T\n\022user_sessi"
+    "on_reply\022\"\n\003err\030\001 \002(\0162\014.login.error:\007suc"
+    "cess\022\016\n\006tempid\030\002 \002(\005\022\n\n\002sk\030\003 \001(\t\"t\n\020user"
+    "_login_reply\022\"\n\003err\030\001 \002(\0162\014.login.error:"
+    "\007success\022\016\n\006tempid\030\002 \002(\005\022\n\n\002sk\030\003 \001(\t\022\016\n\006"
+    "gateip\030\004 \001(\t\022\020\n\010gateport\030\005 \001(\005\"l\n\013login_"
+    "reply\022\"\n\003err\030\001 \002(\0162\014.login.error:\007succes"
+    "s\022\013\n\003uid\030\002 \001(\004\022\n\n\002sk\030\003 \001(\t\022\016\n\006gateip\030\004 \001"
+    "(\t\022\020\n\010gateport\030\005 \001(\005*4\n\005error\022\013\n\007success"
+    "\020\000\022\010\n\004auth\020\001\022\010\n\004freq\020\002\022\n\n\006unknow\020c", 554);
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedFile(
     "login.proto", &protobuf_RegisterTypes);
   login_request::default_instance_ = new login_request();
@@ -234,6 +241,22 @@ struct StaticDescriptorInitializer_login_2eproto {
     protobuf_AddDesc_login_2eproto();
   }
 } static_descriptor_initializer_login_2eproto_;
+const ::google::protobuf::EnumDescriptor* error_descriptor() {
+  protobuf_AssignDescriptorsOnce();
+  return error_descriptor_;
+}
+bool error_IsValid(int value) {
+  switch(value) {
+    case 0:
+    case 1:
+    case 2:
+    case 99:
+      return true;
+    default:
+      return false;
+  }
+}
+
 
 // ===================================================================
 
@@ -1156,14 +1179,19 @@ bool user_session_reply::MergePartialFromCodedStream(
   ::google::protobuf::uint32 tag;
   while ((tag = input->ReadTag()) != 0) {
     switch (::google::protobuf::internal::WireFormatLite::GetTagFieldNumber(tag)) {
-      // required int32 err = 1;
+      // required .login.error err = 1 [default = success];
       case 1: {
         if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
             ::google::protobuf::internal::WireFormatLite::WIRETYPE_VARINT) {
+          int value;
           DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
-                   ::google::protobuf::int32, ::google::protobuf::internal::WireFormatLite::TYPE_INT32>(
-                 input, &err_)));
-          set_has_err();
+                   int, ::google::protobuf::internal::WireFormatLite::TYPE_ENUM>(
+                 input, &value)));
+          if (::login::error_IsValid(value)) {
+            set_err(static_cast< ::login::error >(value));
+          } else {
+            mutable_unknown_fields()->AddVarint(1, value);
+          }
         } else {
           goto handle_uninterpreted;
         }
@@ -1222,9 +1250,10 @@ bool user_session_reply::MergePartialFromCodedStream(
 
 void user_session_reply::SerializeWithCachedSizes(
     ::google::protobuf::io::CodedOutputStream* output) const {
-  // required int32 err = 1;
+  // required .login.error err = 1 [default = success];
   if (has_err()) {
-    ::google::protobuf::internal::WireFormatLite::WriteInt32(1, this->err(), output);
+    ::google::protobuf::internal::WireFormatLite::WriteEnum(
+      1, this->err(), output);
   }
 
   // required int32 tempid = 2;
@@ -1249,9 +1278,10 @@ void user_session_reply::SerializeWithCachedSizes(
 
 ::google::protobuf::uint8* user_session_reply::SerializeWithCachedSizesToArray(
     ::google::protobuf::uint8* target) const {
-  // required int32 err = 1;
+  // required .login.error err = 1 [default = success];
   if (has_err()) {
-    target = ::google::protobuf::internal::WireFormatLite::WriteInt32ToArray(1, this->err(), target);
+    target = ::google::protobuf::internal::WireFormatLite::WriteEnumToArray(
+      1, this->err(), target);
   }
 
   // required int32 tempid = 2;
@@ -1280,11 +1310,10 @@ int user_session_reply::ByteSize() const {
   int total_size = 0;
 
   if (_has_bits_[0 / 32] & (0xffu << (0 % 32))) {
-    // required int32 err = 1;
+    // required .login.error err = 1 [default = success];
     if (has_err()) {
       total_size += 1 +
-        ::google::protobuf::internal::WireFormatLite::Int32Size(
-          this->err());
+        ::google::protobuf::internal::WireFormatLite::EnumSize(this->err());
     }
 
     // required int32 tempid = 2;
@@ -1475,14 +1504,19 @@ bool user_login_reply::MergePartialFromCodedStream(
   ::google::protobuf::uint32 tag;
   while ((tag = input->ReadTag()) != 0) {
     switch (::google::protobuf::internal::WireFormatLite::GetTagFieldNumber(tag)) {
-      // required int32 err = 1;
+      // required .login.error err = 1 [default = success];
       case 1: {
         if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
             ::google::protobuf::internal::WireFormatLite::WIRETYPE_VARINT) {
+          int value;
           DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
-                   ::google::protobuf::int32, ::google::protobuf::internal::WireFormatLite::TYPE_INT32>(
-                 input, &err_)));
-          set_has_err();
+                   int, ::google::protobuf::internal::WireFormatLite::TYPE_ENUM>(
+                 input, &value)));
+          if (::login::error_IsValid(value)) {
+            set_err(static_cast< ::login::error >(value));
+          } else {
+            mutable_unknown_fields()->AddVarint(1, value);
+          }
         } else {
           goto handle_uninterpreted;
         }
@@ -1574,9 +1608,10 @@ bool user_login_reply::MergePartialFromCodedStream(
 
 void user_login_reply::SerializeWithCachedSizes(
     ::google::protobuf::io::CodedOutputStream* output) const {
-  // required int32 err = 1;
+  // required .login.error err = 1 [default = success];
   if (has_err()) {
-    ::google::protobuf::internal::WireFormatLite::WriteInt32(1, this->err(), output);
+    ::google::protobuf::internal::WireFormatLite::WriteEnum(
+      1, this->err(), output);
   }
 
   // required int32 tempid = 2;
@@ -1615,9 +1650,10 @@ void user_login_reply::SerializeWithCachedSizes(
 
 ::google::protobuf::uint8* user_login_reply::SerializeWithCachedSizesToArray(
     ::google::protobuf::uint8* target) const {
-  // required int32 err = 1;
+  // required .login.error err = 1 [default = success];
   if (has_err()) {
-    target = ::google::protobuf::internal::WireFormatLite::WriteInt32ToArray(1, this->err(), target);
+    target = ::google::protobuf::internal::WireFormatLite::WriteEnumToArray(
+      1, this->err(), target);
   }
 
   // required int32 tempid = 2;
@@ -1661,11 +1697,10 @@ int user_login_reply::ByteSize() const {
   int total_size = 0;
 
   if (_has_bits_[0 / 32] & (0xffu << (0 % 32))) {
-    // required int32 err = 1;
+    // required .login.error err = 1 [default = success];
     if (has_err()) {
       total_size += 1 +
-        ::google::protobuf::internal::WireFormatLite::Int32Size(
-          this->err());
+        ::google::protobuf::internal::WireFormatLite::EnumSize(this->err());
     }
 
     // required int32 tempid = 2;
@@ -1878,14 +1913,19 @@ bool login_reply::MergePartialFromCodedStream(
   ::google::protobuf::uint32 tag;
   while ((tag = input->ReadTag()) != 0) {
     switch (::google::protobuf::internal::WireFormatLite::GetTagFieldNumber(tag)) {
-      // required int32 err = 1;
+      // required .login.error err = 1 [default = success];
       case 1: {
         if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
             ::google::protobuf::internal::WireFormatLite::WIRETYPE_VARINT) {
+          int value;
           DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
-                   ::google::protobuf::int32, ::google::protobuf::internal::WireFormatLite::TYPE_INT32>(
-                 input, &err_)));
-          set_has_err();
+                   int, ::google::protobuf::internal::WireFormatLite::TYPE_ENUM>(
+                 input, &value)));
+          if (::login::error_IsValid(value)) {
+            set_err(static_cast< ::login::error >(value));
+          } else {
+            mutable_unknown_fields()->AddVarint(1, value);
+          }
         } else {
           goto handle_uninterpreted;
         }
@@ -1977,9 +2017,10 @@ bool login_reply::MergePartialFromCodedStream(
 
 void login_reply::SerializeWithCachedSizes(
     ::google::protobuf::io::CodedOutputStream* output) const {
-  // required int32 err = 1;
+  // required .login.error err = 1 [default = success];
   if (has_err()) {
-    ::google::protobuf::internal::WireFormatLite::WriteInt32(1, this->err(), output);
+    ::google::protobuf::internal::WireFormatLite::WriteEnum(
+      1, this->err(), output);
   }
 
   // optional uint64 uid = 2;
@@ -2018,9 +2059,10 @@ void login_reply::SerializeWithCachedSizes(
 
 ::google::protobuf::uint8* login_reply::SerializeWithCachedSizesToArray(
     ::google::protobuf::uint8* target) const {
-  // required int32 err = 1;
+  // required .login.error err = 1 [default = success];
   if (has_err()) {
-    target = ::google::protobuf::internal::WireFormatLite::WriteInt32ToArray(1, this->err(), target);
+    target = ::google::protobuf::internal::WireFormatLite::WriteEnumToArray(
+      1, this->err(), target);
   }
 
   // optional uint64 uid = 2;
@@ -2064,11 +2106,10 @@ int login_reply::ByteSize() const {
   int total_size = 0;
 
   if (_has_bits_[0 / 32] & (0xffu << (0 % 32))) {
-    // required int32 err = 1;
+    // required .login.error err = 1 [default = success];
     if (has_err()) {
       total_size += 1 +
-        ::google::protobuf::internal::WireFormatLite::Int32Size(
-          this->err());
+        ::google::protobuf::internal::WireFormatLite::EnumSize(this->err());
     }
 
     // optional uint64 uid = 2;
@@ -2186,5 +2227,7 @@ void login_reply::Swap(login_reply* other) {
 
 
 // @@protoc_insertion_point(namespace_scope)
+
+}  // namespace login
 
 // @@protoc_insertion_point(global_scope)

@@ -23,8 +23,11 @@
 #include <google/protobuf/message.h>
 #include <google/protobuf/repeated_field.h>
 #include <google/protobuf/extension_set.h>
+#include <google/protobuf/generated_enum_reflection.h>
 #include <google/protobuf/unknown_field_set.h>
 // @@protoc_insertion_point(includes)
+
+namespace login {
 
 // Internal implementation detail -- do not call these.
 void  protobuf_AddDesc_login_2eproto();
@@ -38,6 +41,27 @@ class user_session_reply;
 class user_login_reply;
 class login_reply;
 
+enum error {
+  success = 0,
+  auth = 1,
+  freq = 2,
+  unknow = 99
+};
+bool error_IsValid(int value);
+const error error_MIN = success;
+const error error_MAX = unknow;
+const int error_ARRAYSIZE = error_MAX + 1;
+
+const ::google::protobuf::EnumDescriptor* error_descriptor();
+inline const ::std::string& error_Name(error value) {
+  return ::google::protobuf::internal::NameOfEnum(
+    error_descriptor(), value);
+}
+inline bool error_Parse(
+    const ::std::string& name, error* value) {
+  return ::google::protobuf::internal::ParseNamedEnum<error>(
+    error_descriptor(), name, value);
+}
 // ===================================================================
 
 class login_request : public ::google::protobuf::Message {
@@ -118,7 +142,7 @@ class login_request : public ::google::protobuf::Message {
   inline ::std::string* release_passwd();
   inline void set_allocated_passwd(::std::string* passwd);
 
-  // @@protoc_insertion_point(class_scope:login_request)
+  // @@protoc_insertion_point(class_scope:login.login_request)
  private:
   inline void set_has_account();
   inline void clear_has_account();
@@ -210,7 +234,7 @@ class user_login_request : public ::google::protobuf::Message {
   inline ::google::protobuf::uint64 uid() const;
   inline void set_uid(::google::protobuf::uint64 value);
 
-  // @@protoc_insertion_point(class_scope:user_login_request)
+  // @@protoc_insertion_point(class_scope:login.user_login_request)
  private:
   inline void set_has_tempid();
   inline void clear_has_tempid();
@@ -314,7 +338,7 @@ class user_session_request : public ::google::protobuf::Message {
   inline ::std::string* release_sk();
   inline void set_allocated_sk(::std::string* sk);
 
-  // @@protoc_insertion_point(class_scope:user_session_request)
+  // @@protoc_insertion_point(class_scope:login.user_session_request)
  private:
   inline void set_has_tempid();
   inline void clear_has_tempid();
@@ -395,12 +419,12 @@ class user_session_reply : public ::google::protobuf::Message {
 
   // accessors -------------------------------------------------------
 
-  // required int32 err = 1;
+  // required .login.error err = 1 [default = success];
   inline bool has_err() const;
   inline void clear_err();
   static const int kErrFieldNumber = 1;
-  inline ::google::protobuf::int32 err() const;
-  inline void set_err(::google::protobuf::int32 value);
+  inline ::login::error err() const;
+  inline void set_err(::login::error value);
 
   // required int32 tempid = 2;
   inline bool has_tempid() const;
@@ -421,7 +445,7 @@ class user_session_reply : public ::google::protobuf::Message {
   inline ::std::string* release_sk();
   inline void set_allocated_sk(::std::string* sk);
 
-  // @@protoc_insertion_point(class_scope:user_session_reply)
+  // @@protoc_insertion_point(class_scope:login.user_session_reply)
  private:
   inline void set_has_err();
   inline void clear_has_err();
@@ -432,7 +456,7 @@ class user_session_reply : public ::google::protobuf::Message {
 
   ::google::protobuf::UnknownFieldSet _unknown_fields_;
 
-  ::google::protobuf::int32 err_;
+  int err_;
   ::google::protobuf::int32 tempid_;
   ::std::string* sk_;
 
@@ -502,12 +526,12 @@ class user_login_reply : public ::google::protobuf::Message {
 
   // accessors -------------------------------------------------------
 
-  // required int32 err = 1;
+  // required .login.error err = 1 [default = success];
   inline bool has_err() const;
   inline void clear_err();
   static const int kErrFieldNumber = 1;
-  inline ::google::protobuf::int32 err() const;
-  inline void set_err(::google::protobuf::int32 value);
+  inline ::login::error err() const;
+  inline void set_err(::login::error value);
 
   // required int32 tempid = 2;
   inline bool has_tempid() const;
@@ -547,7 +571,7 @@ class user_login_reply : public ::google::protobuf::Message {
   inline ::google::protobuf::int32 gateport() const;
   inline void set_gateport(::google::protobuf::int32 value);
 
-  // @@protoc_insertion_point(class_scope:user_login_reply)
+  // @@protoc_insertion_point(class_scope:login.user_login_reply)
  private:
   inline void set_has_err();
   inline void clear_has_err();
@@ -562,7 +586,7 @@ class user_login_reply : public ::google::protobuf::Message {
 
   ::google::protobuf::UnknownFieldSet _unknown_fields_;
 
-  ::google::protobuf::int32 err_;
+  int err_;
   ::google::protobuf::int32 tempid_;
   ::std::string* sk_;
   ::std::string* gateip_;
@@ -634,12 +658,12 @@ class login_reply : public ::google::protobuf::Message {
 
   // accessors -------------------------------------------------------
 
-  // required int32 err = 1;
+  // required .login.error err = 1 [default = success];
   inline bool has_err() const;
   inline void clear_err();
   static const int kErrFieldNumber = 1;
-  inline ::google::protobuf::int32 err() const;
-  inline void set_err(::google::protobuf::int32 value);
+  inline ::login::error err() const;
+  inline void set_err(::login::error value);
 
   // optional uint64 uid = 2;
   inline bool has_uid() const;
@@ -679,7 +703,7 @@ class login_reply : public ::google::protobuf::Message {
   inline ::google::protobuf::int32 gateport() const;
   inline void set_gateport(::google::protobuf::int32 value);
 
-  // @@protoc_insertion_point(class_scope:login_reply)
+  // @@protoc_insertion_point(class_scope:login.login_reply)
  private:
   inline void set_has_err();
   inline void clear_has_err();
@@ -696,7 +720,7 @@ class login_reply : public ::google::protobuf::Message {
 
   ::google::protobuf::uint64 uid_;
   ::std::string* sk_;
-  ::google::protobuf::int32 err_;
+  int err_;
   ::google::protobuf::int32 gateport_;
   ::std::string* gateip_;
 
@@ -1027,7 +1051,7 @@ inline void user_session_request::set_allocated_sk(::std::string* sk) {
 
 // user_session_reply
 
-// required int32 err = 1;
+// required .login.error err = 1 [default = success];
 inline bool user_session_reply::has_err() const {
   return (_has_bits_[0] & 0x00000001u) != 0;
 }
@@ -1041,10 +1065,11 @@ inline void user_session_reply::clear_err() {
   err_ = 0;
   clear_has_err();
 }
-inline ::google::protobuf::int32 user_session_reply::err() const {
-  return err_;
+inline ::login::error user_session_reply::err() const {
+  return static_cast< ::login::error >(err_);
 }
-inline void user_session_reply::set_err(::google::protobuf::int32 value) {
+inline void user_session_reply::set_err(::login::error value) {
+  assert(::login::error_IsValid(value));
   set_has_err();
   err_ = value;
 }
@@ -1145,7 +1170,7 @@ inline void user_session_reply::set_allocated_sk(::std::string* sk) {
 
 // user_login_reply
 
-// required int32 err = 1;
+// required .login.error err = 1 [default = success];
 inline bool user_login_reply::has_err() const {
   return (_has_bits_[0] & 0x00000001u) != 0;
 }
@@ -1159,10 +1184,11 @@ inline void user_login_reply::clear_err() {
   err_ = 0;
   clear_has_err();
 }
-inline ::google::protobuf::int32 user_login_reply::err() const {
-  return err_;
+inline ::login::error user_login_reply::err() const {
+  return static_cast< ::login::error >(err_);
 }
-inline void user_login_reply::set_err(::google::protobuf::int32 value) {
+inline void user_login_reply::set_err(::login::error value) {
+  assert(::login::error_IsValid(value));
   set_has_err();
   err_ = value;
 }
@@ -1355,7 +1381,7 @@ inline void user_login_reply::set_gateport(::google::protobuf::int32 value) {
 
 // login_reply
 
-// required int32 err = 1;
+// required .login.error err = 1 [default = success];
 inline bool login_reply::has_err() const {
   return (_has_bits_[0] & 0x00000001u) != 0;
 }
@@ -1369,10 +1395,11 @@ inline void login_reply::clear_err() {
   err_ = 0;
   clear_has_err();
 }
-inline ::google::protobuf::int32 login_reply::err() const {
-  return err_;
+inline ::login::error login_reply::err() const {
+  return static_cast< ::login::error >(err_);
 }
-inline void login_reply::set_err(::google::protobuf::int32 value) {
+inline void login_reply::set_err(::login::error value) {
+  assert(::login::error_IsValid(value));
   set_has_err();
   err_ = value;
 }
@@ -1564,10 +1591,16 @@ inline void login_reply::set_gateport(::google::protobuf::int32 value) {
 
 // @@protoc_insertion_point(namespace_scope)
 
+}  // namespace login
+
 #ifndef SWIG
 namespace google {
 namespace protobuf {
 
+template <>
+inline const EnumDescriptor* GetEnumDescriptor< ::login::error>() {
+  return ::login::error_descriptor();
+}
 
 }  // namespace google
 }  // namespace protobuf

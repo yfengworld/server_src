@@ -37,7 +37,6 @@ connector *connector_new(struct sockaddr *sa, int socklen, int kc, user_callback
     snprintf(cr->addrtext, 32, "%s:%d",
             inet_ntoa(((struct sockaddr_in *)(cr->sa))->sin_addr),
             ntohs(((struct sockaddr_in *)(cr->sa))->sin_port));
-    cr->timer = NULL;
     dispatch_conn_new(-1, 't', cr);
     return cr;
 }

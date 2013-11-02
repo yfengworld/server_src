@@ -1,5 +1,7 @@
 #include "user.h"
 
+#include "log.h"
+
 int user_t::guid = 0;
 
 user_t::user_t(int id)
@@ -9,9 +11,19 @@ user_t::user_t(int id)
     pthread_mutex_init(&lock, NULL);
 }
 
+user_t::~user_t()
+{
+    mdebug("user_t id=%d free", id_);
+}
+
 int user_t::get_id()
 {
     return id_;
+}
+
+struct event *user_t::get_expire_timer()
+{
+    return &timer;
 }
 
 void user_t::set_conn(conn *c)

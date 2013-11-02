@@ -13,9 +13,11 @@ class user_t
 {
 public:
     user_t(int id);
+    ~user_t();
 
 public:
     int get_id();
+    struct event *get_expire_timer();
     void set_conn(conn *c);
     void lock_incref();
     int decref_unlock();
@@ -31,6 +33,7 @@ private:
 private:
     int id_;
     conn *c_;
+    struct event timer;
     int refcnt;
     pthread_mutex_t lock;
 };

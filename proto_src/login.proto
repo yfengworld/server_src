@@ -1,3 +1,12 @@
+package login;
+
+enum error {
+    success = 0;
+    auth = 1;
+    freq = 2;
+    unknow = 99;
+}
+
 // client -> login
 message login_request {
     required string account = 1;
@@ -19,14 +28,14 @@ message user_session_request {
 
 // gate -> center
 message user_session_reply {
-    required int32 err = 1;
+    required error err = 1 [default = success];
     required int32 tempid = 2;
     optional string sk = 3;
 }
 
 // center -> login
 message user_login_reply {
-    required int32 err = 1;
+    required error err = 1 [default = success];
     required int32 tempid = 2;
     optional string sk = 3;
     optional string gateip = 4;
@@ -35,7 +44,7 @@ message user_login_reply {
 
 // login -> client
 message login_reply {
-    required int32 err = 1;
+    required error err = 1 [default = success];
     optional uint64 uid = 2;
     optional string sk = 3;
     optional string gateip = 4;

@@ -23,16 +23,10 @@ static void go_connecting(int fd, short what, void *arg)
 static void delay_connecting(conn *c)
 {
     connector *cr = (connector *)c->data;
-    if (NULL == cr->timer) {
-        cr->tv.tv_sec = 5;
-        cr->tv.tv_usec = 0;
-        cr->timer = evtimer_new(c->thread->base, go_connecting, c);
-        if (NULL == cr->timer) {
-            merror("evtimer_new failed!");
-            return;
-        }
-    }
-    evtimer_add(cr->timer, &cr->tv);
+    evtimer_set(&cr->timer, go_connecting, c);
+    event_base_set(c->thread->base, &cr->timer);
+    struct timeval tv = {5, 0};
+    evtimer_add(&cr->timer, &tv);
 }
 
 void connecting_event_cb(struct bufferevent *, short, void *);

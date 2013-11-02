@@ -68,8 +68,7 @@ typedef struct {
     int socklen;
     char addrtext[32];
     /* reconnect timer */
-    struct event *timer;
-    struct timeval tv;
+    struct event timer;
 } connector;
 
 /* thread clone */
