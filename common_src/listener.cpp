@@ -27,7 +27,7 @@ listener *listener_new(struct event_base* base, struct sockaddr *sa, int socklen
     l->cb.type = 'l';
     l->cb.rpc = cb? cb->rpc : NULL;
     l->cb.connect = cb ? cb->connect : NULL;
-    l->cb.disconnect = cb ? disconnect : NULL;
+    l->cb.disconnect = cb ? cb->disconnect : NULL;
     l->l = listener;
     snprintf(l->addrtext, 32, "%s:%d",
             inet_ntoa(((struct sockaddr_in *)sa)->sin_addr),

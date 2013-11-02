@@ -113,8 +113,10 @@ void client_disconnect_cb(conn *c)
     mdebug("client_disconnect_cb");
     conn_lock_incref(c);
     user_t* user = (user_t *)c->user;
-    user_mgr->del_user(user);
-    user->decref();
+    if (user) {
+        user_mgr->del_user(user);
+        user->decref();
+    }
     conn_decref_unlock(c);
 }
 
