@@ -20,7 +20,8 @@ void conn_read_cb(struct bufferevent *bev, void *arg)
         else {
             unsigned char *buffer;
             unsigned short *cur;
-            unsigned short magic_number, len, cmd, flags;
+            unsigned int len;
+            unsigned short cmd, flags;
 
             buffer = evbuffer_pullup(input, MSG_HEAD_SIZE);
             if (NULL == buffer)
@@ -29,15 +30,7 @@ void conn_read_cb(struct bufferevent *bev, void *arg)
                 goto err;
             }
 
-            cur = (unsigned short *)buffer;
-            magic_number = ntohs(*(unsigned short *)cur++);
-            if (MAGIC_NUMBER != magic_number)
-            {
-                merror("magic_number error!");
-                goto err;
-            }
-
-            len = ntohs(*(unsigned short *)cur++);
+            len = ntohs(*(unsigned int *)cur++);
 
             if (MSG_MAX_SIZE < len)
             {

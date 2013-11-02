@@ -9,8 +9,8 @@ int create_msg(uint16_t cmd, uint64_t uid, unsigned char **msg, size_t *sz)
         return -1;
 
     unsigned short *cur = (unsigned short *)*msg;
-    *cur++ = htons((unsigned short)MAGIC_NUMBER);
-    *cur++ = htons((unsigned short)sizeof(uint64_t));
+    *((unsigned int *)cur) = htons((unsigned int)UID_SIZE);
+    cur += 2;
     *cur++ = htons((unsigned short)cmd);
     *cur++ = htons((unsigned short)FLAG_HAS_UID);
     *((uint64_t *)cur) = htons((uint64_t)uid);
@@ -26,8 +26,8 @@ int create_msg(uint16_t cmd, unsigned char **msg, size_t *sz)
     }
 
     unsigned short *cur = (unsigned short *)*msg;
-    *cur++ = htons((unsigned short)MAGIC_NUMBER);
-    *cur++ = htons((unsigned short)0);
+    *((unsigned int *)cur) = htons((unsigned int)0);
+    cur += 2;
     *cur++ = htons((unsigned short)cmd);
     *cur++ = htons((unsigned short)0);
     return 0;
@@ -41,8 +41,8 @@ int message_head(unsigned char *src, size_t src_sz, msg_head *h)
     }
 
     unsigned short *cur = (unsigned short *)src;
-    h->magic = ntohs(*cur++);
-    h->len = ntohs(*cur++);
+    h->len = ntohs(*((unsigned int *)cur));
+    cur += 2;
     h->cmd = ntohs(*cur++);
     h->flags = ntohs(*cur);
     return 0;

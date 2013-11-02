@@ -15,6 +15,8 @@
 #include <inttypes.h>
 #include <stddef.h>
 
+#define UID_SIZE 8
+
 int create_msg(uint16_t cmd, uint64_t uid, unsigned char **msg, size_t *sz);
 int create_msg(uint16_t cmd, unsigned char **msg, size_t *sz);
 int message_head(unsigned char *src, size_t src_sz, msg_head *h);
@@ -23,7 +25,7 @@ template<typename S>
 int create_msg(uint16_t cmd, uint64_t uid, S *s, unsigned char **msg, size_t *sz)
 {
     size_t body_sz = s->ByteSize();
-    *sz = MSG_HEAD_SIZE + sizeof(uint64_t) + body_sz;
+    *sz = MSG_HEAD_SIZE + UID_SIZE + body_sz;
     *msg = (unsigned char *)malloc(*sz);
     if (NULL == *msg) {
         merror("msg alloc failed!");
@@ -31,11 +33,12 @@ int create_msg(uint16_t cmd, uint64_t uid, S *s, unsigned char **msg, size_t *sz
     }
 
     unsigned short *cur = (unsigned short *)*msg;
-    *cur++ = htons((unsigned short)MAGIC_NUMBER);
-    *cur++ = htons((unsigned short)(sizeof(uint64_t) + body_sz));
+    *((unsigned int *)cur) = htons((unsigned int)(UID_SIZE + body_sz));
+    cur += 2;
     *cur++ = htons((unsigned short)cmd);
     *cur++ = htons((unsigned short)FLAG_HAS_UID);
-    *((uint64_t *)cur)++ = htons((uint64_t)uid);
+    *((uint64_t *)cur) = htons((uint64_t)uid);
+    cur += 4;
     
     google::protobuf::io::ArrayOutputStream arr(cur, body_sz);
     google::protobuf::io::CodedOutputStream output(&arr);
@@ -55,8 +58,8 @@ int create_msg(uint16_t cmd, S *s, unsigned char **msg, size_t *sz)
     }
 
     unsigned short *cur = (unsigned short *)*msg;
-    *cur++ = htons((unsigned short)MAGIC_NUMBER);
-    *cur++ = htons((unsigned short)body_sz);
+    *((unsigned int *)cur) = htons((unsigned short)body_sz);
+    cur += 2;
     *cur++ = htons((unsigned short)cmd);
     *cur++ = htons((unsigned short)0);
     
@@ -76,22 +79,19 @@ int msg_body(unsigned char *src, size_t src_sz, uint64_t *uid, S *s)
     }
 
     unsigned short *cur = (unsigned short *)src;
-
-    cur++;
-    unsigned short len = ntohs(*cur);
+    unsigned int len = ntohs(*((unsigned int *)cur)++);
     if (MSG_HEAD_SIZE + len != src_sz) {
         merror("msg length error!");
         return -1;
     }
 
-    cur += 2;
-    unsigned short flag = ntohs(*cur);
-    if (0 == flag & FLAG_HAS_UID) {
+    cur++;
+    unsigned short flags = ntohs(*cur++);
+    if (0 == flags & FLAG_HAS_UID) {
         merror(stderr, "msg no uid!");
         return -1;
     }
 
-    cur++;
     google::protobuf::io::CodedInputStream input((const google::protobuf::uint8*)cur, len);
     s->ParseFromCodedStream(&input);
     return 0;
@@ -105,15 +105,14 @@ int msg_body(unsigned char *src, size_t src_sz, S *s)
         return -1;
     }
     unsigned short *cur = (unsigned short *)src;
-
-    cur++;
-    unsigned short len = ntohs(*cur);
+    unsigned int len = ntohs(*((unsigned int *)cur));
+    cur += 2;
     if (MSG_HEAD_SIZE + len != src_sz) {
         merror("msg length error!");
         return -1;
     }
 
-    cur += 3;
+    cur += 2;
     google::protobuf::io::CodedInputStream input((const google::protobuf::uint8*)cur, len);
     s->ParseFromCodedStream(&input);
     return 0;
