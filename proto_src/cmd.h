@@ -47,6 +47,7 @@ enum
 
     /********************************* gate -> center *********************************/
     GE_BEGIN = 81,
+    ge_reg,
     ge_user_session_reply,
     GE_END,
 

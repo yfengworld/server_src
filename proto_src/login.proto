@@ -52,3 +52,12 @@ message login_reply {
     optional string gateip = 4;
     optional int32 gateport = 5;
 }
+
+
+
+
+// gate -> center
+message reg {
+    required string ip = 1;
+    required int32 port = 2;
+}

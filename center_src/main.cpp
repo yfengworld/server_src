@@ -1,3 +1,6 @@
+#include "fwd.h"
+#include "gate_info.h"
+
 #include "msg_protobuf.h"
 #include "cmd.h"
 #include "net.h"
@@ -11,6 +14,8 @@
 #define WORKER_NUM 8
 
 static void signal_cb(evutil_socket_t, short, void *);
+
+gate_info_manager_t *gate_info_mgr = NULL;
 
 /* game_cb */
 static user_callback game_cb;
@@ -38,6 +43,12 @@ int main(int argc, char **argv)
     game_cb_init(&game_cb);
     gate_cb_init(&gate_cb);
     login_cb_init(&login_cb);
+
+    gate_info_mgr = new (std::nothrow) gate_info_manager_t;
+    if (NULL == gate_info_mgr) {
+        mfatal("new gate_info_manager_t failed!");
+        return 1;
+    }
 
     /* protobuf verify version */
     GOOGLE_PROTOBUF_VERIFY_VERSION;

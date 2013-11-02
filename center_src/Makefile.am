@@ -24,6 +24,7 @@ center_SOURCES = \
 				 ../proto_src/login.pb.cc \
 				 game_cb.cpp \
 				 gate_cb.cpp \
+				 gate_info.cpp \
 				 login_cb.cpp \
 				 main.cpp
 

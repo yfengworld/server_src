@@ -52,8 +52,8 @@ am_center_OBJECTS = net_thread.$(OBJEXT) connection.$(OBJEXT) \
 	accept_cb.$(OBJEXT) read_cb.$(OBJEXT) write_cb.$(OBJEXT) \
 	conn_event_cb.$(OBJEXT) connector_event_cb.$(OBJEXT) \
 	log.$(OBJEXT) cmd_util.$(OBJEXT) login.pb.$(OBJEXT) \
-	game_cb.$(OBJEXT) gate_cb.$(OBJEXT) login_cb.$(OBJEXT) \
-	main.$(OBJEXT)
+	game_cb.$(OBJEXT) gate_cb.$(OBJEXT) gate_info.$(OBJEXT) \
+	login_cb.$(OBJEXT) main.$(OBJEXT)
 center_OBJECTS = $(am_center_OBJECTS)
 center_DEPENDENCIES =
 DEFAULT_INCLUDES = -I.@am__isrc@ -I$(top_builddir)
@@ -211,6 +211,7 @@ center_SOURCES = \
 				 ../proto_src/login.pb.cc \
 				 game_cb.cpp \
 				 gate_cb.cpp \
+				 gate_info.cpp \
 				 login_cb.cpp \
 				 main.cpp
 
@@ -309,6 +310,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/connector_event_cb.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/game_cb.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gate_cb.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gate_info.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/listener.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/log.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/login.pb.Po@am__quote@
