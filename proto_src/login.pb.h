@@ -40,6 +40,8 @@ class user_session_request;
 class user_session_reply;
 class user_login_reply;
 class login_reply;
+class connect_request;
+class connect_reply;
 class center_reg;
 class gate_reg;
 
@@ -755,6 +757,185 @@ class login_reply : public ::google::protobuf::Message {
 
   void InitAsDefaultInstance();
   static login_reply* default_instance_;
+};
+// -------------------------------------------------------------------
+
+class connect_request : public ::google::protobuf::Message {
+ public:
+  connect_request();
+  virtual ~connect_request();
+
+  connect_request(const connect_request& from);
+
+  inline connect_request& operator=(const connect_request& from) {
+    CopyFrom(from);
+    return *this;
+  }
+
+  inline const ::google::protobuf::UnknownFieldSet& unknown_fields() const {
+    return _unknown_fields_;
+  }
+
+  inline ::google::protobuf::UnknownFieldSet* mutable_unknown_fields() {
+    return &_unknown_fields_;
+  }
+
+  static const ::google::protobuf::Descriptor* descriptor();
+  static const connect_request& default_instance();
+
+  void Swap(connect_request* other);
+
+  // implements Message ----------------------------------------------
+
+  connect_request* New() const;
+  void CopyFrom(const ::google::protobuf::Message& from);
+  void MergeFrom(const ::google::protobuf::Message& from);
+  void CopyFrom(const connect_request& from);
+  void MergeFrom(const connect_request& from);
+  void Clear();
+  bool IsInitialized() const;
+
+  int ByteSize() const;
+  bool MergePartialFromCodedStream(
+      ::google::protobuf::io::CodedInputStream* input);
+  void SerializeWithCachedSizes(
+      ::google::protobuf::io::CodedOutputStream* output) const;
+  ::google::protobuf::uint8* SerializeWithCachedSizesToArray(::google::protobuf::uint8* output) const;
+  int GetCachedSize() const { return _cached_size_; }
+  private:
+  void SharedCtor();
+  void SharedDtor();
+  void SetCachedSize(int size) const;
+  public:
+
+  ::google::protobuf::Metadata GetMetadata() const;
+
+  // nested types ----------------------------------------------------
+
+  // accessors -------------------------------------------------------
+
+  // required uint64 uid = 1;
+  inline bool has_uid() const;
+  inline void clear_uid();
+  static const int kUidFieldNumber = 1;
+  inline ::google::protobuf::uint64 uid() const;
+  inline void set_uid(::google::protobuf::uint64 value);
+
+  // required string sk = 2;
+  inline bool has_sk() const;
+  inline void clear_sk();
+  static const int kSkFieldNumber = 2;
+  inline const ::std::string& sk() const;
+  inline void set_sk(const ::std::string& value);
+  inline void set_sk(const char* value);
+  inline void set_sk(const char* value, size_t size);
+  inline ::std::string* mutable_sk();
+  inline ::std::string* release_sk();
+  inline void set_allocated_sk(::std::string* sk);
+
+  // @@protoc_insertion_point(class_scope:login.connect_request)
+ private:
+  inline void set_has_uid();
+  inline void clear_has_uid();
+  inline void set_has_sk();
+  inline void clear_has_sk();
+
+  ::google::protobuf::UnknownFieldSet _unknown_fields_;
+
+  ::google::protobuf::uint64 uid_;
+  ::std::string* sk_;
+
+  mutable int _cached_size_;
+  ::google::protobuf::uint32 _has_bits_[(2 + 31) / 32];
+
+  friend void  protobuf_AddDesc_login_2eproto();
+  friend void protobuf_AssignDesc_login_2eproto();
+  friend void protobuf_ShutdownFile_login_2eproto();
+
+  void InitAsDefaultInstance();
+  static connect_request* default_instance_;
+};
+// -------------------------------------------------------------------
+
+class connect_reply : public ::google::protobuf::Message {
+ public:
+  connect_reply();
+  virtual ~connect_reply();
+
+  connect_reply(const connect_reply& from);
+
+  inline connect_reply& operator=(const connect_reply& from) {
+    CopyFrom(from);
+    return *this;
+  }
+
+  inline const ::google::protobuf::UnknownFieldSet& unknown_fields() const {
+    return _unknown_fields_;
+  }
+
+  inline ::google::protobuf::UnknownFieldSet* mutable_unknown_fields() {
+    return &_unknown_fields_;
+  }
+
+  static const ::google::protobuf::Descriptor* descriptor();
+  static const connect_reply& default_instance();
+
+  void Swap(connect_reply* other);
+
+  // implements Message ----------------------------------------------
+
+  connect_reply* New() const;
+  void CopyFrom(const ::google::protobuf::Message& from);
+  void MergeFrom(const ::google::protobuf::Message& from);
+  void CopyFrom(const connect_reply& from);
+  void MergeFrom(const connect_reply& from);
+  void Clear();
+  bool IsInitialized() const;
+
+  int ByteSize() const;
+  bool MergePartialFromCodedStream(
+      ::google::protobuf::io::CodedInputStream* input);
+  void SerializeWithCachedSizes(
+      ::google::protobuf::io::CodedOutputStream* output) const;
+  ::google::protobuf::uint8* SerializeWithCachedSizesToArray(::google::protobuf::uint8* output) const;
+  int GetCachedSize() const { return _cached_size_; }
+  private:
+  void SharedCtor();
+  void SharedDtor();
+  void SetCachedSize(int size) const;
+  public:
+
+  ::google::protobuf::Metadata GetMetadata() const;
+
+  // nested types ----------------------------------------------------
+
+  // accessors -------------------------------------------------------
+
+  // required .login.error err = 1;
+  inline bool has_err() const;
+  inline void clear_err();
+  static const int kErrFieldNumber = 1;
+  inline ::login::error err() const;
+  inline void set_err(::login::error value);
+
+  // @@protoc_insertion_point(class_scope:login.connect_reply)
+ private:
+  inline void set_has_err();
+  inline void clear_has_err();
+
+  ::google::protobuf::UnknownFieldSet _unknown_fields_;
+
+  int err_;
+
+  mutable int _cached_size_;
+  ::google::protobuf::uint32 _has_bits_[(1 + 31) / 32];
+
+  friend void  protobuf_AddDesc_login_2eproto();
+  friend void protobuf_AssignDesc_login_2eproto();
+  friend void protobuf_ShutdownFile_login_2eproto();
+
+  void InitAsDefaultInstance();
+  static connect_reply* default_instance_;
 };
 // -------------------------------------------------------------------
 
@@ -1831,6 +2012,129 @@ inline ::google::protobuf::int32 login_reply::gateport() const {
 inline void login_reply::set_gateport(::google::protobuf::int32 value) {
   set_has_gateport();
   gateport_ = value;
+}
+
+// -------------------------------------------------------------------
+
+// connect_request
+
+// required uint64 uid = 1;
+inline bool connect_request::has_uid() const {
+  return (_has_bits_[0] & 0x00000001u) != 0;
+}
+inline void connect_request::set_has_uid() {
+  _has_bits_[0] |= 0x00000001u;
+}
+inline void connect_request::clear_has_uid() {
+  _has_bits_[0] &= ~0x00000001u;
+}
+inline void connect_request::clear_uid() {
+  uid_ = GOOGLE_ULONGLONG(0);
+  clear_has_uid();
+}
+inline ::google::protobuf::uint64 connect_request::uid() const {
+  return uid_;
+}
+inline void connect_request::set_uid(::google::protobuf::uint64 value) {
+  set_has_uid();
+  uid_ = value;
+}
+
+// required string sk = 2;
+inline bool connect_request::has_sk() const {
+  return (_has_bits_[0] & 0x00000002u) != 0;
+}
+inline void connect_request::set_has_sk() {
+  _has_bits_[0] |= 0x00000002u;
+}
+inline void connect_request::clear_has_sk() {
+  _has_bits_[0] &= ~0x00000002u;
+}
+inline void connect_request::clear_sk() {
+  if (sk_ != &::google::protobuf::internal::kEmptyString) {
+    sk_->clear();
+  }
+  clear_has_sk();
+}
+inline const ::std::string& connect_request::sk() const {
+  return *sk_;
+}
+inline void connect_request::set_sk(const ::std::string& value) {
+  set_has_sk();
+  if (sk_ == &::google::protobuf::internal::kEmptyString) {
+    sk_ = new ::std::string;
+  }
+  sk_->assign(value);
+}
+inline void connect_request::set_sk(const char* value) {
+  set_has_sk();
+  if (sk_ == &::google::protobuf::internal::kEmptyString) {
+    sk_ = new ::std::string;
+  }
+  sk_->assign(value);
+}
+inline void connect_request::set_sk(const char* value, size_t size) {
+  set_has_sk();
+  if (sk_ == &::google::protobuf::internal::kEmptyString) {
+    sk_ = new ::std::string;
+  }
+  sk_->assign(reinterpret_cast<const char*>(value), size);
+}
+inline ::std::string* connect_request::mutable_sk() {
+  set_has_sk();
+  if (sk_ == &::google::protobuf::internal::kEmptyString) {
+    sk_ = new ::std::string;
+  }
+  return sk_;
+}
+inline ::std::string* connect_request::release_sk() {
+  clear_has_sk();
+  if (sk_ == &::google::protobuf::internal::kEmptyString) {
+    return NULL;
+  } else {
+    ::std::string* temp = sk_;
+    sk_ = const_cast< ::std::string*>(&::google::protobuf::internal::kEmptyString);
+    return temp;
+  }
+}
+inline void connect_request::set_allocated_sk(::std::string* sk) {
+  if (sk_ != &::google::protobuf::internal::kEmptyString) {
+    delete sk_;
+  }
+  if (sk) {
+    set_has_sk();
+    sk_ = sk;
+  } else {
+    clear_has_sk();
+    sk_ = const_cast< ::std::string*>(&::google::protobuf::internal::kEmptyString);
+  }
+}
+
+// -------------------------------------------------------------------
+
+// connect_reply
+
+// required .login.error err = 1;
+inline bool connect_reply::has_err() const {
+  return (_has_bits_[0] & 0x00000001u) != 0;
+}
+inline void connect_reply::set_has_err() {
+  _has_bits_[0] |= 0x00000001u;
+}
+inline void connect_reply::clear_has_err() {
+  _has_bits_[0] &= ~0x00000001u;
+}
+inline void connect_reply::clear_err() {
+  err_ = 0;
+  clear_has_err();
+}
+inline ::login::error connect_reply::err() const {
+  return static_cast< ::login::error >(err_);
+}
+inline void connect_reply::set_err(::login::error value) {
+  assert(::login::error_IsValid(value));
+  set_has_err();
+  err_ = value;
 }
 
 // -------------------------------------------------------------------

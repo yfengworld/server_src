@@ -1,4 +1,5 @@
 #include "fwd.h"
+#include "login.pb.h"
 
 #include "msg_protobuf.h"
 #include "cmd.h"
@@ -8,9 +9,44 @@
 typedef void (*cb)(conn *, unsigned char *msg, size_t sz);
 static cb cbs[CG_END - CG_BEGIN];
 
-static void user_session_cb(conn *c, unsigned char *msg, size_t sz)
+static void connect_request_cb(conn *c, unsigned char *msg, size_t sz)
 {
     mdebug("user_session_cb");
+
+    login::connect_request cr;
+    
+    uint64_t uid = cr.uid();
+    std::string sk = cr.sk();
+
+    login::error err = login::success;
+
+    do {
+        user_t *user = user_mgr->get_user_incref(uid);
+        if (NULL == user) {
+            err = login::unknow;
+            break;
+        }
+
+        if (0 != strncmp(sk.c_str(), user->sk, 32)) {
+            err = login::auth;
+            break;
+        }
+
+        user_lock(user);
+        /* replace */
+        if (user->c) {
+            disconnect(user->c);
+            conn_decref(user->c);
+        }
+        user->c = c;
+        conn_incref(user->c);
+        user_unlock(user);
+        
+    } while (0);
+
+    login::connect_reply r;
+    r.set_err(err);
+    conn_write<login::connect_reply>(c, gc_connect_reply, &r);
 }
 
 static void forward(conn* c, connector *cr, msg_head *h, unsigned char *msg, size_t sz)
@@ -19,7 +55,6 @@ static void forward(conn* c, connector *cr, msg_head *h, unsigned char *msg, siz
 
     if (h->flags & FLAG_HAS_UID) {
         merror("should no uid connection %s", c->addrtext);
-        /* close connection */
         disconnect(c);
         return;
     }
@@ -41,6 +76,7 @@ static void forward(conn* c, connector *cr, msg_head *h, unsigned char *msg, siz
     if (0 >= evbuffer_reserve_space(output, sz + sizeof(uint64_t), v, 1)) {
         evbuffer_unlock(output);
         merror("forward connection %s's cmd:%d failed, evbuffer_reserve_space!", c->addrtext, h->cmd);
+        disconnect(c);
         return;
     }
 
@@ -57,12 +93,11 @@ static void forward(conn* c, connector *cr, msg_head *h, unsigned char *msg, siz
     if (0 > evbuffer_commit_space(output, v, 1)) {
         evbuffer_unlock(output);
         merror("forward connection %s's cmd:%d failed, evbuffer_add!", c->addrtext, h->cmd);
+        disconnect(c);
         return;
     }
     bufferevent_enable(cr->c->bev, EV_WRITE);
     evbuffer_unlock(output);
-
-    disconnect(c);
 
     mdebug("forward cmd:%d for connection %s", h->cmd, c->addrtext);
 }
@@ -127,5 +162,5 @@ void client_cb_init(user_callback *cb)
     cb->connect = client_connect_cb;
     cb->disconnect = client_disconnect_cb;
     memset(cbs, 0, sizeof(cb) * (CG_END - CG_BEGIN));
-    cbs[cg_user_session - CG_BEGIN] = user_session_cb;
+    cbs[cg_connect_request - CG_BEGIN] = connect_request_cb;
 }

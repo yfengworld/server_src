@@ -53,6 +53,17 @@ message login_reply {
     optional int32 gateport = 5;
 }
 
+// client -> gate 
+message connect_request {
+    required uint64 uid = 1;
+    required string sk = 2;
+};
+
+// gate -> client
+message connect_reply {
+    required error err = 1;
+};
+
 // center -> login
 message center_reg {
     required int32 id = 1;
