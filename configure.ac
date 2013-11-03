@@ -6,8 +6,7 @@ AC_INIT([FULL-PACKAGE-NAME], [VERSION], [BUG-REPORT-ADDRESS])
 AC_CONFIG_HEADERS([config.h])
 AM_INIT_AUTOMAKE
 AC_CONFIG_MACRO_DIR([m4])
-LT_INIT
-${CFLAGS="-Wall -g -O0"}
+${ CFLAGS="-Wall -g -O0" AMFLAGS="-Wall -g -O0" }
 
 # Checks for programs.
 AC_PROG_CXX

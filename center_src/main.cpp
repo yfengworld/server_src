@@ -15,6 +15,7 @@
 
 static void signal_cb(evutil_socket_t, short, void *);
 
+connector *login_ = NULL;
 gate_info_manager_t *gate_info_mgr = NULL;
 
 /* game_cb */
@@ -110,6 +111,7 @@ int main(int argc, char **argv)
         mfatal("create center connector failed!");
         return 1;
     }
+    login_ = cl;
 
     event_base_dispatch(main_base);
 

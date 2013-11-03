@@ -1,11 +1,12 @@
-#include "net.h"
-#include "cmd.h"
-#include "log.h"
-#include "msg_protobuf.h"
-
 #include "fwd.h"
-#include "login.pb.h"
 #include "user.h"
+#include "center_info.h"
+#include "login.pb.h"
+
+#include "msg_protobuf.h"
+#include "cmd.h"
+#include "net.h"
+#include "log.h"
 
 typedef void (*cb)(conn *, unsigned char *, size_t);
 static cb cbs[CL_END - CL_BEGIN];
@@ -40,34 +41,39 @@ static void login_request_cb(conn *c, unsigned char *msg, size_t sz)
             break;
         }
 
-        int tempid = 0;
-        conn_lock(c);
-        tempid = (int)(long)(c->arg);
-        conn_unlock(c);
-
-        user_t *user = new (std::nothrow) user_t(tempid);
+        int tempid = (int)(long)(c->arg);
+        user_t *user = (user_t *)malloc(sizeof(user_t));
         if (NULL == user) {
             err = login::unknow;
             break;
         }
+        user->id = tempid;
+        user->c = NULL;
+        user->refcnt = 1;
+        pthread_mutex_init(&user->lock, NULL);
 
         if (0 > user_mgr->add_user(user)) {
             err = login::unknow;
             break;
         }
 
-        user->set_conn(c);
+        user_lock(user);
+        user->c = c;
+        user_unlock(user);
+
+        conn_lock(c);
+        c->user = user;
+        conn_unlock(c);
 
         /* tell center */
-        pthread_rwlock_rdlock(&centers_rwlock);
-        if (centers)
-        {
-            login::user_login_request ulr;
-            ulr.set_tempid(tempid);
-            ulr.set_uid(uid);
-            conn_write<login::user_login_request>(centers->c, le_user_login_request, &ulr);
+        login::user_login_request ulr;
+        ulr.set_tempid(tempid);
+        ulr.set_uid(uid);
+        center_info_t *info = center_info_mgr->get_center_info_incref(1);
+        if (info) {
+            conn_write<login::user_login_request>(info->c, le_user_login_request, &ulr);
+            center_info_decref(info);
         }
-        pthread_rwlock_unlock(&centers_rwlock);
         return;
 
     } while (0);
@@ -125,7 +131,7 @@ void client_connect_cb(conn *c, int ok)
             break;
         }
 
-        int tempid = user_t::get_guid();
+        int tempid = user_manager_t::get_guid();
         conn_lock_incref(c);
         c->arg = (void*)tempid;
         conn_unlock(c);
@@ -141,7 +147,6 @@ void client_disconnect_cb(conn *c)
     mdebug("client_disconnect_cb");
     if (c->user) {
         user_mgr->del_user((user_t *)c->user);
-        ((user_t*)(c->user))->decref();
     }
 }
 

@@ -1,5 +1,6 @@
 #include "fwd.h"
 #include "user.h"
+#include "center_info.h"
 
 #include "msg_protobuf.h"
 #include "cmd.h"
@@ -24,6 +25,7 @@ static user_callback center_cb;
 void center_cb_init(user_callback *cb);
 
 user_manager_t *user_mgr = NULL;
+center_info_manager_t *center_info_mgr = NULL;
 
 int main(int argc, char **argv)
 {
@@ -38,6 +40,20 @@ int main(int argc, char **argv)
     }
     client_cb_init(&client_cb);
     center_cb_init(&center_cb);
+
+    /* user manager */
+    user_mgr = new user_manager_t;
+    if (NULL == user_mgr) {
+        mfatal("new user_manager_t failed!");
+        return 1;
+    }
+
+    /* center info manager */
+    center_info_mgr = new center_info_manager_t;
+    if (NULL == center_info_mgr) {
+        mfatal("new center_info_manager_t failed!");
+        return 1;
+    }
 
     /* protobuf verify version */
     GOOGLE_PROTOBUF_VERIFY_VERSION;
@@ -87,19 +103,11 @@ int main(int argc, char **argv)
         return 1;
     }
     
-    user_mgr = new user_manager_t;
-    if (NULL == user_mgr) {
-        mfatal("create user manager failed!");
-        return 1;
-    }
 
     event_base_dispatch(main_base);
 
     for (int i = 0; i < WORKER_NUM; i++)
         pthread_join(worker[i], NULL);
-
-    delete user_mgr;
-    user_mgr = NULL;
 
     listener_free(lc);
     listener_free(le);
@@ -108,6 +116,12 @@ int main(int argc, char **argv)
 
     /* shutdown protobuf */
     google::protobuf::ShutdownProtobufLibrary();
+
+    delete user_mgr;
+    user_mgr = NULL;
+
+    delete center_info_mgr;
+    center_info_mgr = NULL;
 
     /* close log */
     LOG_CLOSE();

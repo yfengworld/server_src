@@ -2,139 +2,111 @@
 
 #include "log.h"
 
-int user_t::guid = 0;
+#include <stdlib.h>
 
-user_t::user_t(int id)
-    : id_(id)
-    , refcnt(1)
+void user_lock(user_t *user)
 {
-    pthread_mutex_init(&lock, NULL);
+    pthread_mutex_lock(&user->lock);
 }
 
-user_t::~user_t()
+void user_unlock(user_t *user)
 {
-    mdebug("user_t id=%d free", id_);
+    pthread_mutex_unlock(&user->lock);
 }
 
-int user_t::get_id()
+void user_lock_incref(user_t *user)
 {
-    return id_;
+    pthread_mutex_lock(&user->lock);
+    ++user->refcnt;
 }
 
-struct event *user_t::get_expire_timer()
+int user_decref_unlock(user_t *user)
 {
-    return &timer;
-}
-
-void user_t::set_conn(conn *c)
-{
-    lock_incref();
-    c_ = c;
-    decref_unlock();
-    conn_incref(c);
-    conn_lock_incref(c);
-    c->user = this;
-    conn_decref_unlock(c);
-}
-
-void user_t::lock_incref()
-{
-    pthread_mutex_lock(&lock);
-    ++refcnt;
-}
-
-int user_t::decref_unlock()
-{
-    if (--refcnt) {
-        pthread_mutex_unlock(&lock);
+    if (--user->refcnt) {
+        pthread_mutex_unlock(&user->lock);
         return 0;
     }
 
-    if (c_) {
-        conn_lock_incref(c_);
-        c_->user = NULL;
-        conn_decref_unlock(c_);
-        c_ = NULL;
+    if (user->c) {
+        conn_lock_incref(user->c);
+        user->c->user = NULL;
+        conn_decref_unlock(user->c);
+        user->c = NULL;
     }
 
-    delete this;
+    free(user);
+    mdebug("user tempid:%d free!", user->id);
     return 1;
 }
 
-void user_t::incref()
+void user_incref(user_t *user)
 {
-    pthread_mutex_lock(&lock);
-    ++refcnt;
-    pthread_mutex_unlock(&lock);
+    pthread_mutex_lock(&user->lock);
+    ++user->refcnt;
+    pthread_mutex_unlock(&user->lock);
 }
 
-int user_t::decref()
+int user_decref(user_t *user)
 {
-    pthread_mutex_lock(&lock);
-    return decref_unlock();
+    pthread_mutex_lock(&user->lock);
+    return user_decref_unlock(user);
 }
 
-int user_t::get_guid()
-{
-    return ++guid;
-}
+int user_manager_t::guid = 0;
 
 user_manager_t::user_manager_t()
 {
     pthread_rwlock_init(&rwlock, NULL);
 }
 
+int user_manager_t::get_guid()
+{
+    return ++guid;
+}
+
 user_t *user_manager_t::get_user_incref(int id)
 {
     user_t *user = NULL;
-    rdlock();
-    user_map_t::iterator itr = users_.find(id);
-    if (itr != users_.end()) {
+
+    pthread_rwlock_rdlock(&rwlock);
+    user_map_t::iterator itr = users.find(id);
+    if (itr != users.end()) {
         user = itr->second;
-        user->incref();
+        user_incref(user);
     }
-    unlock();
+    pthread_rwlock_unlock(&rwlock);
+
     return user;
 }
 
 int user_manager_t::add_user(user_t *user)
 {
     int ret = -1;
-    rdlock();
-    user_map_t::iterator itr = users_.find(user->get_id());
-    if (itr == users_.end()) {
-        users_.insert(std::make_pair(user->get_id(), user));
+
+    pthread_rwlock_wrlock(&rwlock);
+    user_map_t::iterator itr = users.find(user->id);
+    if (itr == users.end()) {
+        user_incref(user);
+        users.insert(std::make_pair(user->id, user));
         ret = 0;
     }
-    unlock();
+    pthread_rwlock_unlock(&rwlock);
+
     return ret;
 }
 
 int user_manager_t::del_user(user_t *user)
 {
     int ret = -1;
-    rdlock();
-    user_map_t::iterator itr = users_.find(user->get_id());
-    if (itr != users_.end()) {
-        users_.erase(itr);
+
+    pthread_rwlock_rdlock(&rwlock);
+    user_map_t::iterator itr = users.find(user->id);
+    if (itr != users.end()) {
+        user_decref(itr->second);
+        users.erase(itr);
         ret = 0;
     }
-    unlock();
+    pthread_rwlock_unlock(&rwlock);
+
     return ret;
 }
-
-void user_manager_t::rdlock()
-{
-    pthread_rwlock_rdlock(&rwlock);
-}
-
-void user_manager_t::wrlock()
-{
-    pthread_rwlock_wrlock(&rwlock);
-}
-
-void user_manager_t::unlock()
-{
-    pthread_rwlock_unlock(&rwlock);
-}
-

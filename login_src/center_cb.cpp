@@ -1,19 +1,51 @@
+#include "fwd.h"
+#include "user.h"
+#include "center_info.h"
+#include "login.pb.h"
+
+#include "msg_protobuf.h"
+#include "cmd.h"
 #include "net.h"
 #include "log.h"
-#include "cmd.h"
-#include "msg_protobuf.h"
-
-#include "fwd.h"
-
-center_conn *centers = NULL;
-pthread_rwlock_t centers_rwlock = PTHREAD_RWLOCK_INITIALIZER;
 
 typedef void (*cb)(conn *, unsigned char *, size_t);
 static cb cbs[EL_END - EL_BEGIN];
 
+static void center_reg_cb(conn *c, unsigned char *msg, size_t sz)
+{
+    mdebug("center_reg_cb");
+    login::center_reg r;
+    if (0 > msg_body<login::center_reg>(msg, sz, &r)) {
+        merror("msg_body<login::center_reg> failed!");
+        return;
+    }
+    center_info_mgr->add_center_info(r.id(), c);
+}
+
 static void user_login_reply_cb(conn *c, unsigned char *msg, size_t sz)
 {
     mdebug("user_login_reply_cb");
+
+    login::user_login_reply r;
+    msg_body<login::user_login_reply>(msg, sz, &r);
+
+    login::error err = r.err();
+    int tempid = r.tempid();
+    user_t *user = user_mgr->get_user_incref(tempid);
+    if (NULL == user) {
+        mwarn("user tempid:%d not exist when user_login_reply_cb reach!", tempid);
+        return;
+    }
+
+    login::login_reply rr;
+    rr.set_err(err);
+    if (login::success == err) {
+        rr.set_uid(r.uid());
+        rr.set_sk(r.sk());
+        rr.set_gateip(r.gateip());
+        rr.set_gateport(r.gateport());
+    } 
+    conn_write<login::login_reply>(user->c, lc_login_reply, &rr);
 }
 
 static void center_rpc_cb(conn *c, unsigned char *msg, size_t sz)
@@ -39,37 +71,12 @@ static void center_rpc_cb(conn *c, unsigned char *msg, size_t sz)
 static void center_connect_cb(conn *c, int ok)
 {
     mdebug("center_connect_cb");
-    center_conn *cc = (center_conn *)malloc(sizeof(center_conn));
-    if (NULL == cc) {
-        disconnect(c);
-        return;
-    }
-
-    pthread_rwlock_wrlock(&centers_rwlock);
-    cc->c = c;
-    cc->next = centers;
-    centers = cc;
-    pthread_rwlock_unlock(&centers_rwlock);
 }
 
 static void center_disconnect_cb(conn *c)
 {
     mdebug("center_disconnect_cb");
-    pthread_rwlock_wrlock(&centers_rwlock);
-    center_conn *cc = centers;
-    center_conn *prev = NULL;
-    while (cc) {
-        if (cc->c == c) {
-            if (prev)
-                prev->next = cc->next;
-            disconnect(c);
-            free(cc);
-            break;
-        }
-        prev = cc;
-        cc = cc->next;
-    }
-    pthread_rwlock_unlock(&centers_rwlock);
+    center_info_mgr->del_center_info((int)(long)(c->arg));
 }
 
 void center_cb_init(user_callback *cb)
@@ -80,4 +87,5 @@ void center_cb_init(user_callback *cb)
 
     memset(cbs, 0, sizeof(cb) * (EL_END - EL_BEGIN));
     cbs[el_user_login_reply - EL_BEGIN] = user_login_reply_cb;
+    cbs[el_center_reg - EL_BEGIN] = center_reg_cb;
 }

@@ -27,23 +27,43 @@ void gate_info_decref(struct gate_info *info)
 
 gate_info_manager_t::gate_info_manager_t()
 {
-    pthread_mutex_init(&lock, NULL);
+    pthread_rwlock_init(&rwlock, NULL);
 }
 
 struct gate_info *gate_info_manager_t::get_best_gate_incref(uint64_t uid)
 {
     struct gate_info *info = NULL;
 
-    pthread_mutex_lock(&lock);
+    pthread_rwlock_rdlock(&rwlock);
     size_t sz = gate_infos.size();
     if (sz > 0) {
         int idx = (int)(uid % (uint64_t)sz);
         info = gate_infos[idx];
         gate_info_incref(info);
     }
-    pthread_mutex_unlock(&lock);
+    pthread_rwlock_unlock(&rwlock);
 
     return info;
+}
+
+int gate_info_manager_t::get_gate_ip_port(conn *c, char **ip, short *port)
+{
+    int ret = -1;
+
+    pthread_rwlock_rdlock(&rwlock);
+    gate_info_vector_t::iterator itr = gate_infos.begin();
+    for (; itr != gate_infos.end(); ++itr) {
+        if ((*itr)->c == c) {
+            strncpy(*ip, (*itr)->ip, 32);
+            (*ip)[31] = '\0';
+            *port = (*itr)->port;
+            ret = 0;
+            break;
+        }
+    }
+    pthread_rwlock_unlock(&rwlock);
+
+    return ret;
 }
 
 int gate_info_manager_t::add_gate_info(conn *c, const char *ip, short port)
@@ -64,9 +84,9 @@ int gate_info_manager_t::add_gate_info(conn *c, const char *ip, short port)
     pthread_mutex_init(&info->lock, NULL);
     gate_info_incref(info);
 
-    pthread_mutex_lock(&lock);
+    pthread_rwlock_wrlock(&rwlock);
     gate_infos.push_back(info);
-    pthread_mutex_unlock(&lock);
+    pthread_rwlock_unlock(&rwlock);
 
     return 0;
 }
@@ -74,7 +94,7 @@ int gate_info_manager_t::add_gate_info(conn *c, const char *ip, short port)
 int gate_info_manager_t::del_gate_info(conn *c)
 {
     int ret = -1;
-    pthread_mutex_lock(&lock);
+    pthread_rwlock_wrlock(&rwlock);
     gate_info_vector_t::iterator itr = gate_infos.begin();
     for (; itr != gate_infos.end(); ++itr) {
         if ((*itr)->c == c) {
@@ -85,6 +105,6 @@ int gate_info_manager_t::del_gate_info(conn *c)
             break;
         }
     }
-    pthread_mutex_unlock(&lock);
+    pthread_rwlock_unlock(&rwlock);
     return ret;
 }

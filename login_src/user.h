@@ -9,34 +9,20 @@
 
 #define MAX_SESSION_SECS 30
 
-class user_t
-{
-public:
-    user_t(int id);
-    ~user_t();
-
-public:
-    int get_id();
-    struct event *get_expire_timer();
-    void set_conn(conn *c);
-    void lock_incref();
-    int decref_unlock();
-    void incref();
-    int decref();
-
-public:
-    static int get_guid();
-
-private:
-    static int guid;
-
-private:
-    int id_;
-    conn *c_;
-    struct event timer;
+typedef struct user_t user_t;
+struct user_t {
+    int id;
+    conn *c;
     int refcnt;
     pthread_mutex_t lock;
 };
+
+void user_lock(user_t *user);
+void user_unlock(user_t *user);
+void user_lock_incref(user_t *user);
+int user_decref_unlock(user_t *user);
+void user_incref(user_t *user);
+int user_decref(user_t *user);
 
 typedef std::map<int, user_t*> user_map_t;
 
@@ -46,17 +32,16 @@ public:
     user_manager_t();
     
 public:
+    static int get_guid();
+
+public:
     user_t *get_user_incref(int id);
     int add_user(user_t *user);
     int del_user(user_t *user);
 
 public:
-    void rdlock();
-    void wrlock();
-    void unlock();
-
-private:
-    user_map_t users_;
+    static int guid;
+    user_map_t users;
     pthread_rwlock_t rwlock;
 };
 

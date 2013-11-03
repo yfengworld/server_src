@@ -53,11 +53,13 @@ message login_reply {
     optional int32 gateport = 5;
 }
 
-
-
+// center -> login
+message center_reg {
+    required int32 id = 1;
+}
 
 // gate -> center
-message reg {
+message gate_reg {
     required string ip = 1;
     required int32 port = 2;
 }

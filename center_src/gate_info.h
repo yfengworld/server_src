@@ -26,12 +26,13 @@ public:
 
 public:
     struct gate_info *get_best_gate_incref(uint64_t uid);
+    int get_gate_ip_port(conn *c, char **ip, short *port);
     int add_gate_info(conn *c, const char *ip, short port);
     int del_gate_info(conn *c);
 
 private:
     gate_info_vector_t gate_infos;
-    pthread_mutex_t lock;
+    pthread_rwlock_t rwlock;
 };
 
 #endif /* GATE_INFO_H_INCLUDED */

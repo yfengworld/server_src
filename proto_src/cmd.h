@@ -34,6 +34,7 @@ enum
 
     /********************************* center -> login *********************************/
     EL_BEGIN = 21,
+    el_center_reg,
     el_user_login_reply,
     EL_END,
 
@@ -47,7 +48,7 @@ enum
 
     /********************************* gate -> center *********************************/
     GE_BEGIN = 81,
-    ge_reg,
+    ge_gate_reg,
     ge_user_session_reply,
     GE_END,
 

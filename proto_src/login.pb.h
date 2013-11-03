@@ -40,7 +40,8 @@ class user_session_request;
 class user_session_reply;
 class user_login_reply;
 class login_reply;
-class reg;
+class center_reg;
+class gate_reg;
 
 enum error {
   success = 0,
@@ -757,14 +758,14 @@ class login_reply : public ::google::protobuf::Message {
 };
 // -------------------------------------------------------------------
 
-class reg : public ::google::protobuf::Message {
+class center_reg : public ::google::protobuf::Message {
  public:
-  reg();
-  virtual ~reg();
+  center_reg();
+  virtual ~center_reg();
 
-  reg(const reg& from);
+  center_reg(const center_reg& from);
 
-  inline reg& operator=(const reg& from) {
+  inline center_reg& operator=(const center_reg& from) {
     CopyFrom(from);
     return *this;
   }
@@ -778,17 +779,99 @@ class reg : public ::google::protobuf::Message {
   }
 
   static const ::google::protobuf::Descriptor* descriptor();
-  static const reg& default_instance();
+  static const center_reg& default_instance();
 
-  void Swap(reg* other);
+  void Swap(center_reg* other);
 
   // implements Message ----------------------------------------------
 
-  reg* New() const;
+  center_reg* New() const;
   void CopyFrom(const ::google::protobuf::Message& from);
   void MergeFrom(const ::google::protobuf::Message& from);
-  void CopyFrom(const reg& from);
-  void MergeFrom(const reg& from);
+  void CopyFrom(const center_reg& from);
+  void MergeFrom(const center_reg& from);
+  void Clear();
+  bool IsInitialized() const;
+
+  int ByteSize() const;
+  bool MergePartialFromCodedStream(
+      ::google::protobuf::io::CodedInputStream* input);
+  void SerializeWithCachedSizes(
+      ::google::protobuf::io::CodedOutputStream* output) const;
+  ::google::protobuf::uint8* SerializeWithCachedSizesToArray(::google::protobuf::uint8* output) const;
+  int GetCachedSize() const { return _cached_size_; }
+  private:
+  void SharedCtor();
+  void SharedDtor();
+  void SetCachedSize(int size) const;
+  public:
+
+  ::google::protobuf::Metadata GetMetadata() const;
+
+  // nested types ----------------------------------------------------
+
+  // accessors -------------------------------------------------------
+
+  // required int32 id = 1;
+  inline bool has_id() const;
+  inline void clear_id();
+  static const int kIdFieldNumber = 1;
+  inline ::google::protobuf::int32 id() const;
+  inline void set_id(::google::protobuf::int32 value);
+
+  // @@protoc_insertion_point(class_scope:login.center_reg)
+ private:
+  inline void set_has_id();
+  inline void clear_has_id();
+
+  ::google::protobuf::UnknownFieldSet _unknown_fields_;
+
+  ::google::protobuf::int32 id_;
+
+  mutable int _cached_size_;
+  ::google::protobuf::uint32 _has_bits_[(1 + 31) / 32];
+
+  friend void  protobuf_AddDesc_login_2eproto();
+  friend void protobuf_AssignDesc_login_2eproto();
+  friend void protobuf_ShutdownFile_login_2eproto();
+
+  void InitAsDefaultInstance();
+  static center_reg* default_instance_;
+};
+// -------------------------------------------------------------------
+
+class gate_reg : public ::google::protobuf::Message {
+ public:
+  gate_reg();
+  virtual ~gate_reg();
+
+  gate_reg(const gate_reg& from);
+
+  inline gate_reg& operator=(const gate_reg& from) {
+    CopyFrom(from);
+    return *this;
+  }
+
+  inline const ::google::protobuf::UnknownFieldSet& unknown_fields() const {
+    return _unknown_fields_;
+  }
+
+  inline ::google::protobuf::UnknownFieldSet* mutable_unknown_fields() {
+    return &_unknown_fields_;
+  }
+
+  static const ::google::protobuf::Descriptor* descriptor();
+  static const gate_reg& default_instance();
+
+  void Swap(gate_reg* other);
+
+  // implements Message ----------------------------------------------
+
+  gate_reg* New() const;
+  void CopyFrom(const ::google::protobuf::Message& from);
+  void MergeFrom(const ::google::protobuf::Message& from);
+  void CopyFrom(const gate_reg& from);
+  void MergeFrom(const gate_reg& from);
   void Clear();
   bool IsInitialized() const;
 
@@ -830,7 +913,7 @@ class reg : public ::google::protobuf::Message {
   inline ::google::protobuf::int32 port() const;
   inline void set_port(::google::protobuf::int32 value);
 
-  // @@protoc_insertion_point(class_scope:login.reg)
+  // @@protoc_insertion_point(class_scope:login.gate_reg)
  private:
   inline void set_has_ip();
   inline void clear_has_ip();
@@ -850,7 +933,7 @@ class reg : public ::google::protobuf::Message {
   friend void protobuf_ShutdownFile_login_2eproto();
 
   void InitAsDefaultInstance();
-  static reg* default_instance_;
+  static gate_reg* default_instance_;
 };
 // ===================================================================
 
@@ -1752,56 +1835,82 @@ inline void login_reply::set_gateport(::google::protobuf::int32 value) {
 
 // -------------------------------------------------------------------
 
-// reg
+// center_reg
 
-// required string ip = 1;
-inline bool reg::has_ip() const {
+// required int32 id = 1;
+inline bool center_reg::has_id() const {
   return (_has_bits_[0] & 0x00000001u) != 0;
 }
-inline void reg::set_has_ip() {
+inline void center_reg::set_has_id() {
   _has_bits_[0] |= 0x00000001u;
 }
-inline void reg::clear_has_ip() {
+inline void center_reg::clear_has_id() {
   _has_bits_[0] &= ~0x00000001u;
 }
-inline void reg::clear_ip() {
+inline void center_reg::clear_id() {
+  id_ = 0;
+  clear_has_id();
+}
+inline ::google::protobuf::int32 center_reg::id() const {
+  return id_;
+}
+inline void center_reg::set_id(::google::protobuf::int32 value) {
+  set_has_id();
+  id_ = value;
+}
+
+// -------------------------------------------------------------------
+
+// gate_reg
+
+// required string ip = 1;
+inline bool gate_reg::has_ip() const {
+  return (_has_bits_[0] & 0x00000001u) != 0;
+}
+inline void gate_reg::set_has_ip() {
+  _has_bits_[0] |= 0x00000001u;
+}
+inline void gate_reg::clear_has_ip() {
+  _has_bits_[0] &= ~0x00000001u;
+}
+inline void gate_reg::clear_ip() {
   if (ip_ != &::google::protobuf::internal::kEmptyString) {
     ip_->clear();
   }
   clear_has_ip();
 }
-inline const ::std::string& reg::ip() const {
+inline const ::std::string& gate_reg::ip() const {
   return *ip_;
 }
-inline void reg::set_ip(const ::std::string& value) {
+inline void gate_reg::set_ip(const ::std::string& value) {
   set_has_ip();
   if (ip_ == &::google::protobuf::internal::kEmptyString) {
     ip_ = new ::std::string;
   }
   ip_->assign(value);
 }
-inline void reg::set_ip(const char* value) {
+inline void gate_reg::set_ip(const char* value) {
   set_has_ip();
   if (ip_ == &::google::protobuf::internal::kEmptyString) {
     ip_ = new ::std::string;
   }
   ip_->assign(value);
 }
-inline void reg::set_ip(const char* value, size_t size) {
+inline void gate_reg::set_ip(const char* value, size_t size) {
   set_has_ip();
   if (ip_ == &::google::protobuf::internal::kEmptyString) {
     ip_ = new ::std::string;
   }
   ip_->assign(reinterpret_cast<const char*>(value), size);
 }
-inline ::std::string* reg::mutable_ip() {
+inline ::std::string* gate_reg::mutable_ip() {
   set_has_ip();
   if (ip_ == &::google::protobuf::internal::kEmptyString) {
     ip_ = new ::std::string;
   }
   return ip_;
 }
-inline ::std::string* reg::release_ip() {
+inline ::std::string* gate_reg::release_ip() {
   clear_has_ip();
   if (ip_ == &::google::protobuf::internal::kEmptyString) {
     return NULL;
@@ -1811,7 +1920,7 @@ inline ::std::string* reg::release_ip() {
     return temp;
   }
 }
-inline void reg::set_allocated_ip(::std::string* ip) {
+inline void gate_reg::set_allocated_ip(::std::string* ip) {
   if (ip_ != &::google::protobuf::internal::kEmptyString) {
     delete ip_;
   }
@@ -1825,23 +1934,23 @@ inline void reg::set_allocated_ip(::std::string* ip) {
 }
 
 // required int32 port = 2;
-inline bool reg::has_port() const {
+inline bool gate_reg::has_port() const {
   return (_has_bits_[0] & 0x00000002u) != 0;
 }
-inline void reg::set_has_port() {
+inline void gate_reg::set_has_port() {
   _has_bits_[0] |= 0x00000002u;
 }
-inline void reg::clear_has_port() {
+inline void gate_reg::clear_has_port() {
   _has_bits_[0] &= ~0x00000002u;
 }
-inline void reg::clear_port() {
+inline void gate_reg::clear_port() {
   port_ = 0;
   clear_has_port();
 }
-inline ::google::protobuf::int32 reg::port() const {
+inline ::google::protobuf::int32 gate_reg::port() const {
   return port_;
 }
-inline void reg::set_port(::google::protobuf::int32 value) {
+inline void gate_reg::set_port(::google::protobuf::int32 value) {
   set_has_port();
   port_ = value;
 }

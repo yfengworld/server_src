@@ -54,6 +54,7 @@ static void user_session_request_cb(conn *c, unsigned char *msg, size_t sz)
         r.set_sk(usr.sk());
     } else {
         r.set_err(login::unknow);
+        r.set_tempid(usr.tempid());
     }
     conn_write<login::user_session_reply>(c, ge_user_session_reply, &r);
 }
@@ -80,10 +81,10 @@ static void center_rpc_cb(conn *c, unsigned char *msg, size_t sz)
 static void center_connect_cb(conn *c, int ok)
 {
     mdebug("center_connect_cb");
-    login::reg r;
+    login::gate_reg r;
     r.set_ip(gate_ip.c_str());
     r.set_port(gate_port);
-    int ret = connector_write<login::reg>(center, ge_reg, &r);
+    int ret = connector_write<login::gate_reg>(center, ge_gate_reg, &r);
     mdebug("connector_write ret:%d", ret);
 }
 
