@@ -12,16 +12,19 @@ void gate_info_incref(struct gate_info *info)
     pthread_mutex_unlock(&info->lock);
 }
 
-void gate_info_decref(struct gate_info *info)
+int gate_info_decref(struct gate_info *info)
 {
     pthread_mutex_lock(&info->lock);
-    if (--info->refcnt)
-        return;
+    if (--info->refcnt) {
+        pthread_mutex_unlock(&info->lock);
+        return 0;
+    }
     
     conn_decref(info->c);
     free(info);
 
     pthread_mutex_unlock(&info->lock);
+    return 1;
 }
 
 

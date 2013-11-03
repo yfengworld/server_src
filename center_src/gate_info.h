@@ -16,7 +16,7 @@ struct gate_info {
 };
 
 void gate_info_incref(struct gate_info *info);
-void gate_info_decref(struct gate_info *info);
+int gate_info_decref(struct gate_info *info);
 
 typedef std::vector<struct gate_info *> gate_info_vector_t;
 
