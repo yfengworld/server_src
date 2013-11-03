@@ -17,6 +17,13 @@ static void login_reply_cb(conn *c, unsigned char *msg, size_t sz)
     mdebug("login_reply_cb err:%d", lr.err());
 }
 
+static void connect_reply_cb(conn *c, unsigned char *msg, size_t sz)
+{
+    login::connect_reply cr;
+    msg_body<login::connect_reply>(msg, sz, &cr);
+    mdebug("connect_reply_cb err:%d", cr.err());
+}
+
 static void logic_server_rpc_cb(conn *c, unsigned char *msg, size_t sz)
 {
     msg_head h;
@@ -53,7 +60,6 @@ static void server_rpc_cb(conn *c, unsigned char *msg, size_t sz)
     if (0 != message_head(msg, sz, &h)) {
         return;
     }
-    mdebug("server_rpc_cb cmd:%d", h.cmd);
     logic_thread_add_rpc_event(&logic, c, msg, sz);
 }
 
@@ -77,4 +83,5 @@ void server_cb_init(user_callback *cb, user_callback *cb2)
     cb2->disconnect = logic_server_disconnect_cb;
     memset(cbs, 0, sizeof(cb) * (SC_END - SC_BEGIN));
     cbs[lc_login_reply - SC_BEGIN] = login_reply_cb;
+    cbs[gc_connect_reply - SC_BEGIN] = connect_reply_cb;
 }
