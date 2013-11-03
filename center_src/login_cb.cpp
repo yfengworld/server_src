@@ -59,6 +59,9 @@ static void login_rpc_cb(conn *c, unsigned char *msg, size_t sz)
 static void login_connect_cb(conn *c, int ok)
 {
     mdebug("login_connect_cb");
+    login::center_reg r;
+    r.set_id(1);
+    conn_write<login::center_reg>(c, el_center_reg, &r);
 }
 
 static void login_disconnect_cb(conn *c)

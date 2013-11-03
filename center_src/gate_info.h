@@ -26,7 +26,7 @@ public:
 
 public:
     struct gate_info *get_best_gate_incref(uint64_t uid);
-    int get_gate_ip_port(conn *c, char **ip, short *port);
+    int get_gate_ip_port(conn *c, char *ip, short *port);
     int add_gate_info(conn *c, const char *ip, short port);
     int del_gate_info(conn *c);
 

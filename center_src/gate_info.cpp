@@ -46,17 +46,18 @@ struct gate_info *gate_info_manager_t::get_best_gate_incref(uint64_t uid)
     return info;
 }
 
-int gate_info_manager_t::get_gate_ip_port(conn *c, char **ip, short *port)
+int gate_info_manager_t::get_gate_ip_port(conn *c, char *ip, short *port)
 {
     int ret = -1;
 
     pthread_rwlock_rdlock(&rwlock);
     gate_info_vector_t::iterator itr = gate_infos.begin();
     for (; itr != gate_infos.end(); ++itr) {
-        if ((*itr)->c == c) {
-            strncpy(*ip, (*itr)->ip, 32);
-            (*ip)[31] = '\0';
-            *port = (*itr)->port;
+        gate_info *info = *itr;
+        if (info->c == c) {
+            strncpy(ip, info->ip, 32);
+            ip[31] = '\0';
+            *port = info->port;
             ret = 0;
             break;
         }

@@ -39,7 +39,7 @@ static void user_session_reply_cb(conn *c, unsigned char *msg, size_t sz)
     if (login::success == err) {
         char ip[32];
         short port;
-        if (0 > gate_info_mgr->get_gate_ip_port(c, (char **)&ip, &port)) {
+        if (0 > gate_info_mgr->get_gate_ip_port(c, ip, &port)) {
             merror("gate_gate_ip_port failed!");
             rr.set_err(login::unknow);
         } else {

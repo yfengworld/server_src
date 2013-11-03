@@ -76,4 +76,5 @@ void server_cb_init(user_callback *cb, user_callback *cb2)
     cb2->connect = logic_server_connect_cb;
     cb2->disconnect = logic_server_disconnect_cb;
     memset(cbs, 0, sizeof(cb) * (SC_END - SC_BEGIN));
+    cbs[lc_login_reply - SC_BEGIN] = login_reply_cb;
 }
