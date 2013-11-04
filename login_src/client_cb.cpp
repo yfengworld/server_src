@@ -19,6 +19,7 @@ struct timeout_info {
 
 static void expire_timer_cb(int fd, short what, void *arg)
 {
+    return;
     mdebug("expire_timer_cb");
     struct timeout_info *ti = (struct timeout_info *)arg;
     disconnect(ti->c);
@@ -33,7 +34,7 @@ static void login_request_cb(conn *c, unsigned char *msg, size_t sz)
     login::error err = login::success;
 
     do {
-        uint64_t uid = 1;
+        uint64_t uid = rand() % 50000 + 1;
 
         /* TODO account passwd check */
         if (0) {
@@ -41,9 +42,10 @@ static void login_request_cb(conn *c, unsigned char *msg, size_t sz)
             break;
         }
 
-        int tempid = (int)(long)(c->arg);
+        int tempid = user_manager_t::get_guid();
         user_t *user = (user_t *)malloc(sizeof(user_t));
         if (NULL == user) {
+            mdebug("user_t alloc failed!");
             err = login::unknow;
             break;
         }
@@ -53,6 +55,7 @@ static void login_request_cb(conn *c, unsigned char *msg, size_t sz)
         pthread_mutex_init(&user->lock, NULL);
 
         if (0 > user_mgr->add_user(user)) {
+            mdebug("add_user failed!");
             err = login::unknow;
             break;
         }
@@ -131,11 +134,6 @@ void client_connect_cb(conn *c, int ok)
             free(ti);
             break;
         }
-
-        int tempid = user_manager_t::get_guid();
-        conn_lock_incref(c);
-        c->arg = (void*)tempid;
-        conn_unlock(c);
         return;
 
     } while (0);

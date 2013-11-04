@@ -16,7 +16,6 @@ static void login_reply_cb(conn *c, unsigned char *msg, size_t sz)
     msg_body<login::login_reply>(msg, sz, &lr);
     mdebug("login_reply_cb err:%d", lr.err());
 
-    return;
     login::login_request r;
     r.set_account("abc");
     r.set_passwd("xxx");
@@ -34,6 +33,7 @@ static void logic_server_rpc_cb(conn *c, unsigned char *msg, size_t sz)
 {
     msg_head h;
     if (0 != message_head(msg, sz, &h)) {
+        merror("message_head failed!");
         return;
     }
 
@@ -42,8 +42,8 @@ static void logic_server_rpc_cb(conn *c, unsigned char *msg, size_t sz)
             (*(cbs[h.cmd - SC_BEGIN]))(c, msg, sz);
     } else {
         merror("invalid cmd:%d", h.cmd);
+        conn_decref(c);
     }
-    conn_decref(c);
 }
 
 static void logic_server_connect_cb(conn *c, int ok)

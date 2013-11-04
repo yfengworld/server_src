@@ -14,9 +14,18 @@ void conn_event_cb(struct bufferevent *bev, short what, void *arg)
     conn *c = (conn *)arg;
 
     if (what & BEV_EVENT_EOF || what & BEV_EVENT_ERROR) {
-        user_callback *cb = (user_callback *)c->data;
-        if (cb->disconnect) {
-            (*(cb->disconnect))(c);
+        int ret = 0;
+        conn_lock(c);
+        if (STATE_CONNECTED == c->state) {
+            c->state == STATE_NOT_CONNECTED;
+            ret = 1;
+        }
+        conn_unlock(c);
+        if (1 == ret) {
+            user_callback *cb = (user_callback *)c->data;
+            if (cb->disconnect) {
+                (*(cb->disconnect))(c);
+            }
         }
         conn_decref(c);
     }

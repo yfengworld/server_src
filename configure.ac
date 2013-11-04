@@ -2,15 +2,14 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ([2.63])
-AC_INIT([FULL-PACKAGE-NAME], [VERSION], [BUG-REPORT-ADDRESS])
+AC_INIT([server], [1.0], [tinysrc@163.com])
 AC_CONFIG_HEADERS([config.h])
 AM_INIT_AUTOMAKE
 AC_CONFIG_MACRO_DIR([m4])
-${ CFLAGS="-Wall -g -O0" AMFLAGS="-Wall -g -O0" }
+${CXXFLAGS="-Wall -g"}
 
 # Checks for programs.
 AC_PROG_CXX
-AC_PROG_CC
 
 # Checks for libraries.
 # FIXME: Replace `main' with a function in `-levent':

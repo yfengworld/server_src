@@ -8,6 +8,7 @@
 #include "log.h"
 
 #include <strings.h>
+#include <time.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
 #include <signal.h>
@@ -29,6 +30,8 @@ center_info_manager_t *center_info_mgr = NULL;
 
 int main(int argc, char **argv)
 {
+    srand((int)time(NULL));
+
     /* open log */
     if (0 != LOG_OPEN("./login", LOG_LEVEL_DEBUG, -1)) {
         return 1;
@@ -71,6 +74,7 @@ int main(int argc, char **argv)
     thread_init(main_base, WORKER_NUM, worker);
 
     /* signal */
+    signal(SIGPIPE, SIG_IGN);
     struct event *signal_event;
     signal_event = evsignal_new(main_base, SIGINT, signal_cb, (void *)main_base);
     if (NULL == signal_event || 0 != event_add(signal_event, NULL)) {

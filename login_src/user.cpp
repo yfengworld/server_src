@@ -99,7 +99,7 @@ int user_manager_t::del_user(user_t *user)
 {
     int ret = -1;
 
-    pthread_rwlock_rdlock(&rwlock);
+    pthread_rwlock_wrlock(&rwlock);
     user_map_t::iterator itr = users.find(user->id);
     if (itr != users.end()) {
         user_decref(itr->second);
