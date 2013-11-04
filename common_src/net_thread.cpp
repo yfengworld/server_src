@@ -232,7 +232,6 @@ int net_init()
     if (0 > ret) {
         return ret;
     }
-    evthread_enable_lock_debuging();
     return 0;
 }
 
