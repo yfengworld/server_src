@@ -16,11 +16,15 @@ static void user_session_request_cb(conn *c, unsigned char *msg, size_t sz)
     login::user_session_request usr;
     msg_body<login::user_session_request>(msg, sz, &usr);
 
-    int res = 0;
-    pthread_rwlock_wrlock(&user_mgr->rwlock);
-    user_map_t::iterator itr = user_mgr->users.find(usr.uid());
-    if (itr != user_mgr->users.end()) {
-        user_t *user = itr->second;
+    login::error err = login::success;
+    user_t *user = user_mgr->get_user_incref(usr.uid());
+    if (NULL == user) {
+        if (0 > user_mgr->add_user(usr.uid())) {
+            err = login::unknow;
+        } else {
+            err = login::success;
+        }
+    } else {
         strncpy(user->sk, usr.sk().c_str(), 32);
         user->sk[31] = '\0';
         if (user->c) {
@@ -28,33 +32,16 @@ static void user_session_request_cb(conn *c, unsigned char *msg, size_t sz)
             conn_decref(user->c);
             user->c = NULL;
         }
-    } else {
-        user_t *user = (user_t *)malloc(sizeof(user_t));
-        if (NULL == user) {
-            merror("user_t alloc failed!");
-            res = -1;
-        } else {
-            user->uid = usr.uid();
-            strncpy(user->sk, usr.sk().c_str(), 32);
-            user->sk[31] = '\0';
-            user->c = NULL;
-            user->refcnt = 1;
-            pthread_mutex_init(&user->lock, NULL);
-            user_incref(user);
-            user_mgr->users.insert(std::make_pair(user->uid, user));
-        }
+        err = login::success;
     }
-    pthread_rwlock_unlock(&user_mgr->rwlock);
-
     login::user_session_reply r;
-    if (0 == res) {
-        r.set_err(login::success);
+    r.set_err(err);
+    if (err != login::success) {
+        r.set_tempid(usr.tempid());
+    } else {
         r.set_tempid(usr.tempid());
         r.set_uid(usr.uid());
         r.set_sk(usr.sk());
-    } else {
-        r.set_err(login::unknow);
-        r.set_tempid(usr.tempid());
     }
     conn_write<login::user_session_reply>(c, ge_user_session_reply, &r);
 }

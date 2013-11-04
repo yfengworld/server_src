@@ -49,57 +49,76 @@ static void connect_request_cb(conn *c, unsigned char *msg, size_t sz)
     conn_write<login::connect_reply>(c, gc_connect_reply, &r);
 }
 
-static void forward(conn* c, connector *cr, msg_head *h, unsigned char *msg, size_t sz)
+static void forward(conn* src, connector *cr, msg_head *h, unsigned char *msg, size_t sz)
 {
     uint64_t uid = 0;
 
     if (h->flags & FLAG_HAS_UID) {
-        merror("should no uid connection %s", c->addrtext);
-        disconnect(c);
+        merror("forward connection %s's cmd:%d failed, uid exist!", src->addrtext, h->cmd);
+        disconnect(src);
         return;
     }
 
-    if (cr->state != STATE_CONNECTED || !cr->c || !cr->c->bev) {
-        merror("forward connection %s's cmd:%d failed!", c->addrtext, h->cmd);
+    conn *dest = NULL;
+    pthread_mutex_lock(&cr->lock);
+    dest = cr->c;
+    conn_incref(dest);
+    pthread_mutex_unlock(&cr->lock);
+
+    if (NULL == dest) {
+        merror("forward connection %s's cmd:%d failed, dest not exist!", src->addrtext, h->cmd);
+        disconnect(src);
         return;
     }
 
-    evbuffer *output = bufferevent_get_output(cr->c->bev);
-    if (!output) {
-        merror("forward connection %s's cmd:%d failed, bufferevent_get_output!", c->addrtext, h->cmd);
-        return;
-    }
+    conn_lock(dest);
+    if (STATE_NOT_CONNECTED == dest->state) {
+        merror("forward connection %s's cmd:%d failed, state == STATE_NOT_CONNECTED!", src->addrtext, h->cmd);
+        disconnect(src);
+        conn_unlock(dest);
+    } else {
+        evbuffer *output = bufferevent_get_output(dest->bev);
+        if (!output) {
+            merror("forward connection %s's cmd:%d failed, bufferevent_get_output!", src->addrtext, h->cmd);
+            disconnect(src);
+            conn_unlock(dest);
+            return;
+        }
 
-    struct evbuffer_iovec v[1];
+        struct evbuffer_iovec v[1];
 
-    evbuffer_lock(output);
-    if (0 >= evbuffer_reserve_space(output, sz + sizeof(uint64_t), v, 1)) {
+        evbuffer_lock(output);
+        if (0 >= evbuffer_reserve_space(output, sz + sizeof(uint64_t), v, 1)) {
+            merror("forward connection %s's cmd:%d failed, evbuffer_reserve_space!", src->addrtext, h->cmd);
+            disconnect(src);
+            evbuffer_unlock(output);
+            conn_unlock(dest);
+            return;
+        }
+
+        unsigned char *nmsg = (unsigned char *)(v[0].iov_base);
+        memcpy(nmsg, msg, MSG_HEAD_SIZE);
+        nmsg += sizeof(unsigned short);
+        *(unsigned short *)nmsg = htons((unsigned short)(h->len + sizeof(uint64_t)));
+        nmsg += (MSG_HEAD_SIZE - sizeof(unsigned short));
+        *(uint64_t *)nmsg = htons(uid);
+        nmsg += sizeof(uint64_t);
+        memcpy(nmsg, msg + MSG_HEAD_SIZE, h->len);
+        v[0].iov_len = MSG_HEAD_SIZE + h->len + sizeof(uint64_t);
+
+        if (0 > evbuffer_commit_space(output, v, 1)) {
+            merror("forward connection %s's cmd:%d failed, evbuffer_add!", src->addrtext, h->cmd);
+            disconnect(src);
+            evbuffer_unlock(output);
+            conn_unlock(dest);
+            return;
+        }
+        bufferevent_enable(dest->bev, EV_WRITE);
         evbuffer_unlock(output);
-        merror("forward connection %s's cmd:%d failed, evbuffer_reserve_space!", c->addrtext, h->cmd);
-        disconnect(c);
-        return;
+        conn_unlock(dest);
     }
 
-    unsigned char *nmsg = (unsigned char *)(v[0].iov_base);
-    memcpy(nmsg, msg, MSG_HEAD_SIZE);
-    nmsg += sizeof(unsigned short);
-    *(unsigned short *)nmsg = htons((unsigned short)(h->len + sizeof(uint64_t)));
-    nmsg += (MSG_HEAD_SIZE - sizeof(unsigned short));
-    *(uint64_t *)nmsg = htons(uid);
-    nmsg += sizeof(uint64_t);
-    memcpy(nmsg, msg + MSG_HEAD_SIZE, h->len);
-    v[0].iov_len = MSG_HEAD_SIZE + h->len + sizeof(uint64_t);
-
-    if (0 > evbuffer_commit_space(output, v, 1)) {
-        evbuffer_unlock(output);
-        merror("forward connection %s's cmd:%d failed, evbuffer_add!", c->addrtext, h->cmd);
-        disconnect(c);
-        return;
-    }
-    bufferevent_enable(cr->c->bev, EV_WRITE);
-    evbuffer_unlock(output);
-
-    mdebug("forward cmd:%d for connection %s", h->cmd, c->addrtext);
+    mdebug("forward cmd:%d for connection %s", h->cmd, src->addrtext);
 }
 
 void client_rpc_cb(conn *c, unsigned char *msg, size_t sz)

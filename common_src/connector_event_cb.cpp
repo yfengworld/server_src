@@ -45,8 +45,8 @@ static void conn_event_cb2(struct bufferevent *bev, short what, void *arg)
             return;
         }
 
-        /* free bufferevent */
-        pthread_mutex_lock(&c->lock);
+        /* free old bufferevent */
+        conn_lock(c);
         bufferevent_free(c->bev);
 
         /* reconnect */
@@ -54,12 +54,12 @@ static void conn_event_cb2(struct bufferevent *bev, short what, void *arg)
                 BEV_OPT_CLOSE_ON_FREE | BEV_OPT_DEFER_CALLBACKS);
         if (NULL == c->bev) {
             merror("create bufferevent failed!");
-            pthread_mutex_unlock(&c->lock);
+            conn_unlock(c);
             return;
         } else {
             bufferevent_setcb(c->bev, NULL, NULL, connecting_event_cb, c);
-            cr->state = STATE_NOT_CONNECTED;
-            pthread_mutex_unlock(&c->lock);
+            c->state = STATE_NOT_CONNECTED;
+            conn_unlock(c);
             delay_connecting(c);
         }
     }
@@ -82,7 +82,7 @@ void connecting_event_cb(struct bufferevent *bev, short what, void *arg)
     } else {
         minfo("connect %s success!", cr->addrtext);
         conn_lock(c);
-        cr->state = STATE_CONNECTED;
+        c->state = STATE_CONNECTED;
         conn_unlock(c);
         
         user_callback *cb = (user_callback *)c->data;

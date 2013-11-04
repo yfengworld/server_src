@@ -72,7 +72,7 @@ err:
     if (cb->disconnect) {
         (*(cb->disconnect))(c);
     }
-    conn_free(c);
+    conn_decref(c);
     return;
 
 conti:

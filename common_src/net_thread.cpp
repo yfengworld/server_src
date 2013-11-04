@@ -135,7 +135,7 @@ static void thread_libevent_process(int fd, short which, void *arg)
                     c->bev = bev;
                     if (NULL == bev) {
                         merror("create bufferevent failed!");
-                        conn_free(c);
+                        conn_decref(c);
                     } else {
                         strncpy(c->addrtext, li->addrtext, 32);
                         /* multi-thread write */
@@ -143,6 +143,8 @@ static void thread_libevent_process(int fd, short which, void *arg)
                         evbuffer_enable_locking(output, NULL);
                         bufferevent_setcb(bev, conn_read_cb, conn_write_cb, conn_event_cb, c);
                         c->data = li->l;
+                        c->user = NULL;
+                        c->state = STATE_CONNECTED;
                         c->thread = me;
                         if (li->l->cb.connect)
                             (*(li->l->cb.connect))(c, 1);
@@ -167,9 +169,11 @@ static void thread_libevent_process(int fd, short which, void *arg)
                             c->data = cr;
                             c->user = NULL;
                             c->thread = me;
+                            c->state = STATE_NOT_CONNECTED;
 
+                            pthread_mutex_lock(&cr->lock);
                             cr->c = c;
-                            cr->state = STATE_NOT_CONNECTED;
+                            pthread_mutex_unlock(&cr->lock);
 
                             bufferevent_socket_connect(c->bev, cr->sa, cr->socklen);
                         } else {

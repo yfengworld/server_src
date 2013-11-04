@@ -25,9 +25,12 @@ typedef struct {
 } LIBEVENT_DISPATCHER_THREAD;
 
 typedef struct {
-    void *data;
-    void *user;
-    void *arg;
+    void *data;                 /* listener or connector */
+    void *user;                 /* associate logic object */
+    void *arg;                  /* custom data */
+#define STATE_NOT_CONNECTED 0
+#define STATE_CONNECTED 1
+    int state;
     bufferevent *bev;
     int refcnt;
     pthread_mutex_t lock;
@@ -60,9 +63,6 @@ typedef struct {
 typedef struct {
     user_callback cb;
     int keep_connect;
-#define STATE_NOT_CONNECTED 0
-#define STATE_CONNECTED 1
-    volatile int state;
     conn *c;
     pthread_mutex_t lock;
     struct sockaddr *sa;
@@ -78,11 +78,10 @@ void thread_init(struct event_base *base, int nthreads, pthread_t *th);
 /* connection */
 void conn_init();
 conn *conn_new();
-void conn_free(conn *c);
 void conn_lock_incref(conn *c);
-void conn_decref_unlock(conn *c);
+int conn_decref_unlock(conn *c);
 void conn_incref(conn *c);
-void conn_decref(conn *c);
+int conn_decref(conn *c);
 void conn_lock(conn *c);
 void conn_unlock(conn *c);
 void disconnect(conn *c);

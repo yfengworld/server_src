@@ -15,6 +15,12 @@ static void login_reply_cb(conn *c, unsigned char *msg, size_t sz)
     login::login_reply lr;
     msg_body<login::login_reply>(msg, sz, &lr);
     mdebug("login_reply_cb err:%d", lr.err());
+
+    return;
+    login::login_request r;
+    r.set_account("abc");
+    r.set_passwd("xxx");
+    conn_write<login::login_request>(c, cl_login_request, &r);
 }
 
 static void connect_reply_cb(conn *c, unsigned char *msg, size_t sz)

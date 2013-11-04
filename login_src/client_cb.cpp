@@ -81,6 +81,7 @@ static void login_request_cb(conn *c, unsigned char *msg, size_t sz)
     login::login_reply lr;
     lr.set_err(err);
     conn_write<login::login_reply>(c, lc_login_reply, &lr);
+    mdebug("send login_reply");
 }
 
 void client_rpc_cb(conn *c, unsigned char *msg, size_t sz)

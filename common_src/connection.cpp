@@ -44,6 +44,7 @@ conn *conn_new()
     c->data = NULL;
     c->user = NULL;
     c->arg = NULL;
+    c->state = STATE_NOT_CONNECTED;
     c->bev = NULL;
     c->refcnt = 1;
     pthread_mutex_init(&c->lock, NULL);
@@ -77,23 +78,17 @@ static int conn_add_to_freelist(conn *c) {
     return ret;
 }
 
-void conn_free(conn *c)
-{
-    pthread_mutex_lock(&c->lock);
-    conn_decref_unlock(c);
-}
-
 void conn_lock_incref(conn *c)
 {
     pthread_mutex_lock(&c->lock);
     ++c->refcnt;
 }
 
-void conn_decref_unlock(conn *c)
+int conn_decref_unlock(conn *c)
 {
     if (--c->refcnt) {
         pthread_mutex_unlock(&c->lock);
-        return;
+        return 0;
     }
     if (NULL != c->bev) {
         bufferevent_free(c->bev);
@@ -102,6 +97,7 @@ void conn_decref_unlock(conn *c)
     if (0 != conn_add_to_freelist(c)) {
         free(c);
     }
+    return 1;
 }
 
 void conn_incref(conn *c)
@@ -111,7 +107,7 @@ void conn_incref(conn *c)
     pthread_mutex_unlock(&c->lock);
 }
 
-void conn_decref(conn *c)
+int conn_decref(conn *c)
 {
     pthread_mutex_lock(&c->lock);
     return conn_decref_unlock(c);
@@ -130,10 +126,15 @@ void conn_unlock(conn *c)
 void disconnect(conn *c)
 {
     if (c) {
+        conn_lock(c);
         user_callback *cb = (user_callback *)(c->data);
-        if (cb->disconnect)
-            (*(cb->disconnect))(c);
-        conn_free(c);
+        if (STATE_NOT_CONNECTED == c->state) {
+            if (cb->disconnect)
+                (*(cb->disconnect))(c);
+            c->state = STATE_CONNECTED;
+        }
+        conn_unlock(c);
+        conn_decref(c);
     }
 }
 
