@@ -144,7 +144,6 @@ int conn_write(conn *c, unsigned char *msg, size_t sz) {
     if (c->bev && 0 == bufferevent_write(c->bev, msg, sz)) {
         conn_decref_unlock(c);
         return 0;
-        //return bufferevent_enable(c->bev, EV_WRITE);
     }
     conn_decref_unlock(c);
     return -1;

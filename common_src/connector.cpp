@@ -53,10 +53,7 @@ int connector_write(connector *cr, unsigned char *msg, size_t sz)
     if (cr->c) {
         conn_lock_incref(cr->c);
         if (cr->c->state == STATE_CONNECTED && cr->c->bev) {
-            if (0 == bufferevent_write(cr->c->bev, msg, sz)) {
-                ret = 0;
-               // ret = bufferevent_enable(cr->c->bev, EV_WRITE);
-            }
+            ret = bufferevent_write(cr->c->bev, msg, sz);
         }
         conn_decref_unlock(cr->c);
     }
