@@ -37,18 +37,19 @@ static void logic_server_rpc_cb(conn *c, unsigned char *msg, size_t sz)
         return;
     }
 
+    mdebug("server -> client cmd:%d len:%d flags:%d", h.cmd, h.len, h.flags);
     if (h.cmd > SC_BEGIN && h.cmd < SC_END) {
         if (cbs[h.cmd - SC_BEGIN])
             (*(cbs[h.cmd - SC_BEGIN]))(c, msg, sz);
     } else {
-        merror("invalid cmd:%d", h.cmd);
+        merror("server -> client invalid cmd:%d len:%d flags:%d", h.cmd, h.len, h.flags);
         conn_decref(c);
     }
 }
 
 static void logic_server_connect_cb(conn *c, int ok)
 {
-    mdebug("logic_server_connect_cb");
+    mdebug("logic_server_connect_cb ok:%d", ok);
     login::login_request lr;
     lr.set_account("abc");
     lr.set_passwd("xxx");

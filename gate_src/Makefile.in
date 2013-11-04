@@ -162,7 +162,7 @@ INCLUDES = \
 		   -I../proto_src
 
 AM_CXXFLAGS = 
-gate_LDADD = -lpthread -levent -lprotobuf
+gate_LDADD = -lpthread -levent_pthreads -lprotobuf
 gate_SOURCES = \
 			   ../common_src/net_thread.cpp \
 			   ../common_src/msg_protobuf.cpp \

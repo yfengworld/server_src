@@ -12,7 +12,6 @@ static cb cbs[GE_END - GE_BEGIN];
 
 static void gate_reg_cb(conn *c, unsigned char *msg, size_t sz)
 {
-    mdebug("gate_reg_cb");
     login::gate_reg r;
     if (0 > msg_body<login::gate_reg>(msg, sz, &r)) {
         merror("msg_body<login::reg> failed!");
@@ -24,8 +23,6 @@ static void gate_reg_cb(conn *c, unsigned char *msg, size_t sz)
 
 static void user_session_reply_cb(conn *c, unsigned char *msg, size_t sz)
 {
-    mdebug("user_session_reply_cb");
-
     login::user_session_reply r;
     if (0 > msg_body<login::user_session_reply>(msg, sz, &r)) {
         merror("msg_body<login::user_session_reply failed!");
@@ -60,14 +57,14 @@ static void gate_rpc_cb(conn *c, unsigned char *msg, size_t sz)
         merror("message_head failed!");
         return;
     }
-    mdebug("gate_rpc_cb cmd:%d", h.cmd);
+    mdebug("gate_rpc_cb cmd:%d len:%d flags:%d", h.cmd, h.len, h.flags);
 
     if (h.cmd > GE_BEGIN && h.cmd < GE_END) {
         if (cbs[h.cmd - GE_BEGIN]) {
             (*(cbs[h.cmd - GE_BEGIN]))(c, msg, sz);
         }
     } else {
-        merror("invalid cmd:%d", h.cmd);
+        merror("gate_rpc_cb invalid cmd:%d len:%d flags:%d", h.cmd, h.len, h.flags);
         return;
     }
 }

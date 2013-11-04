@@ -54,6 +54,10 @@ int main(int argc, char **argv)
     game_cb_init(&game_cb);
     cache_cb_init(&cache_cb);
 
+    if (0 > net_init()) {
+        mfatal("net_init failed!");
+        return 1;
+    }
     /* user manager */
     user_mgr = new (std::nothrow) user_manager_t;
     if (NULL == user_mgr) {
@@ -114,6 +118,7 @@ int main(int argc, char **argv)
     }
 
     /* connector to game */
+    /*
     bzero(&csa, sizeof(csa));
     csa.sin_family = AF_INET;
     csa.sin_addr.s_addr = inet_addr("127.0.0.1");
@@ -125,8 +130,10 @@ int main(int argc, char **argv)
         mfatal("create game connector failed!");
         return 1;
     }
+    */
 
     /* connector to cache */
+    /*
     bzero(&csa, sizeof(csa));
     csa.sin_family = AF_INET;
     csa.sin_addr.s_addr = inet_addr("127.0.0.1");
@@ -138,15 +145,18 @@ int main(int argc, char **argv)
         mfatal("create cache connector failed!");
         return 1;
     }
+    */
 
     event_base_dispatch(main_base);
 
     for (int i = 0; i < WORKER_NUM; i++)
         pthread_join(worker[i], NULL);
 
+    /*
     connector_free(ca);
     connector_free(cm);
     connector_free(ce);
+    */
     listener_free(lc);
     event_free(signal_event);
     event_base_free(main_base);

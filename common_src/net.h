@@ -4,6 +4,7 @@
 #include <event2/util.h>
 #include <event2/listener.h>
 #include <event2/event.h>
+#include <event2/thread.h>
 #include <event.h>
 
 #include <pthread.h>
@@ -71,6 +72,9 @@ typedef struct {
     /* reconnect timer */
     struct event timer;
 } connector;
+
+/* net init */
+int net_init();
 
 /* thread clone */
 void thread_init(struct event_base *base, int nthreads, pthread_t *th);

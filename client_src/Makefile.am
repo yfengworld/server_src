@@ -4,7 +4,7 @@ INCLUDES = \
 
 AM_CXXFLAGS =
 
-client_LDADD = -lpthread -levent -lprotobuf
+client_LDADD = -lpthread -levent_pthreads -lprotobuf
 
 bin_PROGRAMS = client
 

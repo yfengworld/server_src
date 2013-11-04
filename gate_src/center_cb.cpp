@@ -11,8 +11,6 @@ static cb cbs[EG_END - EG_BEGIN];
 
 static void user_session_request_cb(conn *c, unsigned char *msg, size_t sz)
 {
-    mdebug("user_session_request_cb");
-
     login::user_session_request usr;
     msg_body<login::user_session_request>(msg, sz, &usr);
 
@@ -53,26 +51,25 @@ static void center_rpc_cb(conn *c, unsigned char *msg, size_t sz)
         merror("message_head failed!");
         return;
     }
-    mdebug("center_rpc_cb cmd:%d", h.cmd);
+    mdebug("center -> gate cmd:%d len:%d flags:%d", h.cmd, h.len, h.flags);
 
     if (h.cmd > EG_BEGIN && h.cmd < EG_END) {
         if (cbs[h.cmd - EG_BEGIN]) {
             (*(cbs[h.cmd - EG_BEGIN]))(c, msg, sz);
         }
     } else {
-        merror("invalid cmd:%d", h.cmd);
+        merror("center -> gate invalid cmd:%d len:%d flags:%d", h.cmd, h.len, h.flags);
         return;
     }
 }
 
 static void center_connect_cb(conn *c, int ok)
 {
-    mdebug("center_connect_cb");
+    mdebug("center_connect_cb ok:%d", ok);
     login::gate_reg r;
     r.set_ip(gate_ip.c_str());
     r.set_port(gate_port);
     int ret = connector_write<login::gate_reg>(center, ge_gate_reg, &r);
-    mdebug("connector_write ret:%d", ret);
 }
 
 static void center_disconnect_cb(conn *c)

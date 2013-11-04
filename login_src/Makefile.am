@@ -4,7 +4,7 @@ INCLUDES = \
 
 AM_CXXFLAGS =
 
-login_LDADD = -lpthread -levent -lprotobuf
+login_LDADD = -lpthread -levent_pthreads -lprotobuf
 
 bin_PROGRAMS = login
 

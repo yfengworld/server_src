@@ -39,9 +39,6 @@ void conn_read_cb(struct bufferevent *bev, void *arg)
             if (total_len < MSG_HEAD_SIZE + len)
                 goto conti;
 
-            unsigned short cmd = ntohs(*(unsigned short *)cur++);
-            unsigned short flags = ntohs(*(unsigned short *)cur);
-
             size_t msg_len = MSG_HEAD_SIZE + len;
             buffer = evbuffer_pullup(input, msg_len);
             if (NULL == buffer)

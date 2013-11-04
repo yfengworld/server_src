@@ -4,7 +4,7 @@ INCLUDES = \
 
 AM_CXXFLAGS =
 
-game_LDADD = -lpthread -levent -lprotobuf
+game_LDADD = -lpthread -levent_pthreads -lprotobuf
 
 bin_PROGRAMS = game 
 

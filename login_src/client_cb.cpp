@@ -29,8 +29,6 @@ static void expire_timer_cb(int fd, short what, void *arg)
 
 static void login_request_cb(conn *c, unsigned char *msg, size_t sz)
 {
-    mdebug("login_request_cb");
-
     login::error err = login::success;
 
     do {
@@ -84,7 +82,6 @@ static void login_request_cb(conn *c, unsigned char *msg, size_t sz)
     login::login_reply lr;
     lr.set_err(err);
     conn_write<login::login_reply>(c, lc_login_reply, &lr);
-    mdebug("send login_reply");
 }
 
 void client_rpc_cb(conn *c, unsigned char *msg, size_t sz)
@@ -96,14 +93,14 @@ void client_rpc_cb(conn *c, unsigned char *msg, size_t sz)
         disconnect(c);
         return;
     }
-    mdebug("client_rpc_cb cmd:%d", h.cmd);
+    mdebug("client -> login cmd:%d len:%d flags:%d", h.cmd, h.len, h.flags);
 
     if (h.cmd > CL_BEGIN && h.cmd < CL_END) {
         if (cbs[h.cmd - CL_BEGIN]) {
             (*(cbs[h.cmd - CL_BEGIN]))(c, msg, sz);
         }
     } else {
-        merror("invalid cmd:%d", h.cmd);
+        merror("client -> login invalid cmd:%d len:%d flags:%d", h.cmd, h.len, h.flags);
         /* close connection */
         disconnect(c);
         return;

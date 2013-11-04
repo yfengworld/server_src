@@ -36,6 +36,12 @@ int main(int argc, char **argv)
     /* protobuf verify version */
     GOOGLE_PROTOBUF_VERIFY_VERSION;
 
+    /* net init */
+    if (0 > net_init()) {
+        mfatal("net_init failed!");
+        return 1;
+    }
+
     struct event_base *main_base = event_base_new();
     if (NULL == main_base) {
         mfatal("main_base = event_base_new() failed!");

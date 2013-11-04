@@ -126,6 +126,7 @@ void conn_unlock(conn *c)
 void disconnect(conn *c)
 {
     if (c) {
+        mdebug("disconnect");
         conn_lock(c);
         user_callback *cb = (user_callback *)(c->data);
         if (STATE_NOT_CONNECTED == c->state) {
@@ -142,7 +143,8 @@ int conn_write(conn *c, unsigned char *msg, size_t sz) {
     conn_lock_incref(c);
     if (c->bev && 0 == bufferevent_write(c->bev, msg, sz)) {
         conn_decref_unlock(c);
-        return bufferevent_enable(c->bev, EV_WRITE);
+        return 0;
+        //return bufferevent_enable(c->bev, EV_WRITE);
     }
     conn_decref_unlock(c);
     return -1;

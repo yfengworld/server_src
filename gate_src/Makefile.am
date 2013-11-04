@@ -4,7 +4,7 @@ INCLUDES = \
 
 AM_CXXFLAGS =
 
-gate_LDADD = -lpthread -levent -lprotobuf
+gate_LDADD = -lpthread -levent_pthreads -lprotobuf
 
 bin_PROGRAMS = gate 
 

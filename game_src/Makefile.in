@@ -161,7 +161,7 @@ INCLUDES = \
 		   -I../proto_src
 
 AM_CXXFLAGS = 
-game_LDADD = -lpthread -levent -lprotobuf
+game_LDADD = -lpthread -levent_pthreads -lprotobuf
 game_SOURCES = \
 			   ../common_src/net_thread.cpp \
 			   ../common_src/msg_protobuf.cpp \

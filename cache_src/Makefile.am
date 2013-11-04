@@ -4,7 +4,7 @@ INCLUDES = \
 
 AM_CXXFLAGS =
 
-cache_LDADD = -lpthread -levent -lprotobuf
+cache_LDADD = -lpthread -levent_pthreads -lprotobuf
 
 bin_PROGRAMS = cache
 

@@ -35,6 +35,11 @@ int main(int argc, char **argv)
     }
     server_cb_init(&server_cb, &logic_server_cb);
 
+    if (0 > net_init()) {
+        mfatal("net_init failed!");
+        return 1;
+    }
+
     /* protobuf verify version */
     GOOGLE_PROTOBUF_VERIFY_VERSION;
 

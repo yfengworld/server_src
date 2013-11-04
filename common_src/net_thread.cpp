@@ -131,7 +131,7 @@ static void thread_libevent_process(int fd, short which, void *arg)
                 conn *c = conn_new();
                 if (NULL != c) {
                     struct bufferevent* bev = bufferevent_socket_new(me->base, item->fd,
-                            BEV_OPT_CLOSE_ON_FREE | BEV_OPT_DEFER_CALLBACKS);
+                            BEV_OPT_THREADSAFE | BEV_OPT_CLOSE_ON_FREE | BEV_OPT_DEFER_CALLBACKS);
                     c->bev = bev;
                     if (NULL == bev) {
                         merror("create bufferevent failed!");
@@ -159,7 +159,7 @@ static void thread_libevent_process(int fd, short which, void *arg)
                     conn *c = conn_new();
                     if (c) {
                         struct bufferevent *bev = bufferevent_socket_new(me->base, -1,
-                                BEV_OPT_CLOSE_ON_FREE | BEV_OPT_DEFER_CALLBACKS);
+                                BEV_OPT_THREADSAFE | BEV_OPT_CLOSE_ON_FREE | BEV_OPT_DEFER_CALLBACKS);
                         c->bev = bev;
                         if (NULL != bev) {
                             /* multi-thread write */
@@ -224,6 +224,16 @@ static void create_worker(void *(*func)(void *), void *arg, pthread_t *th) {
         mfatal("pthread_create failed!");
         exit(1);
     }
+}
+
+int net_init()
+{
+    int ret = evthread_use_pthreads();
+    if (0 > ret) {
+        return ret;
+    }
+    evthread_enable_lock_debuging();
+    return 0;
 }
 
 static int init_count = 0;

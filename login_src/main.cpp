@@ -44,6 +44,12 @@ int main(int argc, char **argv)
     client_cb_init(&client_cb);
     center_cb_init(&center_cb);
 
+    /* net init */
+    if (0 > net_init()) {
+        mfatal("net_init failed!");
+        return 1;
+    }
+
     /* user manager */
     user_mgr = new user_manager_t;
     if (NULL == user_mgr) {

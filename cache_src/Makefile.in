@@ -161,7 +161,7 @@ INCLUDES = \
 		   -I../proto_src
 
 AM_CXXFLAGS = 
-cache_LDADD = -lpthread -levent -lprotobuf
+cache_LDADD = -lpthread -levent_pthreads -lprotobuf
 cache_SOURCES = \
 				../common_src/net_thread.cpp \
 				../common_src/msg_protobuf.cpp \

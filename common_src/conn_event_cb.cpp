@@ -12,6 +12,7 @@
 void conn_event_cb(struct bufferevent *bev, short what, void *arg)
 {
     conn *c = (conn *)arg;
+    mdebug("conn_event_cb what:%d", what);
 
     if (what & BEV_EVENT_EOF || what & BEV_EVENT_ERROR) {
         int ret = 0;

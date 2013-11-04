@@ -4,7 +4,7 @@ INCLUDES = \
 
 AM_CXXFLAGS =
 
-center_LDADD = -lpthread -levent -lprotobuf
+center_LDADD = -lpthread -levent_pthreads -lprotobuf
 
 bin_PROGRAMS = center 
 
