@@ -57,14 +57,14 @@ static void gate_rpc_cb(conn *c, unsigned char *msg, size_t sz)
         merror("message_head failed!");
         return;
     }
-    mdebug("gate_rpc_cb cmd:%d len:%d flags:%d", h.cmd, h.len, h.flags);
+    mdebug("gate -> center cmd:%d len:%d flags:%d", h.cmd, h.len, h.flags);
 
     if (h.cmd > GE_BEGIN && h.cmd < GE_END) {
         if (cbs[h.cmd - GE_BEGIN]) {
             (*(cbs[h.cmd - GE_BEGIN]))(c, msg, sz);
         }
     } else {
-        merror("gate_rpc_cb invalid cmd:%d len:%d flags:%d", h.cmd, h.len, h.flags);
+        merror("gate -> center invalid cmd:%d len:%d flags:%d", h.cmd, h.len, h.flags);
         return;
     }
 }

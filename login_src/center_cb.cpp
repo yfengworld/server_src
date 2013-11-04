@@ -13,7 +13,6 @@ static cb cbs[EL_END - EL_BEGIN];
 
 static void center_reg_cb(conn *c, unsigned char *msg, size_t sz)
 {
-    mdebug("center_reg_cb");
     login::center_reg r;
     if (0 > msg_body<login::center_reg>(msg, sz, &r)) {
         merror("msg_body<login::center_reg> failed!");
@@ -24,8 +23,6 @@ static void center_reg_cb(conn *c, unsigned char *msg, size_t sz)
 
 static void user_login_reply_cb(conn *c, unsigned char *msg, size_t sz)
 {
-    mdebug("user_login_reply_cb");
-
     login::user_login_reply r;
     msg_body<login::user_login_reply>(msg, sz, &r);
 
@@ -55,6 +52,7 @@ static void center_rpc_cb(conn *c, unsigned char *msg, size_t sz)
         merror("message_head failed!");
         return;
     }
+    mdebug("center -> login cmd:%d len:%d flags:%d", h.cmd, h.len, h.flags);
 
     if (h.cmd > EL_BEGIN && h.cmd < EL_END) {
         if (cbs[h.cmd - EL_BEGIN]) {
@@ -62,7 +60,7 @@ static void center_rpc_cb(conn *c, unsigned char *msg, size_t sz)
                 (*(cbs[h.cmd - EL_BEGIN]))(c, msg, sz);
             }
         } else {
-            merror("invalid cmd:%d", h.cmd);
+            merror("center -> login invalid cmd:%d len:%d flags:%d", h.cmd, h.len, h.flags);
             return;
         }
     }

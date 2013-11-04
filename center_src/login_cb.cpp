@@ -14,7 +14,6 @@ static cb cbs[LE_END - LE_BEGIN];
 
 static void user_login_request_cb(conn *c, unsigned char *msg, size_t sz)
 {
-    mdebug("user_login_request_cb");
     login::user_login_request ulr;
     if (0 > msg_body<login::user_login_request>(msg, sz, &ulr)) {
         merror("msg_body<login::user_user_login_request failed!");
@@ -44,14 +43,14 @@ static void login_rpc_cb(conn *c, unsigned char *msg, size_t sz)
         merror("message_head failed!");
         return;
     }
-    mdebug("login_rpc_cb cmd:%d", h.cmd);
+    mdebug("login -> center cmd:%d len:%d flags:%d", h.cmd, h.len, h.flags);
 
     if (h.cmd > LE_BEGIN && h.cmd < LE_END) {
         if (cbs[h.cmd - LE_BEGIN]) {
             (*(cbs[h.cmd - LE_BEGIN]))(c, msg, sz);
         }
     } else {
-        merror("invalid cmd:%d", h.cmd);
+        merror("login -> center invalid cmd:%d len:%d flags:%d", h.cmd, h.len, h.flags);
         return;
     }
 }
