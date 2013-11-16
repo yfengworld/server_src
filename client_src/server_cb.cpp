@@ -18,7 +18,7 @@ static void login_reply_cb(conn *c, unsigned char *msg, size_t sz)
 
     login::login_request r;
     r.set_account("abc");
-    r.set_passwd("xxx");
+    r.set_passwd("123");
     conn_write<login::login_request>(c, cl_login_request, &r);
 }
 
@@ -52,7 +52,7 @@ static void logic_server_connect_cb(conn *c, int ok)
     mdebug("logic_server_connect_cb ok:%d", ok);
     login::login_request lr;
     lr.set_account("abc");
-    lr.set_passwd("xxx");
+    lr.set_passwd("123");
     conn_write<login::login_request>(c, cl_login_request, &lr);
 }
 
