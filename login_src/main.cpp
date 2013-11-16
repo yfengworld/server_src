@@ -25,6 +25,7 @@ void client_cb_init(user_callback *cb);
 static user_callback center_cb;
 void center_cb_init(user_callback *cb);
 
+ConnectionPool_T pool = NULL;
 user_manager_t *user_mgr = NULL;
 center_info_manager_t *center_info_mgr = NULL;
 
@@ -49,6 +50,15 @@ int main(int argc, char **argv)
         mfatal("net_init failed!");
         return 1;
     }
+
+	/* db */
+	URL_T url = URL_new("mysql://localhost/db1?user=root&password=");
+	pool = ConnectionPool_new(url);
+	if (NULL == pool) {
+		mfatal("ConnectionPool_new url=%s failed!", URL_toString(url));
+		return 1;
+	}
+	ConnectionPool_start(pool);
 
     /* user manager */
     user_mgr = new user_manager_t;
@@ -113,7 +123,6 @@ int main(int argc, char **argv)
         return 1;
     }
     
-
     event_base_dispatch(main_base);
 
     for (int i = 0; i < WORKER_NUM; i++)
@@ -132,6 +141,10 @@ int main(int argc, char **argv)
 
     delete center_info_mgr;
     center_info_mgr = NULL;
+
+	/* db */
+	ConnectionPool_free(&pool);
+	URL_free(&url);
 
     /* close log */
     LOG_CLOSE();

@@ -1,0 +1,12 @@
+db1 represent database, profile represent table
+
+db1
+|
+|
+|-----profile
+
+
+db2
+|
+|
+|-----user

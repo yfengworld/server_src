@@ -158,11 +158,12 @@ top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 INCLUDES = \
-		   -I../common_src \
-		   -I../proto_src
+	   -I/usr/local/include/zdb \
+	   -I../common_src \
+	   -I../proto_src
 
 AM_CXXFLAGS = 
-login_LDADD = -lpthread -levent_pthreads -lprotobuf
+login_LDADD = -lzdb -lpthread -levent_pthreads -lprotobuf
 login_SOURCES = \
 			   ../common_src/log.cpp \
 			   ../common_src/net_thread.cpp \

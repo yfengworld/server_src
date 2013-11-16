@@ -1,10 +1,11 @@
 INCLUDES = \
-		   -I../common_src \
-		   -I../proto_src
+	   -I/usr/local/include/zdb \
+	   -I../common_src \
+	   -I../proto_src
 
 AM_CXXFLAGS =
 
-login_LDADD = -lpthread -levent_pthreads -lprotobuf
+login_LDADD = -lzdb -lpthread -levent_pthreads -lprotobuf
 
 bin_PROGRAMS = login
 
