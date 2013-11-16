@@ -40,7 +40,7 @@ static void login_request_cb(conn *c, unsigned char *msg, size_t sz)
 		login::login_request lr;
 		msg_body<login::login_request>(msg, sz, &lr);
 		ResultSet_T result = Connection_executeQuery(dbc,
-				"SELECT `uid` FROM `profile` WHERE `account`=%s AND `passwd`=%s;",
+				"SELECT `id` FROM `profile` WHERE `account`='%s' AND `passwd`='%s';",
 				lr.account().c_str(), lr.passwd().c_str());
 
 		if (ResultSet_next(result)) {
