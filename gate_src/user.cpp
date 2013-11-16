@@ -75,8 +75,9 @@ int user_manager_t::add_user(uint64_t uid)
     int ret = -1;
 
     pthread_rwlock_wrlock(&rwlock);
-    user_map_t::iterator itr = users.find(uid);
-    if (itr == users.end()) {
+    std::pair<user_map_t::iterator, bool> ib = users.insert(std::make_pair(uid, (user_t*)NULL));
+    //user_map_t::iterator itr = users.find(uid);
+    if (ib.second) {
         user_t *user = (user_t *)malloc(sizeof(user_t));
         if (NULL == user) {
             merror("new user_t failed!");
@@ -85,7 +86,8 @@ int user_manager_t::add_user(uint64_t uid)
             user->c = NULL;
             user->refcnt = 1;
             pthread_mutex_init(&user->lock, NULL);
-            users.insert(std::make_pair(uid, user));
+            //users.insert(std::make_pair(uid, user));
+            ib.first->second = user;
             ret = 0;
         }
     }
@@ -96,7 +98,6 @@ int user_manager_t::add_user(uint64_t uid)
 
 int user_manager_t::del_user(uint64_t uid)
 {
-
     int ret = -1;
 
     pthread_rwlock_wrlock(&rwlock);
