@@ -49,6 +49,8 @@ enum error {
   success = 0,
   auth = 1,
   freq = 2,
+  ban = 3,
+  version = 4,
   unknow = 99
 };
 bool error_IsValid(int value);
@@ -146,20 +148,30 @@ class login_request : public ::google::protobuf::Message {
   inline ::std::string* release_passwd();
   inline void set_allocated_passwd(::std::string* passwd);
 
+  // required int32 version = 3;
+  inline bool has_version() const;
+  inline void clear_version();
+  static const int kVersionFieldNumber = 3;
+  inline ::google::protobuf::int32 version() const;
+  inline void set_version(::google::protobuf::int32 value);
+
   // @@protoc_insertion_point(class_scope:login.login_request)
  private:
   inline void set_has_account();
   inline void clear_has_account();
   inline void set_has_passwd();
   inline void clear_has_passwd();
+  inline void set_has_version();
+  inline void clear_has_version();
 
   ::google::protobuf::UnknownFieldSet _unknown_fields_;
 
   ::std::string* account_;
   ::std::string* passwd_;
+  ::google::protobuf::int32 version_;
 
   mutable int _cached_size_;
-  ::google::protobuf::uint32 _has_bits_[(2 + 31) / 32];
+  ::google::protobuf::uint32 _has_bits_[(3 + 31) / 32];
 
   friend void  protobuf_AddDesc_login_2eproto();
   friend void protobuf_AssignDesc_login_2eproto();
@@ -1261,6 +1273,28 @@ inline void login_request::set_allocated_passwd(::std::string* passwd) {
     clear_has_passwd();
     passwd_ = const_cast< ::std::string*>(&::google::protobuf::internal::kEmptyString);
   }
+}
+
+// required int32 version = 3;
+inline bool login_request::has_version() const {
+  return (_has_bits_[0] & 0x00000004u) != 0;
+}
+inline void login_request::set_has_version() {
+  _has_bits_[0] |= 0x00000004u;
+}
+inline void login_request::clear_has_version() {
+  _has_bits_[0] &= ~0x00000004u;
+}
+inline void login_request::clear_version() {
+  version_ = 0;
+  clear_has_version();
+}
+inline ::google::protobuf::int32 login_request::version() const {
+  return version_;
+}
+inline void login_request::set_version(::google::protobuf::int32 value) {
+  set_has_version();
+  version_ = value;
 }
 
 // -------------------------------------------------------------------

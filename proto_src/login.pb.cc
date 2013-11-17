@@ -62,9 +62,10 @@ void protobuf_AssignDesc_login_2eproto() {
       "login.proto");
   GOOGLE_CHECK(file != NULL);
   login_request_descriptor_ = file->message_type(0);
-  static const int login_request_offsets_[2] = {
+  static const int login_request_offsets_[3] = {
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(login_request, account_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(login_request, passwd_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(login_request, version_),
   };
   login_request_reflection_ =
     new ::google::protobuf::internal::GeneratedMessageReflection(
@@ -296,25 +297,26 @@ void protobuf_AddDesc_login_2eproto() {
   GOOGLE_PROTOBUF_VERIFY_VERSION;
 
   ::google::protobuf::DescriptorPool::InternalAddGeneratedFile(
-    "\n\013login.proto\022\005login\"0\n\rlogin_request\022\017\n"
-    "\007account\030\001 \002(\t\022\016\n\006passwd\030\002 \002(\t\"1\n\022user_l"
-    "ogin_request\022\016\n\006tempid\030\001 \002(\005\022\013\n\003uid\030\002 \002("
-    "\004\"\?\n\024user_session_request\022\016\n\006tempid\030\001 \002("
-    "\005\022\013\n\003uid\030\002 \002(\004\022\n\n\002sk\030\003 \002(\t\"a\n\022user_sessi"
-    "on_reply\022\"\n\003err\030\001 \002(\0162\014.login.error:\007suc"
-    "cess\022\016\n\006tempid\030\002 \002(\005\022\013\n\003uid\030\003 \001(\004\022\n\n\002sk\030"
-    "\004 \001(\t\"\201\001\n\020user_login_reply\022\"\n\003err\030\001 \002(\0162"
-    "\014.login.error:\007success\022\016\n\006tempid\030\002 \002(\005\022\013"
-    "\n\003uid\030\003 \001(\004\022\n\n\002sk\030\004 \001(\t\022\016\n\006gateip\030\005 \001(\t\022"
-    "\020\n\010gateport\030\006 \001(\005\"l\n\013login_reply\022\"\n\003err\030"
-    "\001 \002(\0162\014.login.error:\007success\022\013\n\003uid\030\002 \001("
-    "\004\022\n\n\002sk\030\003 \001(\t\022\016\n\006gateip\030\004 \001(\t\022\020\n\010gatepor"
-    "t\030\005 \001(\005\"*\n\017connect_request\022\013\n\003uid\030\001 \002(\004\022"
-    "\n\n\002sk\030\002 \002(\t\"*\n\rconnect_reply\022\031\n\003err\030\001 \002("
-    "\0162\014.login.error\"\030\n\ncenter_reg\022\n\n\002id\030\001 \002("
-    "\005\"$\n\010gate_reg\022\n\n\002ip\030\001 \002(\t\022\014\n\004port\030\002 \002(\005*"
-    "4\n\005error\022\013\n\007success\020\000\022\010\n\004auth\020\001\022\010\n\004freq\020"
-    "\002\022\n\n\006unknow\020c", 733);
+    "\n\013login.proto\022\005login\"A\n\rlogin_request\022\017\n"
+    "\007account\030\001 \002(\t\022\016\n\006passwd\030\002 \002(\t\022\017\n\007versio"
+    "n\030\003 \002(\005\"1\n\022user_login_request\022\016\n\006tempid\030"
+    "\001 \002(\005\022\013\n\003uid\030\002 \002(\004\"\?\n\024user_session_reque"
+    "st\022\016\n\006tempid\030\001 \002(\005\022\013\n\003uid\030\002 \002(\004\022\n\n\002sk\030\003 "
+    "\002(\t\"a\n\022user_session_reply\022\"\n\003err\030\001 \002(\0162\014"
+    ".login.error:\007success\022\016\n\006tempid\030\002 \002(\005\022\013\n"
+    "\003uid\030\003 \001(\004\022\n\n\002sk\030\004 \001(\t\"\201\001\n\020user_login_re"
+    "ply\022\"\n\003err\030\001 \002(\0162\014.login.error:\007success\022"
+    "\016\n\006tempid\030\002 \002(\005\022\013\n\003uid\030\003 \001(\004\022\n\n\002sk\030\004 \001(\t"
+    "\022\016\n\006gateip\030\005 \001(\t\022\020\n\010gateport\030\006 \001(\005\"l\n\013lo"
+    "gin_reply\022\"\n\003err\030\001 \002(\0162\014.login.error:\007su"
+    "ccess\022\013\n\003uid\030\002 \001(\004\022\n\n\002sk\030\003 \001(\t\022\016\n\006gateip"
+    "\030\004 \001(\t\022\020\n\010gateport\030\005 \001(\005\"*\n\017connect_requ"
+    "est\022\013\n\003uid\030\001 \002(\004\022\n\n\002sk\030\002 \002(\t\"*\n\rconnect_"
+    "reply\022\031\n\003err\030\001 \002(\0162\014.login.error\"\030\n\ncent"
+    "er_reg\022\n\n\002id\030\001 \002(\005\"$\n\010gate_reg\022\n\n\002ip\030\001 \002"
+    "(\t\022\014\n\004port\030\002 \002(\005*J\n\005error\022\013\n\007success\020\000\022\010"
+    "\n\004auth\020\001\022\010\n\004freq\020\002\022\007\n\003ban\020\003\022\013\n\007version\020\004"
+    "\022\n\n\006unknow\020c", 772);
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedFile(
     "login.proto", &protobuf_RegisterTypes);
   login_request::default_instance_ = new login_request();
@@ -355,6 +357,8 @@ bool error_IsValid(int value) {
     case 0:
     case 1:
     case 2:
+    case 3:
+    case 4:
     case 99:
       return true;
     default:
@@ -368,6 +372,7 @@ bool error_IsValid(int value) {
 #ifndef _MSC_VER
 const int login_request::kAccountFieldNumber;
 const int login_request::kPasswdFieldNumber;
+const int login_request::kVersionFieldNumber;
 #endif  // !_MSC_VER
 
 login_request::login_request()
@@ -388,6 +393,7 @@ void login_request::SharedCtor() {
   _cached_size_ = 0;
   account_ = const_cast< ::std::string*>(&::google::protobuf::internal::kEmptyString);
   passwd_ = const_cast< ::std::string*>(&::google::protobuf::internal::kEmptyString);
+  version_ = 0;
   ::memset(_has_bits_, 0, sizeof(_has_bits_));
 }
 
@@ -439,6 +445,7 @@ void login_request::Clear() {
         passwd_->clear();
       }
     }
+    version_ = 0;
   }
   ::memset(_has_bits_, 0, sizeof(_has_bits_));
   mutable_unknown_fields()->Clear();
@@ -476,6 +483,22 @@ bool login_request::MergePartialFromCodedStream(
           ::google::protobuf::internal::WireFormat::VerifyUTF8String(
             this->passwd().data(), this->passwd().length(),
             ::google::protobuf::internal::WireFormat::PARSE);
+        } else {
+          goto handle_uninterpreted;
+        }
+        if (input->ExpectTag(24)) goto parse_version;
+        break;
+      }
+
+      // required int32 version = 3;
+      case 3: {
+        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
+            ::google::protobuf::internal::WireFormatLite::WIRETYPE_VARINT) {
+         parse_version:
+          DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
+                   ::google::protobuf::int32, ::google::protobuf::internal::WireFormatLite::TYPE_INT32>(
+                 input, &version_)));
+          set_has_version();
         } else {
           goto handle_uninterpreted;
         }
@@ -519,6 +542,11 @@ void login_request::SerializeWithCachedSizes(
       2, this->passwd(), output);
   }
 
+  // required int32 version = 3;
+  if (has_version()) {
+    ::google::protobuf::internal::WireFormatLite::WriteInt32(3, this->version(), output);
+  }
+
   if (!unknown_fields().empty()) {
     ::google::protobuf::internal::WireFormat::SerializeUnknownFields(
         unknown_fields(), output);
@@ -547,6 +575,11 @@ void login_request::SerializeWithCachedSizes(
         2, this->passwd(), target);
   }
 
+  // required int32 version = 3;
+  if (has_version()) {
+    target = ::google::protobuf::internal::WireFormatLite::WriteInt32ToArray(3, this->version(), target);
+  }
+
   if (!unknown_fields().empty()) {
     target = ::google::protobuf::internal::WireFormat::SerializeUnknownFieldsToArray(
         unknown_fields(), target);
@@ -570,6 +603,13 @@ int login_request::ByteSize() const {
       total_size += 1 +
         ::google::protobuf::internal::WireFormatLite::StringSize(
           this->passwd());
+    }
+
+    // required int32 version = 3;
+    if (has_version()) {
+      total_size += 1 +
+        ::google::protobuf::internal::WireFormatLite::Int32Size(
+          this->version());
     }
 
   }
@@ -605,6 +645,9 @@ void login_request::MergeFrom(const login_request& from) {
     if (from.has_passwd()) {
       set_passwd(from.passwd());
     }
+    if (from.has_version()) {
+      set_version(from.version());
+    }
   }
   mutable_unknown_fields()->MergeFrom(from.unknown_fields());
 }
@@ -622,7 +665,7 @@ void login_request::CopyFrom(const login_request& from) {
 }
 
 bool login_request::IsInitialized() const {
-  if ((_has_bits_[0] & 0x00000003) != 0x00000003) return false;
+  if ((_has_bits_[0] & 0x00000007) != 0x00000007) return false;
 
   return true;
 }
@@ -631,6 +674,7 @@ void login_request::Swap(login_request* other) {
   if (other != this) {
     std::swap(account_, other->account_);
     std::swap(passwd_, other->passwd_);
+    std::swap(version_, other->version_);
     std::swap(_has_bits_[0], other->_has_bits_[0]);
     _unknown_fields_.Swap(&other->_unknown_fields_);
     std::swap(_cached_size_, other->_cached_size_);
