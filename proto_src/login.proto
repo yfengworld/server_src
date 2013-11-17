@@ -4,6 +4,8 @@ enum error {
     success = 0;
     auth = 1;
     freq = 2;
+	ban = 3;
+	version = 4;
     unknow = 99;
 }
 
@@ -11,6 +13,7 @@ enum error {
 message login_request {
     required string account = 1;
     required string passwd = 2;
+	required int32 version = 3;
 }
 
 // login -> center
