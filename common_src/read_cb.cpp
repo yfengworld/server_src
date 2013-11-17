@@ -65,7 +65,7 @@ void conn_read_cb(struct bufferevent *bev, void *arg)
     return;
 
 err:
-    mdebug("close sockect!");
+    mdebug("close socket!");
     if (cb->disconnect) {
         (*(cb->disconnect))(c);
     }
