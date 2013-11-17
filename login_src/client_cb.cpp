@@ -82,11 +82,12 @@ static void login_request_cb(conn *c, unsigned char *msg, size_t sz)
 					conn_write<login::user_login_request>(info->c, le_user_login_request, &ulr);
 					center_info_decref(info);
 				}
-				return;
 			} while (0);
-			login::login_reply lr;
-			lr.set_err(err);
-			conn_write<login::login_reply>(c, lc_login_reply, &lr);
+			if (login::success != err) {
+				login::login_reply lr;
+				lr.set_err(err);
+				conn_write<login::login_reply>(c, lc_login_reply, &lr);
+			}
 		} else {
 			login::login_reply lr;
 			lr.set_err(login::auth);
@@ -95,7 +96,7 @@ static void login_request_cb(conn *c, unsigned char *msg, size_t sz)
 	} CATCH(SQLException) {
 		merror("SQLException -- %s", Exception_frame.message);
 	} FINALLY {
-		Connection_close(dbc);
+		ConnectionPool_returnConnection(pool, dbc);
 	} END_TRY;
 }
 

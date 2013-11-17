@@ -58,6 +58,8 @@ int main(int argc, char **argv)
 		mfatal("ConnectionPool_new url=%s failed!", URL_toString(url));
 		return 1;
 	}
+	ConnectionPool_setInitialConnections(pool, 4);
+	ConnectionPool_setMaxConnections(pool, 32);
 	ConnectionPool_start(pool);
 
     /* user manager */
@@ -102,7 +104,7 @@ int main(int argc, char **argv)
     struct sockaddr_in sa;
     bzero(&sa, sizeof(sa));
     sa.sin_family = AF_INET;
-    sa.sin_addr.s_addr = htonl(INADDR_ANY);
+    sa.sin_addr.s_addr = inet_addr("10.0.2.15");/*htonl(INADDR_ANY);*/
     sa.sin_port = htons(41000);
 
     listener *lc = listener_new(main_base, (struct sockaddr *)&sa, sizeof(sa), &client_cb);
