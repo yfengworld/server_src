@@ -28,9 +28,9 @@ int user_decref_unlock(user_t *user)
     }
 
     if (user->c) {
-        conn_lock_incref(user->c);
+        conn_lock(user->c);
         user->c->user = NULL;
-        conn_decref_unlock(user->c);
+        conn_unlock(user->c);
         user->c = NULL;
     }
 

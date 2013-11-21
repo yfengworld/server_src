@@ -52,7 +52,7 @@ int main(int argc, char **argv)
     }
 
 	/* db */
-	URL_T url = URL_new("mysql://localhost/db1?user=root&password=");
+	URL_T url = URL_new("mysql://10.0.2.15/db1?user=znf&password=123");
 	pool = ConnectionPool_new(url);
 	if (NULL == pool) {
 		mfatal("ConnectionPool_new url=%s failed!", URL_toString(url));

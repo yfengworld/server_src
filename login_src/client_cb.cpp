@@ -40,14 +40,12 @@ static void login_request_cb(conn *c, unsigned char *msg, size_t sz)
 		login::login_request lr;
 		msg_body<login::login_request>(msg, sz, &lr);
 		ResultSet_T result = Connection_executeQuery(dbc,
-				"SELECT `id`, `status`, `ban`, `lasttime`, `lastip`"
+				"SELECT `id`, `ban`, `lasttime`, `lastip`"
 				" FROM `profile` WHERE `account`='%s' AND `passwd`='%s';",
 				lr.account().c_str(), lr.passwd().c_str());
 
 		if (ResultSet_next(result)) {
 			uint64_t uid = ResultSet_getLLong(result, 1);
-			int status = ReusltSet_getInt(result, 2);
-			int ban = ResultSet_getInt(result, 3);
 			login::error err = login::success;
 			do {
 				int tempid = user_manager_t::get_guid();

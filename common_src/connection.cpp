@@ -47,7 +47,7 @@ conn *conn_new()
     c->arg = NULL;
     c->state = STATE_NOT_CONNECTED;
     c->bev = NULL;
-    c->refcnt = 1;
+	atomic_counter_init(&c->refcnt);
     pthread_mutex_init(&c->lock, NULL);
     c->thread = NULL;
     return c;
@@ -79,18 +79,16 @@ static int conn_add_to_freelist(conn *c) {
     return ret;
 }
 
-void conn_lock_incref(conn *c)
+void conn_incref(conn *c)
 {
-    pthread_mutex_lock(&c->lock);
-    ++c->refcnt;
+	atomic_counter_inc(&c->refcnt);
 }
 
-int conn_decref_unlock(conn *c)
+int conn_decref(conn *c)
 {
-    if (--c->refcnt) {
-        pthread_mutex_unlock(&c->lock);
-        return 0;
-    }
+	if (atomic_counter_dec(&c->refcnt)) {
+		return 0;
+	}
     if (NULL != c->bev) {
         bufferevent_free(c->bev);
         c->bev = NULL;
@@ -99,19 +97,6 @@ int conn_decref_unlock(conn *c)
         free(c);
     }
     return 1;
-}
-
-void conn_incref(conn *c)
-{
-    pthread_mutex_lock(&c->lock);
-    ++c->refcnt;
-    pthread_mutex_unlock(&c->lock);
-}
-
-int conn_decref(conn *c)
-{
-    pthread_mutex_lock(&c->lock);
-    return conn_decref_unlock(c);
 }
 
 void conn_lock(conn *c)
@@ -142,16 +127,16 @@ void disconnect(conn *c)
 
 int conn_write(conn *c, unsigned char *msg, size_t sz)
 {
+	conn_incref(c);
     conn_lock(c);
-    if (c->refcnt <= 0) {
-        conn_unlock(c);
-        return -1;
-    }
-    ++c->refcnt;
-    if (c->bev && 0 == bufferevent_write(c->bev, msg, sz)) {
-        conn_decref_unlock(c);
-        return 0;
-    }
-    conn_decref_unlock(c);
-    return -1;
+	if (STATE_CONNECTED == c->state) {
+		if (0 == bufferevent_write(c->bev, msg, sz)) {
+			conn_unlock(c);
+			conn_decref(c);
+			return 0;
+		}
+	}
+	conn_unlock(c);
+	conn_decref(c);
+	return -1;
 }

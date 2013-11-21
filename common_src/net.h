@@ -1,6 +1,8 @@
 #ifndef NET_H_INCLUDED
 #define NET_H_INCLUDED
 
+#include "atomic_counter.h"
+
 #include <event2/util.h>
 #include <event2/listener.h>
 #include <event2/event.h>
@@ -33,7 +35,7 @@ typedef struct {
 #define STATE_CONNECTED 1
     int state;
     bufferevent *bev;
-    int refcnt;
+	struct atomic_counter refcnt;
     pthread_mutex_t lock;
     char addrtext[32];
     LIBEVENT_THREAD *thread;
@@ -82,8 +84,6 @@ void thread_init(struct event_base *base, int nthreads, pthread_t *th);
 /* connection */
 void conn_init();
 conn *conn_new();
-void conn_lock_incref(conn *c);
-int conn_decref_unlock(conn *c);
 void conn_incref(conn *c);
 int conn_decref(conn *c);
 void conn_lock(conn *c);

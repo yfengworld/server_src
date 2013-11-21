@@ -10,6 +10,7 @@ login_LDADD = -lzdb -lpthread -levent_pthreads -lprotobuf
 bin_PROGRAMS = login
 
 login_SOURCES = \
+			   ../common_src/atomic_counter.cpp \
 			   ../common_src/log.cpp \
 			   ../common_src/net_thread.cpp \
 			   ../common_src/msg_protobuf.cpp \

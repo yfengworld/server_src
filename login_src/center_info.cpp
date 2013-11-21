@@ -94,9 +94,11 @@ int center_info_manager_t::add_center_info(int id, conn *c)
         }
         info->id = id;
         info->c = c;
-        conn_lock_incref(info->c);
+		conn_incref(info->c);
+		conn_lock(info->c);
         info->c->arg = (void *)id;
         conn_unlock(info->c);
+		conn_decref(info->c);
         info->refcnt = 1;
         pthread_mutex_init(&info->lock, NULL);
         center_info_incref(info);

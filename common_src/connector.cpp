@@ -51,11 +51,7 @@ int connector_write(connector *cr, unsigned char *msg, size_t sz)
     int ret = -1;
     pthread_mutex_lock(&cr->lock);
     if (cr->c) {
-        conn_lock_incref(cr->c);
-        if (cr->c->state == STATE_CONNECTED && cr->c->bev) {
-            ret = bufferevent_write(cr->c->bev, msg, sz);
-        }
-        conn_decref_unlock(cr->c);
+		ret = conn_write(cr->c, msg, sz);
     }
     pthread_mutex_unlock(&cr->lock);
 

@@ -45,13 +45,14 @@ CONFIG_CLEAN_FILES =
 CONFIG_CLEAN_VPATH_FILES =
 am__installdirs = "$(DESTDIR)$(bindir)"
 PROGRAMS = $(bin_PROGRAMS)
-am_login_OBJECTS = log.$(OBJEXT) net_thread.$(OBJEXT) \
-	msg_protobuf.$(OBJEXT) connection.$(OBJEXT) listener.$(OBJEXT) \
-	connector.$(OBJEXT) accept_cb.$(OBJEXT) read_cb.$(OBJEXT) \
-	write_cb.$(OBJEXT) conn_event_cb.$(OBJEXT) \
-	connector_event_cb.$(OBJEXT) cmd_util.$(OBJEXT) \
-	login.pb.$(OBJEXT) client_cb.$(OBJEXT) center_cb.$(OBJEXT) \
-	center_info.$(OBJEXT) user.$(OBJEXT) main.$(OBJEXT)
+am_login_OBJECTS = atomic_counter.$(OBJEXT) log.$(OBJEXT) \
+	net_thread.$(OBJEXT) msg_protobuf.$(OBJEXT) \
+	connection.$(OBJEXT) listener.$(OBJEXT) connector.$(OBJEXT) \
+	accept_cb.$(OBJEXT) read_cb.$(OBJEXT) write_cb.$(OBJEXT) \
+	conn_event_cb.$(OBJEXT) connector_event_cb.$(OBJEXT) \
+	cmd_util.$(OBJEXT) login.pb.$(OBJEXT) client_cb.$(OBJEXT) \
+	center_cb.$(OBJEXT) center_info.$(OBJEXT) user.$(OBJEXT) \
+	main.$(OBJEXT)
 login_OBJECTS = $(am_login_OBJECTS)
 login_DEPENDENCIES =
 DEFAULT_INCLUDES = -I.@am__isrc@ -I$(top_builddir)
@@ -165,6 +166,7 @@ INCLUDES = \
 AM_CXXFLAGS = 
 login_LDADD = -lzdb -lpthread -levent_pthreads -lprotobuf
 login_SOURCES = \
+			   ../common_src/atomic_counter.cpp \
 			   ../common_src/log.cpp \
 			   ../common_src/net_thread.cpp \
 			   ../common_src/msg_protobuf.cpp \
@@ -266,6 +268,7 @@ distclean-compile:
 	-rm -f *.tab.c
 
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/accept_cb.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/atomic_counter.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/center_cb.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/center_info.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/client_cb.Po@am__quote@
@@ -297,6 +300,20 @@ distclean-compile:
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$<' object='$@' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(CXXCOMPILE) -c -o $@ `$(CYGPATH_W) '$<'`
+
+atomic_counter.o: ../common_src/atomic_counter.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT atomic_counter.o -MD -MP -MF $(DEPDIR)/atomic_counter.Tpo -c -o atomic_counter.o `test -f '../common_src/atomic_counter.cpp' || echo '$(srcdir)/'`../common_src/atomic_counter.cpp
+@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/atomic_counter.Tpo $(DEPDIR)/atomic_counter.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='../common_src/atomic_counter.cpp' object='atomic_counter.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o atomic_counter.o `test -f '../common_src/atomic_counter.cpp' || echo '$(srcdir)/'`../common_src/atomic_counter.cpp
+
+atomic_counter.obj: ../common_src/atomic_counter.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT atomic_counter.obj -MD -MP -MF $(DEPDIR)/atomic_counter.Tpo -c -o atomic_counter.obj `if test -f '../common_src/atomic_counter.cpp'; then $(CYGPATH_W) '../common_src/atomic_counter.cpp'; else $(CYGPATH_W) '$(srcdir)/../common_src/atomic_counter.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/atomic_counter.Tpo $(DEPDIR)/atomic_counter.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='../common_src/atomic_counter.cpp' object='atomic_counter.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o atomic_counter.obj `if test -f '../common_src/atomic_counter.cpp'; then $(CYGPATH_W) '../common_src/atomic_counter.cpp'; else $(CYGPATH_W) '$(srcdir)/../common_src/atomic_counter.cpp'; fi`
 
 log.o: ../common_src/log.cpp
 @am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT log.o -MD -MP -MF $(DEPDIR)/log.Tpo -c -o log.o `test -f '../common_src/log.cpp' || echo '$(srcdir)/'`../common_src/log.cpp
